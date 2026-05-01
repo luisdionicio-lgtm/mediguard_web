@@ -1,0 +1,197 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #f4f8fb;
+  color: #1f2937;
+}
+
+.navbar {
+  height: 70px;
+  background: #0f766e;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 8%;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 25px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+.hero {
+  min-height: 80vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  padding: 60px 8%;
+  background: linear-gradient(135deg, #e0f7f4, #ffffff);
+}
+
+.hero-text h1 {
+  font-size: 55px;
+  color: #0f766e;
+  margin-bottom: 20px;
+}
+
+.hero-text p {
+  font-size: 20px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 14px 25px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-secondary {
+  background: #0f766e;
+  color: white;
+}
+
+.hero-card {
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.hero-card h3 {
+  color: #0f766e;
+  margin-bottom: 20px;
+}
+
+.hero-card li {
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.section {
+  padding: 60px 8%;
+  text-align: center;
+}
+
+.section h2 {
+  color: #0f766e;
+  font-size: 35px;
+  margin-bottom: 30px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+  color: #dc2626;
+  margin-bottom: 12px;
+}
+
+.dark {
+  background: #0f766e;
+  color: white;
+}
+
+.dark h2 {
+  color: white;
+}
+
+.form-section {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.form-card {
+  background: white;
+  width: 380px;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-card h2 {
+  text-align: center;
+  color: #0f766e;
+}
+
+.form-card input {
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+}
+
+.footer {
+  background: #111827;
+  color: white;
+  text-align: center;
+  padding: 25px;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar {
+    flex-direction: column;
+    height: auto;
+    gap: 10px;
+  }
+}

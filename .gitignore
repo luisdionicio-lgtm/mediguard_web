@@ -1,16 +1,23 @@
-# Django
+# ─── Django ──────────────────────────────────────────────────────────────────
 backend_django/venv/
-backend_django/__pycache__/
+backend_django/.venv/
 backend_django/db.sqlite3
 backend_django/*.pyc
 
-# React
+# ─── React ───────────────────────────────────────────────────────────────────
 frontend_react/node_modules/
 frontend_react/dist/
 
-# General
+# ─── General ─────────────────────────────────────────────────────────────────
 .vscode/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+*.env
 .env
-__pycache__/
-*.pyc
+.env.*
 .DS_Store
+
+# ─── Archivos sensibles — NUNCA subir ────────────────────────────────────────
+*.sqlite3
+*.db

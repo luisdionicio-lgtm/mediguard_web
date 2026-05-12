@@ -62,9 +62,28 @@ class ContactoEmergencia(models.Model):
         verbose_name='Es contacto principal',
         help_text='Contacto principal que se muestra primero en el botón SOS.',
     )
+    email = models.EmailField(
+        blank=True,
+        null=True,
+        verbose_name='Correo electrónico',
+        help_text='Email del contacto para notificaciones opcionales.',
+    )
+    notas = models.CharField(
+        max_length=255,
+        blank=True,
+        default='',
+        verbose_name='Notas',
+        help_text='Información adicional del contacto. Ej: "Disponible solo en horario laboral".',
+    )
+
+    # ── Auditoría ──────────────────────────────────────────────────────────────
     creado_en = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Fecha de registro',
+    )
+    actualizado_en = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Última actualización',
     )
 
     class Meta:
@@ -145,6 +164,32 @@ class EventoSOS(models.Model):
         verbose_name='Notas',
         help_text='Observaciones del usuario al resolver o marcar como falsa alarma.',
     )
+    # ── Información de dispositivo y contexto ──────────────────────────────────
+    dispositivo = models.CharField(
+        max_length=100,
+        blank=True,
+        default='',
+        verbose_name='Dispositivo',
+        help_text='User-Agent simplificado. Ej: "Chrome/Android", "Safari/iOS", "Firefox/Web".',
+    )
+    direccion_aproximada = models.CharField(
+        max_length=255,
+        blank=True,
+        default='',
+        verbose_name='Dirección aproximada',
+        help_text='Dirección legible obtenida por geocodificación inversa (opcional).',
+    )
+    duracion_segundos = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name='Duración del evento (seg)',
+        help_text='Tiempo en segundos entre activación y resolución. Calculado al resolver.',
+    )
+    contactos_notificados = models.PositiveSmallIntegerField(
+        default=0,
+        verbose_name='Contactos notificados',
+        help_text='Número de contactos de emergencia que el cliente notificó durante el evento.',
+    )
     activado_en = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Activado el',
@@ -173,6 +218,12 @@ class EventoSOS(models.Model):
     def tiene_ubicacion(self):
         """Indica si el evento tiene coordenadas GPS registradas."""
         return self.ubicacion_latitud is not None and self.ubicacion_longitud is not None
+
+    def calcular_duracion(self):
+        """Calcula y guarda la duración del evento al resolverlo."""
+        if self.resuelto_en and self.activado_en:
+            delta = self.resuelto_en - self.activado_en
+            self.duracion_segundos = int(delta.total_seconds())
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -235,6 +286,37 @@ class NumeroServicioEmergencia(models.Model):
         default=100,
         verbose_name='Prioridad',
         help_text='Menor número = mayor prioridad en la lista. El 112 debería tener prioridad=1.',
+    )
+    # ── Recursos adicionales ───────────────────────────────────────────────────
+    icono = models.CharField(
+        max_length=50,
+        blank=True,
+        default='',
+        verbose_name='Ícono',
+        help_text='Nombre del ícono a mostrar en el frontend. Ej: "ambulance", "police", "fire".',
+    )
+    url_sitio_web = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name='Sitio web',
+        help_text='URL del sitio oficial del servicio. Ej: https://www.pnp.gob.pe/',
+    )
+    horario_atencion = models.CharField(
+        max_length=100,
+        blank=True,
+        default='24/7',
+        verbose_name='Horario de atención',
+        help_text='Descripción del horario. Ej: "24/7", "Lun-Vie 08:00-18:00".',
+    )
+
+    # ── Auditoría ──────────────────────────────────────────────────────────────
+    creado_en = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Fecha de creación',
+    )
+    actualizado_en = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Última actualización',
     )
 
     class Meta:

@@ -119,232 +119,331 @@ Django genera el nombre de tabla como `{app}_{modelo_en_minúsculas}`. Ejemplo:
 | `telefono`          | `CharField(20)`       | `VARCHAR(20) UNIQUE`           | Sí       | `NULL`       | `phone VARCHAR(20) UNIQUE`     |
 | `is_active`         | `BooleanField`        | `BOOLEAN NOT NULL`             | No       | `TRUE`       | `is_active BOOLEAN DEFAULT TRUE` |
 | `is_staff`          | `BooleanField`        | `BOOLEAN NOT NULL`             | No       | `FALSE`      | *(rol de admin Django)*        |
-| `is_superuser`      | `BooleanField`        | `BOOLEAN NOT NULL`             | No       | `FALSE`      | *(superadmin Django)*          |
-| `esta_verificado`   | `BooleanField`        | `BOOLEAN NOT NULL`             | No       | `FALSE`      | `is_verified BOOLEAN DEFAULT FALSE` |
-| `date_joined`       | `DateTimeField`       | `TIMESTAMPTZ NOT NULL`         | No       | `now()`      | `created_at TIMESTAMPTZ DEFAULT NOW()` |
-| `last_login`        | `DateTimeField`       | `TIMESTAMPTZ`                  | Sí       | `NULL`       | `last_login_at TIMESTAMPTZ`    |
-| `actualizado_en`    | `DateTimeField`       | `TIMESTAMPTZ NOT NULL`         | No       | `now()`      | `updated_at TIMESTAMPTZ DEFAULT NOW()` |
-| `fecha_nacimiento`  | `DateField`           | `DATE`                         | Sí       | `NULL`       | *(extendido por MediGuard)*    |
-| `foto_perfil`       | `ImageField`          | `VARCHAR(255)` (ruta)          | Sí       | `NULL`       | *(extendido por MediGuard)*    |
-| `genero`            | `CharField(1)`        | `VARCHAR(1)`                   | Sí       | `NULL`       | *(extendido por MediGuard)*    |
-| `pais`              | `CharField(5)`        | `VARCHAR(5) NOT NULL`          | No       | `'PE'`       | *(extendido por MediGuard)*    |
+# 🗄️ MediGuard AI — Documentación del Esquema de Base de Datos
 
-### Choices — `genero`
-
-| Valor DB | Etiqueta           |
-|----------|--------------------|
-| `M`      | Masculino          |
-| `F`      | Femenino           |
-| `O`      | Otro               |
-| `N`      | Prefiero no decir  |
-
-### Constraints — `users_usuario`
-
-| Nombre                         | Tipo    | Columna(s) | Descripción                                              |
-|-------------------------------|---------|------------|----------------------------------------------------------|
-| `username` UNIQUE (heredado)   | UNIQUE  | `username` | Django lo hereda de AbstractUser                         |
-| `email` UNIQUE                 | UNIQUE  | `email`    | Equivale a `email UNIQUE` del SQL del DBA                |
-| `telefono` UNIQUE              | UNIQUE  | `telefono` | Equivale a `phone UNIQUE` del SQL del DBA                |
-| `chk_email_contiene_arroba`    | CHECK   | `email`    | Validacion minima. Django aplica `EmailValidator` completo en capa Python. Equivale a `CONSTRAINT chk_email_format` del DBA |
-
-### Indices — `users_usuario`
-
-| Indice                          | Columna(s)        | Proposito                               |
-|--------------------------------|-------------------|-----------------------------------------|
-| `users_usuario_email_idx`       | `email`           | Busqueda rapida por correo              |
-| `users_usuario_pais_idx`        | `pais`            | Filtrar usuarios por pais               |
-| `users_usuario_verificado_idx`  | `esta_verificado` | Analitica: verificados vs pendientes    |
+> **Dirigido a:** Administrador de Base de Datos  
+> **Preparado por:** Equipo Backend  
+> **Fecha:** 2026-05-12  
+> **Motor de BD:** PostgreSQL  
+> **Fuente de verdad:** DDL definitivo del sprint 1
 
 ---
 
-## 4. Tabla: `emergency_contactoemergencia`
+## Tabla de Contenidos
 
-> Contactos personales de emergencia. Cada usuario puede tener **múltiples** contactos (relación 1:N con `users_usuario`).
-
-| Columna          | Tipo Django          | Tipo SQL (PostgreSQL)   | Nullable | Default    | Descripción                                                  |
-|------------------|----------------------|-------------------------|----------|------------|--------------------------------------------------------------|
-| `id`             | `BigAutoField`       | `BIGSERIAL PRIMARY KEY` | No       | auto       | Clave primaria                                               |
-| `usuario_id`     | `ForeignKey`         | `BIGINT REFERENCES ...` | No       | —          | FK → `users_usuario.id` (CASCADE DELETE)                     |
-| `nombre`         | `CharField(100)`     | `VARCHAR(100)`          | No       | —          | Nombre completo del contacto                                 |
-| `telefono`       | `CharField(20)`      | `VARCHAR(20)`           | No       | —          | Teléfono con validación de formato internacional             |
-| `relacion`       | `CharField(20)`      | `VARCHAR(20)`           | No       | `'otro'`   | Choices: `familiar`, `amigo`, `medico`, `vecino`, `otro`     |
-| `es_principal`   | `BooleanField`       | `BOOLEAN`               | No       | `FALSE`    | Contacto SOS principal del usuario                           |
-| `email`          | `EmailField(254)`    | `VARCHAR(254)`          | Sí       | `NULL`     | Email del contacto (para notificaciones futuras)             |
-| `notas`          | `CharField(255)`     | `VARCHAR(255)`          | No       | `''`       | Info adicional. Ej: "Solo disponible de noche"               |
-| `creado_en`      | `DateTimeField`      | `TIMESTAMPTZ`           | No       | `now()`    | Timestamp de registro (inmutable)                            |
-| `actualizado_en` | `DateTimeField`      | `TIMESTAMPTZ`           | No       | `now()`    | Auto-actualizado en cada `save()`                            |
-
-### Choices — `relacion`
-
-| Valor DB   | Etiqueta  |
-|------------|-----------|
-| `familiar` | Familiar  |
-| `amigo`    | Amigo/a   |
-| `medico`   | Médico/a  |
-| `vecino`   | Vecino/a  |
-| `otro`     | Otro      |
-
-### Constraints — `emergency_contactoemergencia`
-
-| Nombre                         | Columnas                 | Tipo    | Descripción                                       |
-|-------------------------------|--------------------------|---------|---------------------------------------------------|
-| `telefono_unico_por_usuario`   | `(usuario_id, telefono)` | UNIQUE  | Un usuario no puede registrar el mismo número dos veces |
-
-### Índices — `emergency_contactoemergencia`
-
-| Índice                                         | Columnas                    | Propósito                              |
-|------------------------------------------------|-----------------------------|----------------------------------------|
-| `emergency_contacto_usuario_principal_idx`     | `(usuario_id, es_principal)`| SOS localiza el contacto principal rápido |
+1. [Visión General](#1-visión-general)
+2. [Diagrama ER](#2-diagrama-er)
+3. [Tabla: `roles`](#3-tabla-roles)
+4. [Tabla: `users`](#4-tabla-users)
+5. [Tabla pivote: `user_roles`](#5-tabla-pivote-user_roles)
+6. [Tabla: `verification_tokens`](#6-tabla-verification_tokens)
+7. [Tabla: `audit_log`](#7-tabla-audit_log)
+8. [Constraints e Índices](#8-constraints-e-índices)
+9. [Notas para PostgreSQL](#9-notas-para-postgresql)
 
 ---
 
-## 5. Tabla: `emergency_eventosos`
+## 1. Visión General
 
-> Historial de activaciones del botón SOS. Cada registro = un evento de emergencia activado por un usuario.
+El esquema definitivo del sistema de primeros auxilios se centra en autenticación, autorización por roles, trazabilidad de acciones y tokens de verificación.
 
-| Columna                 | Tipo Django                  | Tipo SQL (PostgreSQL)   | Nullable | Default      | Descripción                                                      |
-|-------------------------|------------------------------|-------------------------|----------|--------------|------------------------------------------------------------------|
-| `id`                    | `BigAutoField`               | `BIGSERIAL PRIMARY KEY` | No       | auto         | Clave primaria                                                   |
-| `usuario_id`            | `ForeignKey`                 | `BIGINT REFERENCES ...` | No       | —            | FK → `users_usuario.id` (CASCADE DELETE)                         |
-| `estado`                | `CharField(20)`              | `VARCHAR(20)`           | No       | `'activado'` | Choices: `activado`, `resuelto`, `falsa_alarma`                  |
-| `ubicacion_latitud`     | `DecimalField(9,6)`          | `DECIMAL(9,6)`          | Sí       | `NULL`       | Latitud GPS. Precisión ~11 cm                                    |
-| `ubicacion_longitud`    | `DecimalField(9,6)`          | `DECIMAL(9,6)`          | Sí       | `NULL`       | Longitud GPS. Precisión ~11 cm                                   |
-| `notas`                 | `TextField`                  | `TEXT`                  | No       | `''`         | Observaciones al resolver o cerrar el evento                     |
-| `dispositivo`           | `CharField(100)`             | `VARCHAR(100)`          | No       | `''`         | User-Agent simplificado. Ej: `"Chrome/Android"`                  |
-| `direccion_aproximada`  | `CharField(255)`             | `VARCHAR(255)`          | No       | `''`         | Dirección legible por geocodificación inversa (opcional)         |
-| `duracion_segundos`     | `PositiveIntegerField`       | `INTEGER`               | Sí       | `NULL`       | Tiempo transcurrido entre activación y resolución                |
-| `contactos_notificados` | `PositiveSmallIntegerField`  | `SMALLINT`              | No       | `0`          | N° de contactos que el cliente notificó durante el evento        |
-| `activado_en`           | `DateTimeField`              | `TIMESTAMPTZ`           | No       | `now()`      | Timestamp de activación (inmutable)                              |
-| `resuelto_en`           | `DateTimeField`              | `TIMESTAMPTZ`           | Sí       | `NULL`       | Timestamp de resolución o cierre                                 |
+| Tabla | Responsabilidad |
+|------|------------------|
+| `roles` | Catálogo de roles del sistema |
+| `users` | Usuarios autenticables del sistema |
+| `user_roles` | Relación N:M entre usuarios y roles |
+| `verification_tokens` | Tokens para verificación de correo, contraseña o teléfono |
+| `audit_log` | Registro de auditoría de acciones relevantes |
 
-### Choices — `estado`
+### Convención de nombres de tablas
 
-| Valor DB       | Etiqueta      | Descripción                         |
-|----------------|---------------|-------------------------------------|
-| `activado`     | Activado      | SOS activo, esperando respuesta     |
-| `resuelto`     | Resuelto      | Emergencia atendida                 |
-| `falsa_alarma` | Falsa Alarma  | El usuario canceló o fue accidental |
-
-### Índices — `emergency_eventosos`
-
-| Índice                                      | Columnas                       | Propósito                             |
-|---------------------------------------------|--------------------------------|---------------------------------------|
-| `emergency_eventosos_estado_idx`            | `estado`                       | Filtro rápido por estado              |
-| `emergency_eventosos_usuario_estado_idx`    | `(usuario_id, estado)`         | Historial por usuario y estado        |
-| `emergency_eventosos_usuario_activado_idx`  | `(usuario_id, activado_en)`    | Historial cronológico del usuario     |
-
-> **Nota:** `ubicacion_latitud` y `ubicacion_longitud` son opcionales porque en navegadores web el usuario puede denegar el permiso de GPS. El frontend envía `null` en ese caso.
+Se usa el nombre explícito definido en el DDL. No depende de la convención automática de Django para este documento.
 
 ---
 
-## 6. Tabla: `emergency_numeroservicioemergencia`
+## 2. Diagrama ER
 
-> Números institucionales de emergencia (112, 105, 106, etc.). **No tiene FK a usuarios** — es data global administrada desde el panel de admin Django.
-
-| Columna           | Tipo Django                  | Tipo SQL (PostgreSQL)   | Nullable | Default     | Descripción                                                     |
-|-------------------|------------------------------|-------------------------|----------|-------------|-----------------------------------------------------------------|
-| `id`              | `BigAutoField`               | `BIGSERIAL PRIMARY KEY` | No       | auto        | Clave primaria                                                  |
-| `nombre`          | `CharField(100)`             | `VARCHAR(100)`          | No       | —           | Nombre del servicio. Ej: `"PNP - Policía Nacional del Perú"`    |
-| `telefono`        | `CharField(20)`              | `VARCHAR(20)`           | No       | —           | Número de emergencia. Ej: `"105"`, `"112"`                      |
-| `tipo_servicio`   | `CharField(20)`              | `VARCHAR(20)`           | No       | `'general'` | Choices: `policia`, `ambulancia`, `bomberos`, `general`, `otro` |
-| `codigo_pais`     | `CharField(5)`               | `VARCHAR(5)`            | No       | `'PE'`      | ISO 3166-1. Permite multi-país en futuras versiones             |
-| `descripcion`     | `CharField(255)`             | `VARCHAR(255)`          | No       | `''`        | Descripción breve del servicio                                  |
-| `activo`          | `BooleanField`               | `BOOLEAN`               | No       | `TRUE`      | Permite desactivar sin borrar el registro                       |
-| `prioridad`       | `PositiveSmallIntegerField`  | `SMALLINT`              | No       | `100`       | Orden de aparición. Menor = primero. El `112` debe tener `1`   |
-| `icono`           | `CharField(50)`              | `VARCHAR(50)`           | No       | `''`        | Nombre de ícono para el frontend. Ej: `"ambulance"`, `"fire"`   |
-| `url_sitio_web`   | `URLField(200)`              | `VARCHAR(200)`          | Sí       | `NULL`      | URL del sitio oficial del servicio                              |
-| `horario_atencion`| `CharField(100)`             | `VARCHAR(100)`          | No       | `'24/7'`    | Descripción del horario. Ej: `"Lun-Vie 08:00-18:00"`           |
-| `creado_en`       | `DateTimeField`              | `TIMESTAMPTZ`           | No       | `now()`     | Timestamp de creación (inmutable)                               |
-| `actualizado_en`  | `DateTimeField`              | `TIMESTAMPTZ`           | No       | `now()`     | Auto-actualizado en cada `save()`                               |
-
-### Choices — `tipo_servicio`
-
-| Valor DB     | Etiqueta             |
-|--------------|----------------------|
-| `policia`    | Policía              |
-| `ambulancia` | Ambulancia           |
-| `bomberos`   | Bomberos             |
-| `general`    | Emergencias General  |
-| `otro`       | Otro                 |
-
-### Constraints — `emergency_numeroservicioemergencia`
-
-| Nombre                   | Columnas                  | Tipo   | Descripción                                          |
-|--------------------------|---------------------------|--------|------------------------------------------------------|
-| `telefono_unico_por_pais` | `(telefono, codigo_pais)` | UNIQUE | El mismo número no se duplica dentro del mismo país  |
-
-### Índices — `emergency_numeroservicioemergencia`
-
-| Índice                                         | Columnas       | Propósito                                    |
-|------------------------------------------------|----------------|----------------------------------------------|
-| `emergency_numero_codigo_pais_idx`             | `codigo_pais`  | Filtrar servicios por país en la API         |
-| `emergency_numero_activo_idx`                  | `activo`       | Excluir servicios inactivos en consultas     |
-
----
-
-## 7. Constraints e Índices — Resumen Global
-
-| Tabla                                  | Constraint / Índice                      | Tipo   | Columnas                      |
-|----------------------------------------|------------------------------------------|--------|-------------------------------|
-| `users_usuario`                        | `username` UNIQUE (heredado)             | UNIQUE | `username`                    |
-| `users_usuario`                        | `pais` index                             | INDEX  | `pais`                        |
-| `users_usuario`                        | `esta_verificado` index                  | INDEX  | `esta_verificado`             |
-| `emergency_contactoemergencia`         | `telefono_unico_por_usuario`             | UNIQUE | `(usuario_id, telefono)`      |
-| `emergency_contactoemergencia`         | `usuario + es_principal` index           | INDEX  | `(usuario_id, es_principal)`  |
-| `emergency_eventosos`                  | `estado` index                           | INDEX  | `estado`                      |
-| `emergency_eventosos`                  | `usuario + estado` index                 | INDEX  | `(usuario_id, estado)`        |
-| `emergency_eventosos`                  | `usuario + activado_en` index            | INDEX  | `(usuario_id, activado_en)`   |
-| `emergency_numeroservicioemergencia`   | `telefono_unico_por_pais`                | UNIQUE | `(telefono, codigo_pais)`     |
-| `emergency_numeroservicioemergencia`   | `codigo_pais` index                      | INDEX  | `codigo_pais`                 |
-| `emergency_numeroservicioemergencia`   | `activo` index                           | INDEX  | `activo`                      |
+```
+┌──────────────────────────────┐
+│           roles              │
+│  PK  id UUID                 │
+│      name UNIQUE             │
+│      description             │
+│      created_at              │
+└─────────────┬────────────────┘
+              │ 1
+              │
+              │ N
+┌─────────────▼────────────────┐
+│         user_roles           │
+│  PK/FK user_id               │
+│  PK/FK role_id               │
+│      assigned_at             │
+│      assigned_by FK → users  │
+└─────────────┬────────────────┘
+              │ N
+              │
+              │ 1
+┌─────────────▼────────────────┐        ┌──────────────────────────────┐
+│            users             │◄───────┤   verification_tokens        │
+│  PK  id UUID                 │ 1   N  │  PK  id UUID                 │
+│      first_name              │        │  FK  user_id                 │
+│      last_name               │        │      token UNIQUE            │
+│      email UNIQUE            │        │      token_type              │
+│      phone UNIQUE            │        │      expires_at              │
+│      password_hash           │        │      used                    │
+│      is_active               │        │      created_at              │
+│      is_verified             │        └──────────────────────────────┘
+│      last_login_at           │
+│      created_at              │        ┌──────────────────────────────┐
+│      updated_at              │        │          audit_log           │
+└─────────────┬────────────────┘        │  PK  id UUID                 │
+              │                         │  FK  user_id                 │
+              │ 1                       │      action                  │
+              │                         │      entity_type             │
+              │ N                       │      entity_id               │
+┌─────────────▼────────────────┐        │      metadata JSONB          │
+│          audit_log           │        │      created_at              │
+└──────────────────────────────┘        └──────────────────────────────┘
+```
 
 ---
 
-## 8. Notas para Migración a PostgreSQL
+## 3. Tabla: `roles`
 
-> Actualmente en SQLite para desarrollo. La migración a PostgreSQL se realizará en sprint de producción.
+> Catálogo de roles del sistema. Se carga con datos semilla al crear la base de datos.
+
+| Columna | Tipo SQL | Nullable | Default | Descripción |
+|--------|----------|----------|---------|-------------|
+| `id` | `UUID` | No | `gen_random_uuid()` | Clave primaria |
+| `name` | `VARCHAR(50)` | No | — | Nombre único del rol |
+| `description` | `TEXT` | Sí | `NULL` | Descripción funcional del rol |
+| `created_at` | `TIMESTAMPTZ` | No | `NOW()` | Fecha de creación |
+
+### Datos semilla — `roles`
+
+| name | description |
+|------|-------------|
+| `CIUDADANO` | Usuario estándar del sistema |
+| `SOCORRISTA` | Voluntario certificado en primeros auxilios |
+| `COORDINADOR` | Coordina equipos de respuesta |
+| `ADMIN` | Administrador del sistema |
+
+### Constraints — `roles`
+
+| Nombre | Tipo | Columna(s) | Descripción |
+|--------|------|------------|-------------|
+| `roles_name_key` | UNIQUE | `name` | No permite duplicar nombres de rol |
+
+### Índices — `roles`
+
+No se definen índices adicionales aparte del unique sobre `name`.
+
+---
+
+## 4. Tabla: `users`
+
+> Tabla principal de usuarios autenticables.
+
+| Columna | Tipo SQL | Nullable | Default | Descripción |
+|--------|----------|----------|---------|-------------|
+| `id` | `UUID` | No | `gen_random_uuid()` | Clave primaria |
+| `first_name` | `VARCHAR(100)` | No | — | Nombres del usuario |
+| `last_name` | `VARCHAR(100)` | No | — | Apellidos del usuario |
+| `email` | `VARCHAR(255)` | No | — | Correo único del usuario |
+| `phone` | `VARCHAR(20)` | Sí | `NULL` | Teléfono opcional y único |
+| `password_hash` | `VARCHAR(255)` | No | — | Hash de contraseña |
+| `is_active` | `BOOLEAN` | No | `TRUE` | Estado de activación |
+| `is_verified` | `BOOLEAN` | No | `FALSE` | Estado de verificación |
+| `last_login_at` | `TIMESTAMPTZ` | Sí | `NULL` | Último acceso |
+| `created_at` | `TIMESTAMPTZ` | No | `NOW()` | Fecha de creación |
+| `updated_at` | `TIMESTAMPTZ` | No | `NOW()` | Fecha de última actualización |
+
+### Constraints — `users`
+
+| Nombre | Tipo | Columna(s) | Descripción |
+|--------|------|------------|-------------|
+| `users_pkey` | PRIMARY KEY | `id` | Clave primaria UUID |
+| `users_email_key` | UNIQUE | `email` | Correo único |
+| `users_phone_key` | UNIQUE | `phone` | Teléfono único, permitiendo `NULL` |
+| `chk_email_format` | CHECK | `email` | Valida formato básico de correo con expresión regular |
+
+### Índices — `users`
+
+| Índice | Columnas | Propósito |
+|--------|----------|-----------|
+| `idx_users_email` | `email` | Búsqueda rápida por correo |
+| `idx_users_is_active` | `is_active` | Optimiza consultas de usuarios activos |
+
+---
+
+## 5. Tabla pivote: `user_roles`
+
+> Relación N:M entre usuarios y roles. Permite múltiples roles por usuario y múltiples usuarios por rol.
+
+| Columna | Tipo SQL | Nullable | Default | Descripción |
+|--------|----------|----------|---------|-------------|
+| `user_id` | `UUID` | No | — | FK hacia `users(id)` |
+| `role_id` | `UUID` | No | — | FK hacia `roles(id)` |
+| `assigned_at` | `TIMESTAMPTZ` | No | `NOW()` | Fecha de asignación |
+| `assigned_by` | `UUID` | Sí | `NULL` | FK opcional hacia `users(id)` |
+
+### Constraints — `user_roles`
+
+| Nombre | Tipo | Columna(s) | Descripción |
+|--------|------|------------|-------------|
+| `user_roles_pkey` | PRIMARY KEY | `(user_id, role_id)` | Evita duplicar el mismo rol para un usuario |
+| `user_roles_user_id_fkey` | FK | `user_id` | Elimina asignaciones al borrar el usuario |
+| `user_roles_role_id_fkey` | FK | `role_id` | Restringe borrado de roles en uso |
+| `user_roles_assigned_by_fkey` | FK | `assigned_by` | Si se borra el asignador, queda `NULL` |
+
+### Índices — `user_roles`
+
+No se definen índices adicionales fuera de la clave primaria compuesta.
+
+---
+
+## 6. Tabla: `verification_tokens`
+
+> Tokens para verificación de correo, recuperación de contraseña o verificación telefónica.
+
+| Columna | Tipo SQL | Nullable | Default | Descripción |
+|--------|----------|----------|---------|-------------|
+| `id` | `UUID` | No | `gen_random_uuid()` | Clave primaria |
+| `user_id` | `UUID` | No | — | FK hacia `users(id)` |
+| `token` | `VARCHAR(255)` | No | `encode(gen_random_bytes(32), 'hex')` | Token único |
+| `token_type` | `token_type_enum` | No | — | Tipo de token |
+| `expires_at` | `TIMESTAMPTZ` | No | `NOW() + INTERVAL '24 hours'` | Fecha de expiración |
+| `used` | `BOOLEAN` | No | `FALSE` | Indica si el token ya fue consumido |
+| `created_at` | `TIMESTAMPTZ` | No | `NOW()` | Fecha de creación |
+
+### ENUM — `token_type_enum`
+
+| Valor | Significado |
+|------|-------------|
+| `EMAIL_VERIFICATION` | Verificación de correo |
+| `PASSWORD_RESET` | Restablecimiento de contraseña |
+| `PHONE_VERIFICATION` | Verificación de teléfono |
+
+### Constraints — `verification_tokens`
+
+| Nombre | Tipo | Columna(s) | Descripción |
+|--------|------|------------|-------------|
+| `verification_tokens_pkey` | PRIMARY KEY | `id` | Clave primaria |
+| `verification_tokens_token_key` | UNIQUE | `token` | Un token no puede repetirse |
+| `verification_tokens_user_id_fkey` | FK | `user_id` | Borra tokens cuando se elimina el usuario |
+| `chk_token_not_expired_when_used` | CHECK | `used`, `expires_at`, `created_at` | Evita un token marcado como usado con expiración anterior a su creación |
+
+### Índices — `verification_tokens`
+
+| Índice | Columnas | Propósito |
+|--------|----------|-----------|
+| `idx_tokens_user_id` | `user_id` | Buscar tokens por usuario |
+| `idx_tokens_token` | `token` | Buscar tokens vigentes con filtro parcial `used = FALSE` |
+
+---
+
+## 7. Tabla: `audit_log`
+
+> Registro de auditoría para acciones relevantes del sistema.
+
+| Columna | Tipo SQL | Nullable | Default | Descripción |
+|--------|----------|----------|---------|-------------|
+| `id` | `UUID` | No | `gen_random_uuid()` | Clave primaria |
+| `user_id` | `UUID` | Sí | `NULL` | FK opcional hacia `users(id)` |
+| `action` | `VARCHAR(100)` | No | — | Acción realizada, por ejemplo `USER_REGISTERED` |
+| `entity_type` | `VARCHAR(50)` | Sí | `NULL` | Tipo de entidad afectada |
+| `entity_id` | `UUID` | Sí | `NULL` | Identificador de la entidad afectada |
+| `metadata` | `JSONB` | Sí | `NULL` | Información adicional estructurada |
+| `created_at` | `TIMESTAMPTZ` | No | `NOW()` | Fecha del evento |
+
+### Constraints — `audit_log`
+
+| Nombre | Tipo | Columna(s) | Descripción |
+|--------|------|------------|-------------|
+| `audit_log_pkey` | PRIMARY KEY | `id` | Clave primaria |
+| `audit_log_user_id_fkey` | FK | `user_id` | Si el usuario se elimina, el campo queda en `NULL` |
+
+### Índices — `audit_log`
+
+| Índice | Columnas | Propósito |
+|--------|----------|-----------|
+| `idx_audit_user_id` | `user_id` | Auditoría por usuario |
+| `idx_audit_action` | `action` | Filtrar por tipo de acción |
+| `idx_audit_created` | `created_at DESC` | Consultas cronológicas de auditoría |
+
+---
+
+## 8. Constraints e Índices
+
+| Tabla | Constraint / Índice | Tipo | Columnas |
+|------|----------------------|------|----------|
+| `roles` | `roles_name_key` | UNIQUE | `name` |
+| `users` | `users_email_key` | UNIQUE | `email` |
+| `users` | `users_phone_key` | UNIQUE | `phone` |
+| `users` | `chk_email_format` | CHECK | `email` |
+| `users` | `idx_users_email` | INDEX | `email` |
+| `users` | `idx_users_is_active` | INDEX | `is_active` |
+| `user_roles` | `user_roles_pkey` | PRIMARY KEY | `(user_id, role_id)` |
+| `verification_tokens` | `verification_tokens_token_key` | UNIQUE | `token` |
+| `verification_tokens` | `chk_token_not_expired_when_used` | CHECK | `used, expires_at, created_at` |
+| `verification_tokens` | `idx_tokens_user_id` | INDEX | `user_id` |
+| `verification_tokens` | `idx_tokens_token` | INDEX | `token` |
+| `audit_log` | `idx_audit_user_id` | INDEX | `user_id` |
+| `audit_log` | `idx_audit_action` | INDEX | `action` |
+| `audit_log` | `idx_audit_created` | INDEX | `created_at DESC` |
+
+---
+
+## 9. Notas para PostgreSQL
 
 ### Pasos clave
 
-1. **Instalar driver:** `pip install psycopg2-binary`
-2. **Actualizar `settings.py`:**
-   ```python
-   DATABASES = {
-       'default': {
-           'ENGINE': 'django.db.backends.postgresql',
-           'NAME': 'mediguard_db',
-           'USER': 'mediguard_user',
-           'PASSWORD': '<contraseña>',
-           'HOST': 'localhost',
-           'PORT': '5432',
-       }
-   }
-   ```
-3. **Crear la BD en PostgreSQL:**
+1. **Asegurar extensión UUID y generación de hashes.**
    ```sql
-   CREATE DATABASE mediguard_db;
-   CREATE USER mediguard_user WITH PASSWORD '<contraseña>';
-   GRANT ALL PRIVILEGES ON DATABASE mediguard_db TO mediguard_user;
+   CREATE EXTENSION IF NOT EXISTS "pgcrypto";
    ```
-4. **Aplicar migraciones:**
-   ```bash
-   python manage.py migrate
-   ```
-5. **Cargar datos iniciales** (números de emergencia):
-   ```bash
-   python manage.py loaddata numeros_emergencia_pe.json
-   ```
+2. **Crear tipos y tablas en el orden correcto.** Primero `roles` y `users`, luego `user_roles`, `verification_tokens` y `audit_log`.
+3. **Cargar datos semilla de roles.** Los roles base deben insertarse antes de asignar permisos a usuarios.
+4. **Mantener `updated_at` sincronizado.** Si se requiere actualización automática, usar trigger o lógica de aplicación.
+5. **Usar `JSONB` para auditoría.** Permite consultas flexibles sobre metadatos.
 
 ### Consideraciones de PostgreSQL
 
-| Aspecto              | Recomendación                                                                 |
-|----------------------|-------------------------------------------------------------------------------|
-| `foto_perfil`        | En producción usar **S3 / Cloudinary** en lugar de almacenamiento local       |
-| `DecimalField(9,6)`  | PostgreSQL usa `NUMERIC(9,6)` — compatible directamente                       |
-| Timestamps           | Django usa `TIMESTAMPTZ` (con timezone) — asegurar `USE_TZ = True` en settings|
-| Collation            | Usar `en_US.UTF-8` o `es_PE.UTF-8` para búsquedas con acentos correctas      |
-| Full-text search     | `notas` en `EventoSOS` puede beneficiarse de índice `GIN` para búsquedas     |
+| Aspecto | Recomendación |
+|--------|---------------|
+| UUIDs | Usar `pgcrypto` y `gen_random_uuid()` |
+| Tokens | Mantener el token como texto hexadecimal de longitud fija |
+| Fechas | Usar `TIMESTAMPTZ` con `timezone=True` en la aplicación |
+| JSON | `JSONB` es preferible para índices y consultas sobre `metadata` |
+| Índices parciales | Útiles para consultas frecuentes sobre datos activos o no usados |
+
+### Conexión rápida
+
+Para conectar la aplicación a PostgreSQL, define estos valores de entorno y usa una URL estándar:
+
+`postgresql://mediguard_user:<password>@localhost:5432/mediguard_db`
+
+En Django, la configuración mínima queda así:
+
+```python
+DATABASES = {
+  "default": {
+    "ENGINE": "django.db.backends.postgresql",
+    "NAME": "mediguard_db",
+    "USER": "mediguard_user",
+    "PASSWORD": "<password>",
+    "HOST": "localhost",
+    "PORT": "5432",
+  }
+}
+```
+
+Prueba la conexión con:
+
+```bash
+python manage.py migrate
+```
 
 ---
 
-*Documento generado automáticamente desde los modelos Django. Ante cualquier discrepancia, el modelo Python es la fuente de verdad.*

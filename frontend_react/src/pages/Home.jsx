@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import MobileMockup from '../components/MobileMockup';
 
 function Home() {
   return (
@@ -12,7 +13,7 @@ function Home() {
             </div>
             <h1>Asistencia vital en tu bolsillo con <span>MediGuard AI</span></h1>
             <p>
-              La aplicación móvil que transforma tu smartphone en una herramienta de respuesta inmediata. 
+              La aplicación móvil que transforma tu smartphone en una herramienta de respuesta inmediata.
               Prevención, primeros auxilios y contacto rápido con servicios de salud en el momento que más lo necesitas.
             </p>
 
@@ -29,7 +30,7 @@ function Home() {
                 Registrarse en la Web
               </Link>
             </div>
-            
+
             <div style={{ marginTop: '1.5rem' }}>
               <a href="#features" style={{ fontSize: '0.875rem', color: 'var(--teal-primary)', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                 Conocer más sobre el proyecto
@@ -42,12 +43,7 @@ function Home() {
           </div>
 
           <div className="hero-image-container">
-            <div className="hero-image-wrapper">
-              <img
-                src="/hero.png"
-                alt="Aplicación móvil MediGuard AI para emergencias médicas"
-              />
-            </div>
+            <MobileMockup />
           </div>
         </div>
       </section>
@@ -73,7 +69,7 @@ function Home() {
         <div className="section-header">
           <h2 className="section-title">Funcionalidades de la Aplicación</h2>
           <p className="section-subtitle">
-            MediGuard AI integra tecnología de vanguardia para ofrecer asistencia completa 
+            MediGuard AI integra tecnología de vanguardia para ofrecer asistencia completa
             antes, durante y después de una emergencia médica.
           </p>
         </div>
@@ -180,7 +176,7 @@ function Home() {
           <div>
             <h2 className="section-title" style={{ textAlign: 'left', marginBottom: '1.5rem', fontSize: '2rem' }}>Sobre el Proyecto Académico</h2>
             <p style={{ color: 'var(--blue-light)', marginBottom: '1.5rem', fontSize: '1.125rem' }}>
-              MediGuard AI nace como un <strong>Proyecto Integrador Universitario</strong> con un profundo impacto social. 
+              MediGuard AI nace como un <strong>Proyecto Integrador Universitario</strong> con un profundo impacto social.
               Nuestro objetivo es democratizar el acceso a la información de salud vital y reducir los tiempos de respuesta en situaciones de emergencia.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '2rem' }}>
@@ -207,11 +203,11 @@ function Home() {
               </li>
               <li style={{ padding: '1rem 0', borderBottom: '1px solid var(--gray-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <strong style={{ color: 'var(--blue-mid)' }}>Rony Quintana</strong>
-                <span style={{ fontSize: '0.875rem', color: 'var(--teal-primary)', backgroundColor: 'var(--teal-light)', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)' }}>Backend Developer</span>
+                <span style={{ fontSize: '0.875rem', color: 'var(--teal-primary)', backgroundColor: 'var(--teal-light)', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)' }}>Mobile Developer</span>
               </li>
               <li style={{ padding: '1rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <strong style={{ color: 'var(--blue-mid)' }}>Jeronimo Ortiz</strong>
-                <span style={{ fontSize: '0.875rem', color: 'var(--teal-primary)', backgroundColor: 'var(--teal-light)', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)' }}>Mobile Developer</span>
+                <span style={{ fontSize: '0.875rem', color: 'var(--teal-primary)', backgroundColor: 'var(--teal-light)', padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)' }}>Backend Developer</span>
               </li>
             </ul>
           </div>
@@ -222,7 +218,7 @@ function Home() {
         <div className="cta-content">
           <h2 className="cta-title">Lleva la seguridad en tu bolsillo</h2>
           <p className="cta-desc">
-            No esperes a que ocurra una emergencia. Regístrate en nuestra plataforma web hoy mismo 
+            No esperes a que ocurra una emergencia. Regístrate en nuestra plataforma web hoy mismo
             y prepárate para descargar la aplicación móvil de MediGuard AI.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>

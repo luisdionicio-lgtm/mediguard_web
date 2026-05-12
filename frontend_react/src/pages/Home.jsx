@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import MobileMockup from '../components/MobileMockup';
 
 function Home() {
   return (
@@ -42,12 +43,7 @@ function Home() {
           </div>
 
           <div className="hero-image-container">
-            <div className="hero-image-wrapper">
-              <img
-                src="/hero.png"
-                alt="Aplicación móvil MediGuard AI para emergencias médicas"
-              />
-            </div>
+            <MobileMockup />
           </div>
         </div>
       </section>

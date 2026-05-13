@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { authService } from '../services/authService';
 
 function Register() {
   const [form, setForm] = useState({
@@ -16,21 +17,43 @@ function Register() {
     });
   };
 
-  const handleRegister = (e) => {
+  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setError('');
 
     if (!form.name || !form.email || !form.password || !form.confirmPassword) {
-      alert('Por favor, completa todos los campos.');
+      setError('Por favor, completa todos los campos.');
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      alert('Las contraseñas no coinciden. Por favor, verifica e inténtalo de nuevo.');
+      setError('Las contraseñas no coinciden. Por favor, verifica e inténtalo de nuevo.');
       return;
     }
 
-    // Existing functionality kept intact
-    alert('Registro validado correctamente');
+    const nameParts = form.name.split(' ');
+    const first_name = nameParts[0];
+    const last_name = nameParts.slice(1).join(' ') || ' ';
+
+    setLoading(true);
+    try {
+      await authService.register({
+        first_name,
+        last_name,
+        email: form.email,
+        password: form.password
+      });
+      navigate('/dashboard');
+      window.location.reload();
+    } catch (err) {
+      setError(err.response?.data?.email ? 'El correo ya está registrado.' : 'Error al registrar la cuenta.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Basic password strength indicator
@@ -67,6 +90,7 @@ function Register() {
           </div>
 
           <form onSubmit={handleRegister}>
+            {error && <div className="error-message" style={{color: '#EF4444', marginBottom: '1rem'}}>{error}</div>}
             <div className="form-group">
               <label className="form-label">Nombre Completo</label>
               <div className="form-input-container">
@@ -148,8 +172,8 @@ function Register() {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-              Completar Registro
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>
+              {loading ? 'Registrando...' : 'Completar Registro'}
             </button>
           </form>
 

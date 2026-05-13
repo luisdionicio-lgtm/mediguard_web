@@ -7,12 +7,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # ── API REST ─────────────────────────────────────────────────────────────
-    # Prefijo /api/ separa la API REST del admin y facilita el versionado futuro.
-    # La futura app móvil consumirá exactamente los mismos endpoints.
-    #
-    # Autenticación: registro, login, refresco, perfil, cerrar-sesion
-    path('api/auth/', include('users.urls')),
-
-    # Futuras apps — agregar aquí cuando tengan HUs activas:
-    # path('api/emergencia/', include('emergency.urls')),
+    # Autenticación y usuarios
+    path('api/auth/', include('users.urls')), # Mantenemos retrocompatibilidad
+    path('api/', include('users.urls')), # Añade endpoints directos /api/login, /api/register, /api/profile
+    
+    # Contenido (Guides, Hospitals, News)
+    path('api/', include('content.urls')),
+    
+    # Emergencia
+    path('api/', include('emergency.urls')),
 ]

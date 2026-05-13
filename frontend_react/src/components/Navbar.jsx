@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { authService } from '../services/authService';
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -31,8 +32,17 @@ function Navbar() {
       </div>
 
       <div className="nav-actions">
-        <Link to="/login" className="btn btn-secondary">Ingresar</Link>
-        <Link to="/registro" className="btn btn-primary">Crear Cuenta</Link>
+        {authService.isAuthenticated() ? (
+          <>
+            <Link to="/dashboard" className="nav-link">Dashboard</Link>
+            <Link to="/profile" className="btn btn-primary">Mi Perfil</Link>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="btn btn-secondary">Ingresar</Link>
+            <Link to="/registro" className="btn btn-primary">Crear Cuenta</Link>
+          </>
+        )}
       </div>
     </nav>
   );

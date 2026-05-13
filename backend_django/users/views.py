@@ -201,3 +201,18 @@ class VistaCerrarSesion(APIView):
                 {'error': 'Token inválido o ya expirado.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VistaListarUsuarios
+# GET /api/users/ → listar todos los usuarios (solo ADMIN)
+# ─────────────────────────────────────────────────────────────────────────────
+class VistaListarUsuarios(generics.ListAPIView):
+    queryset = Usuario.objects.all().order_by('-created_at')
+    serializer_class = SerializadorUsuario
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        if not self.request.user.is_staff:
+            return Usuario.objects.none()
+        return super().get_queryset()
+

@@ -1,20 +1,33 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { authService } from '../services/authService';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
 
     if (!email || !password) {
-      alert('Por favor, completa todos los campos.');
+      setError('Por favor, completa todos los campos.');
       return;
     }
 
-    // Existing functionality kept intact
-    alert('Login validado correctamente');
+    setLoading(true);
+    try {
+      await authService.login(email, password);
+      navigate('/dashboard');
+      window.location.reload(); // Refresh to update Navbar
+    } catch (err) {
+      setError('Credenciales incorrectas o error en el servidor.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,6 +52,7 @@ function Login() {
           </div>
 
           <form onSubmit={handleLogin}>
+            {error && <div className="error-message" style={{color: '#EF4444', marginBottom: '1rem'}}>{error}</div>}
             <div className="form-group">
               <label className="form-label">Correo Electrónico</label>
               <div className="form-input-container">
@@ -73,8 +87,8 @@ function Login() {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-              Ingresar a mi cuenta
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>
+              {loading ? 'Cargando...' : 'Ingresar a mi cuenta'}
             </button>
           </form>
 

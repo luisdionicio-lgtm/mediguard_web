@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from .models import Usuario
+from rest_framework import serializers
+
+from .models import Rol, UserRole, Usuario
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SerializadorRegistro
-# Responsabilidad: validar y crear un nuevo usuario.
-# Solo se usa en POST /api/auth/registro/
-# La contraseña es write_only — nunca se devuelve en la respuesta.
-# Valida unicidad de correo (AbstractUser no lo hace por defecto).
-# ─────────────────────────────────────────────────────────────────────────────
+class SerializadorRol(serializers.ModelSerializer):
+    class Meta:
+        model = Rol
+        fields = ['id', 'name', 'description']
+
+
 class SerializadorRegistro(serializers.ModelSerializer):
     contrasena = serializers.CharField(
         write_only=True,
@@ -21,56 +21,92 @@ class SerializadorRegistro(serializers.ModelSerializer):
 
     class Meta:
         model = Usuario
-        fields = ['username', 'email', 'contrasena', 'first_name', 'telefono']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'contrasena']
         extra_kwargs = {
-            'email':      {'required': True},
-            'first_name': {'required': False, 'default': ''},
-            'telefono':   {'required': False, 'default': ''},
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+            'email': {'required': True},
+            'phone': {'required': False, 'allow_null': True, 'allow_blank': True},
         }
 
     def validate_email(self, value):
-        """
-        AbstractUser permite correos duplicados por defecto.
-        Esta validación asegura unicidad a nivel de serializer
-        sin necesidad de modificar el modelo ni hacer nuevas migraciones.
-        """
-        if Usuario.objects.filter(email__iexact=value).exists():
-            raise serializers.ValidationError(
-                'Ya existe una cuenta registrada con este correo electrónico.'
-            )
-        return value.lower()  # normalizar a minúsculas
+        email = value.lower()
+        if Usuario.objects.filter(email__iexact=email).exists():
+            raise serializers.ValidationError('Ya existe una cuenta registrada con este correo electronico.')
+        return email
+
+    def validate_phone(self, value):
+        return value or None
 
     def create(self, validated_data):
         return Usuario.objects.create_user(
-            username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password'],
-            first_name=validated_data.get('first_name', ''),
-            telefono=validated_data.get('telefono', ''),
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            phone=validated_data.get('phone'),
         )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SerializadorUsuario
-# Responsabilidad: exponer datos del usuario autenticado (solo lectura).
-# Se usa en GET /api/auth/perfil/
-# Nunca expone la contraseña. Todos los campos son read_only.
-# ─────────────────────────────────────────────────────────────────────────────
 class SerializadorUsuario(serializers.ModelSerializer):
+    roles = serializers.SlugRelatedField(many=True, read_only=True, slug_field='name')
+    is_staff = serializers.BooleanField(read_only=True)
+    is_superuser = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = Usuario
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'telefono', 'date_joined']
-        read_only_fields = ['id', 'username', 'email', 'date_joined']
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'is_active',
+            'is_verified',
+            'last_login',
+            'created_at',
+            'updated_at',
+            'roles',
+            'is_staff',
+            'is_superuser',
+        ]
+        read_only_fields = fields
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SerializadorActualizacionUsuario
-# Responsabilidad: permitir actualización parcial del perfil.
-# Se usa en PATCH /api/auth/perfil/
-# Solo permite cambiar campos de perfil — NO permite cambiar username, email ni contraseña.
-# El cambio de contraseña requiere un endpoint dedicado (fuera del scope actual).
-# ─────────────────────────────────────────────────────────────────────────────
 class SerializadorActualizacionUsuario(serializers.ModelSerializer):
     class Meta:
         model = Usuario
-        fields = ['first_name', 'last_name', 'telefono']
+        fields = ['first_name', 'last_name', 'phone']
+
+
+class SerializadorAsignacionRoles(serializers.Serializer):
+    roles = serializers.ListField(
+        child=serializers.ChoiceField(choices=Rol.Nombre.values),
+        allow_empty=False,
+    )
+
+    def validate_roles(self, value):
+        return list(dict.fromkeys(value))
+
+    def update(self, instance, validated_data):
+        roles = Rol.objects.filter(name__in=validated_data['roles'])
+        roles_por_nombre = {rol.name: rol for rol in roles}
+        faltantes = set(validated_data['roles']) - set(roles_por_nombre.keys())
+
+        if faltantes:
+            raise serializers.ValidationError(
+                f'Roles no encontrados: {", ".join(sorted(faltantes))}'
+            )
+
+        UserRole.objects.filter(user=instance).delete()
+        for rol_name in validated_data['roles']:
+            UserRole.objects.create(
+                user=instance,
+                role=roles_por_nombre[rol_name],
+                assigned_by=self.context['request'].user,
+            )
+
+        return instance
+
+    def create(self, validated_data):
+        raise NotImplementedError('Este serializer solo actualiza roles.')

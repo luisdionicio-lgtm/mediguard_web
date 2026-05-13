@@ -5,21 +5,62 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Usuario
-from .serializers import SerializadorRegistro, SerializadorUsuario, SerializadorActualizacionUsuario
+from .models import AuditLog, Usuario
+from .serializers import (
+    SerializadorActualizacionUsuario,
+    SerializadorAsignacionRoles,
+    SerializadorRegistro,
+    SerializadorUsuario,
+)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # VistaRegistro
-# POST /api/auth/registro/
-# Pública — no requiere autenticación (AllowAny).
-# Crea el usuario y devuelve tokens JWT inmediatamente,
-# evitando que el usuario tenga que hacer login por separado tras registrarse.
+# POST /api/auth/registro/           → crea usuario
+# GET  /api/auth/registro/?email=... → verifica si un usuario fue registrado
+# Publica — no requiere autenticacion (AllowAny).
 # ─────────────────────────────────────────────────────────────────────────────
-class VistaRegistro(generics.CreateAPIView):
+class VistaRegistro(generics.ListCreateAPIView):
     queryset = Usuario.objects.all()
     serializer_class = SerializadorRegistro
     permission_classes = [AllowAny]
+
+    def list(self, request, *args, **kwargs):
+        email = request.query_params.get('email', '').strip().lower()
+
+        if request.user and request.user.is_authenticated and not email:
+            return Response({
+                'registrado': True,
+                'usuario': SerializadorUsuario(request.user).data,
+            }, status=status.HTTP_200_OK)
+
+        if not email:
+            return Response(
+                {'error': 'Para verificar un registro envia el parametro ?email=correo@dominio.com.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        usuario = Usuario.objects.filter(email__iexact=email).first()
+        if not usuario:
+            return Response({
+                'registrado': False,
+                'email': email,
+                'mensaje': 'No existe un usuario registrado con ese correo.',
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            'registrado': True,
+            'usuario': {
+                'id': str(usuario.id),
+                'first_name': usuario.first_name,
+                'last_name': usuario.last_name,
+                'email': usuario.email,
+                'phone': usuario.phone,
+                'is_active': usuario.is_active,
+                'is_verified': usuario.is_verified,
+                'roles': list(usuario.roles.values_list('name', flat=True)),
+            },
+        }, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         serializador = self.get_serializer(data=request.data)
@@ -40,23 +81,92 @@ class VistaRegistro(generics.CreateAPIView):
 
 # ─────────────────────────────────────────────────────────────────────────────
 # VistaPerfil
-# GET  /api/auth/perfil/  → retorna datos del usuario autenticado
-# PATCH /api/auth/perfil/ → actualiza first_name, last_name, telefono
+# GET    /api/auth/perfil/  → retorna datos del usuario autenticado
+# PUT    /api/auth/perfil/  → reemplaza first_name, last_name, phone
+# PATCH  /api/auth/perfil/  → actualiza parcialmente first_name, last_name, phone
+# DELETE /api/auth/perfil/  → elimina la cuenta autenticada
 # Privada — requiere Bearer token.
 # Usa get_serializer_class para devolver el serializador correcto según el método.
 # ─────────────────────────────────────────────────────────────────────────────
-class VistaPerfil(generics.RetrieveUpdateAPIView):
+class VistaPerfil(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get', 'patch']  # PUT completo deshabilitado — solo PATCH parcial
+    http_method_names = ['get', 'put', 'patch', 'delete']
 
     def get_object(self):
         # El usuario autenticado ya viene en request.user — no necesita query extra.
         return self.request.user
 
     def get_serializer_class(self):
-        if self.request.method == 'PATCH':
+        if self.request.method in ['PUT', 'PATCH']:
             return SerializadorActualizacionUsuario
         return SerializadorUsuario
+
+    def destroy(self, request, *args, **kwargs):
+        usuario = self.get_object()
+        usuario.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VistaRolesUsuario
+# GET /api/auth/usuarios/<id>/roles/       → consulta roles de un usuario
+# PUT/PATCH /api/auth/usuarios/<id>/roles/ → reemplaza roles del usuario
+# Privada — requiere Bearer token de un usuario ADMIN.
+# ─────────────────────────────────────────────────────────────────────────────
+class VistaRolesUsuario(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_usuario(self, usuario_id):
+        return generics.get_object_or_404(Usuario, id=usuario_id)
+
+    def validar_admin(self, request):
+        if not request.user.is_staff:
+            return Response(
+                {'error': 'Solo un usuario ADMIN puede consultar o modificar roles.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        return None
+
+    def get(self, request, usuario_id):
+        respuesta_prohibida = self.validar_admin(request)
+        if respuesta_prohibida:
+            return respuesta_prohibida
+
+        usuario = self.get_usuario(usuario_id)
+        return Response(SerializadorUsuario(usuario).data, status=status.HTTP_200_OK)
+
+    def put(self, request, usuario_id):
+        return self.actualizar_roles(request, usuario_id)
+
+    def patch(self, request, usuario_id):
+        return self.actualizar_roles(request, usuario_id)
+
+    def actualizar_roles(self, request, usuario_id):
+        respuesta_prohibida = self.validar_admin(request)
+        if respuesta_prohibida:
+            return respuesta_prohibida
+
+        usuario = self.get_usuario(usuario_id)
+        serializador = SerializadorAsignacionRoles(
+            instance=usuario,
+            data=request.data,
+            context={'request': request},
+        )
+        serializador.is_valid(raise_exception=True)
+        usuario = serializador.save()
+
+        AuditLog.objects.create(
+            user=request.user,
+            action='USER_ROLES_UPDATED',
+            entity_type='users',
+            entity_id=usuario.id,
+            metadata={
+                'target_email': usuario.email,
+                'roles': list(usuario.roles.values_list('name', flat=True)),
+            },
+        )
+
+        return Response(SerializadorUsuario(usuario).data, status=status.HTTP_200_OK)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

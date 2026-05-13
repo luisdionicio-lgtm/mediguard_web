@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Aplicaciones del proyecto
-    'users',
+    'users.apps.UsersConfig',
     'emergency',
 ]
 
@@ -83,7 +83,7 @@ DATABASES = {
 
 
 # ─── Modelo de usuario personalizado ─────────────────────────────────────────
-# Apunta a users.Usuario (AbstractUser + telefono). NO cambiar después de la primera migración.
+# Apunta a users.Usuario, modelo personalizado alineado al DDL de Sprint 1.
 AUTH_USER_MODEL = 'users.Usuario'
 
 

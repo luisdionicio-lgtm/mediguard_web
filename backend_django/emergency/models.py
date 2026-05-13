@@ -103,7 +103,7 @@ class ContactoEmergencia(models.Model):
 
     def __str__(self):
         etiqueta = ' [Principal]' if self.es_principal else ''
-        return f"{self.nombre} ({self.telefono}){etiqueta} — {self.usuario.username}"
+        return f"{self.nombre} ({self.telefono}){etiqueta} — {self.usuario.email}"
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -212,7 +212,7 @@ class EventoSOS(models.Model):
         ]
 
     def __str__(self):
-        return f"SOS [{self.estado}] — {self.usuario.username} @ {self.activado_en:%Y-%m-%d %H:%M}"
+        return f"SOS [{self.estado}] — {self.usuario.email} @ {self.activado_en:%Y-%m-%d %H:%M}"
 
     @property
     def tiene_ubicacion(self):

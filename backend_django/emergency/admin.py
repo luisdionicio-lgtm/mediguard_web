@@ -7,7 +7,7 @@ from .models import ContactoEmergencia, EventoSOS, NumeroServicioEmergencia
 class AdministradorContactoEmergencia(admin.ModelAdmin):
     list_display    = ['nombre', 'telefono', 'relacion', 'es_principal', 'usuario', 'creado_en']
     list_filter     = ['relacion', 'es_principal', 'creado_en']
-    search_fields   = ['nombre', 'telefono', 'usuario__username', 'usuario__email']
+    search_fields   = ['nombre', 'telefono', 'usuario__email']
     readonly_fields = ['creado_en']
     ordering        = ['-es_principal', 'nombre']
 
@@ -16,7 +16,7 @@ class AdministradorContactoEmergencia(admin.ModelAdmin):
 class AdministradorEventoSOS(admin.ModelAdmin):
     list_display    = ['usuario', 'estado', 'tiene_ubicacion', 'activado_en', 'resuelto_en']
     list_filter     = ['estado', 'activado_en']
-    search_fields   = ['usuario__username', 'usuario__email', 'notas']
+    search_fields   = ['usuario__email', 'notas']
     readonly_fields = ['activado_en', 'tiene_ubicacion']
     ordering        = ['-activado_en']
 

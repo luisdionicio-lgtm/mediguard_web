@@ -35,9 +35,9 @@ function Register() {
       return;
     }
 
-    const nameParts = form.name.split(' ');
+    const nameParts = form.name.trim().split(' ');
     const first_name = nameParts[0];
-    const last_name = nameParts.slice(1).join(' ') || ' ';
+    const last_name = nameParts.slice(1).join(' ') || first_name; // Fallback to first_name if no last_name is provided to avoid validation errors
 
     setLoading(true);
     try {
@@ -45,12 +45,25 @@ function Register() {
         first_name,
         last_name,
         email: form.email,
-        password: form.password
+        contrasena: form.password
       });
       navigate('/dashboard');
       window.location.reload();
     } catch (err) {
-      setError(err.response?.data?.email ? 'El correo ya está registrado.' : 'Error al registrar la cuenta.');
+      if (err.response?.data) {
+        const data = err.response.data;
+        if (data.email) {
+          setError('El correo ya está registrado.');
+        } else if (data.contrasena) {
+          setError(Array.isArray(data.contrasena) ? data.contrasena[0] : 'La contraseña no cumple con los requisitos.');
+        } else if (data.error) {
+          setError(data.error);
+        } else {
+          setError('Error al registrar la cuenta. Verifica los datos.');
+        }
+      } else {
+        setError('Error de conexión con el servidor.');
+      }
     } finally {
       setLoading(false);
     }

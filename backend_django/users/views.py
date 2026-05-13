@@ -120,7 +120,7 @@ class VistaRolesUsuario(APIView):
         return generics.get_object_or_404(Usuario, id=usuario_id)
 
     def validar_admin(self, request):
-        if not request.user.is_staff:
+        if not getattr(request.user, 'is_staff', False):
             return Response(
                 {'error': 'Solo un usuario ADMIN puede consultar o modificar roles.'},
                 status=status.HTTP_403_FORBIDDEN,
@@ -212,7 +212,7 @@ class VistaListarUsuarios(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        if not self.request.user.is_staff:
+        if not getattr(self.request.user, 'is_staff', False):
             return Usuario.objects.none()
         return super().get_queryset()
 

@@ -21,8 +21,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     authService.logout();
-    navigate('/login');
-    window.location.reload(); // Refresh to update Navbar
+    window.location.href = '/login'; // Use href for a hard redirect that clears state and navigates
   };
 
   return (

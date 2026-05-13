@@ -1,0 +1,8 @@
+{
+  "venvPath": ".",
+  "venv": "backend_django/venv",
+  "extraPaths": [
+    "backend_django",
+    "backend_django/venv/Lib/site-packages"
+  ]
+}

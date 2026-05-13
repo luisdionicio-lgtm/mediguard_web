@@ -1,6 +1,7 @@
 from django.db import models
 
 class Guide(models.Model):
+    objects = models.Manager()
     title = models.CharField(max_length=255)
     description = models.TextField()
     category = models.CharField(max_length=100)  # e.g., 'SOS', 'RCP', 'Quemaduras', etc.
@@ -13,6 +14,7 @@ class Guide(models.Model):
         return self.title
 
 class Hospital(models.Model):
+    objects = models.Manager()
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     phone = models.CharField(max_length=50, blank=True, null=True)
@@ -27,6 +29,7 @@ class Hospital(models.Model):
         return self.name
 
 class News(models.Model):
+    objects = models.Manager()
     title = models.CharField(max_length=255)
     summary = models.TextField()
     content = models.TextField()

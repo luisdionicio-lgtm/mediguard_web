@@ -91,7 +91,7 @@ class Usuario(AbstractBaseUser):
     la columna fisica `password_hash` mediante `db_column`.
     """
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  # type: ignore
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(
@@ -241,6 +241,8 @@ class VerificationToken(models.Model):
 
 class AuditLog(models.Model):
     """Bitacora de acciones relevantes del sistema."""
+
+    objects = models.Manager()
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(

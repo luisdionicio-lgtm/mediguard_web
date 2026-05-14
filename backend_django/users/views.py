@@ -69,12 +69,19 @@ class VistaRegistro(generics.ListCreateAPIView):
 
         # Generar tokens tras registro exitoso
         refresh = RefreshToken.for_user(usuario)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+        usuario_data = SerializadorUsuario(usuario).data
 
         return Response({
-            'usuario': SerializadorUsuario(usuario).data,
+            'user': usuario_data,
+            'usuario': usuario_data,
             'tokens': {
-                'acceso': str(refresh.access_token),
-                'refresco': str(refresh),
+                'access': access_token,
+                'refresh': refresh_token,
+                # Compatibilidad temporal con el frontend/documentacion previa.
+                'acceso': access_token,
+                'refresco': refresh_token,
             }
         }, status=status.HTTP_201_CREATED)
 

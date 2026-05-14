@@ -34,6 +34,8 @@ class RegistroUsuariosSprint1Tests(TestCase):
         self.assertTrue(usuario.roles.filter(name=Rol.Nombre.CIUDADANO).exists())
         self.assertTrue(AuditLog.objects.filter(user=usuario, action='USER_REGISTERED').exists())
         self.assertIn('tokens', response.data)
+        self.assertIn('access', response.data['tokens'])
+        self.assertIn('refresh', response.data['tokens'])
 
     def test_registro_directo_api_guarda_telefono_en_sqlite(self):
         response = self.client.post('/api/register/', {

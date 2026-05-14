@@ -14,13 +14,17 @@ def api_root(request):
     return Response({
         'mensaje': 'MediGuard AI API',
         'auth': {
-            'registro': f'{auth_base_url}registro/',
             'register': f'{base_url}register/',
             'login': f'{base_url}login/',
             'token_refresco': f'{auth_base_url}token/refresco/',
-            'perfil': f'{base_url}profile/',
+            'profile': f'{base_url}profile/',
             'cerrar_sesion': f'{base_url}logout/',
             'usuarios': f'{base_url}users/',
+        },
+        'legacy_auth': {
+            'registro': f'{auth_base_url}registro/',
+            'perfil': f'{auth_base_url}perfil/',
+            'cerrar_sesion': f'{auth_base_url}cerrar-sesion/',
         },
         'contenido': {
             'guias': f'{base_url}guides/',

@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
-  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,10 +15,6 @@ function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  useEffect(() => {
-    setIsAuthenticated(authService.isAuthenticated());
-  }, [location.pathname]);
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -63,7 +58,7 @@ function Navbar() {
         ) : (
           <>
             <Link to="/login" className="btn btn-secondary">Ingresar</Link>
-            <Link to="/registro" className="btn btn-primary">Crear Cuenta</Link>
+            <Link to="/register" className="btn btn-primary">Crear Cuenta</Link>
           </>
         )}
       </div>

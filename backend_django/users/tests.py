@@ -18,13 +18,13 @@ class RegistroUsuariosSprint1Tests(TestCase):
             defaults={'description': 'Administrador del sistema'},
         )
 
-    def test_registro_crea_usuario_rol_ciudadano_auditoria_y_tokens(self):
-        response = self.client.post('/api/auth/registro/', {
+    def test_register_creates_user_default_role_audit_and_tokens(self):
+        response = self.client.post('/api/register/', {
             'first_name': 'Ana',
             'last_name': 'Torres',
             'email': 'ANA@example.com',
             'phone': '+51999888777',
-            'contrasena': 'ClaveSegura123!',
+            'password': 'ClaveSegura123!',
         }, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -36,20 +36,21 @@ class RegistroUsuariosSprint1Tests(TestCase):
         self.assertIn('tokens', response.data)
         self.assertIn('access', response.data['tokens'])
         self.assertIn('refresh', response.data['tokens'])
+        self.assertIn('user', response.data)
 
-    def test_registro_directo_api_guarda_telefono_en_sqlite(self):
+    def test_register_api_saves_phone_in_sqlite(self):
         response = self.client.post('/api/register/', {
             'first_name': 'Luis',
             'last_name': 'Prueba',
             'email': 'luis.prueba@example.com',
             'phone': '+51999123456',
-            'contrasena': 'ClaveSegura123!',
+            'password': 'ClaveSegura123!',
         }, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         usuario = Usuario.objects.get(email='luis.prueba@example.com')
         self.assertEqual(usuario.phone, '+51999123456')
-        self.assertEqual(response.data['usuario']['phone'], '+51999123456')
+        self.assertEqual(response.data['user']['phone'], '+51999123456')
 
     def test_api_root_muestra_endpoints_creados(self):
         response = self.client.get('/api/')
@@ -57,7 +58,15 @@ class RegistroUsuariosSprint1Tests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('register', response.data['auth'])
         self.assertIn('login', response.data['auth'])
-        self.assertIn('cerrar_sesion', response.data['auth'])
+        self.assertIn('logout', response.data['auth'])
+        self.assertIn('token_refresh', response.data['auth'])
+        self.assertNotIn('legacy_auth', response.data)
+        self.assertNotIn('token_refresco', response.data['auth'])
+
+    def test_spanish_auth_routes_are_not_exposed(self):
+        self.assertEqual(self.client.get('/api/auth/registro/').status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(self.client.get('/api/auth/perfil/').status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(self.client.post('/api/auth/cerrar-sesion/').status_code, status.HTTP_404_NOT_FOUND)
 
     def test_login_funciona_con_email_y_password(self):
         Usuario.objects.create_user(
@@ -67,7 +76,7 @@ class RegistroUsuariosSprint1Tests(TestCase):
             last_name='Demo',
         )
 
-        response = self.client.post('/api/auth/login/', {
+        response = self.client.post('/api/login/', {
             'email': 'usuario@example.com',
             'password': 'ClaveSegura123!',
         }, format='json')
@@ -84,16 +93,16 @@ class RegistroUsuariosSprint1Tests(TestCase):
             last_name='Original',
         )
 
-        response = self.client.post('/api/auth/registro/', {
+        response = self.client.post('/api/register/', {
             'first_name': 'Usuario',
             'last_name': 'Duplicado',
             'email': 'duplicado@example.com',
-            'contrasena': 'ClaveSegura123!',
+            'password': 'ClaveSegura123!',
         }, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_get_registro_verifica_usuario_existente_por_email(self):
+    def test_get_register_checks_existing_user_by_email(self):
         Usuario.objects.create_user(
             email='verificado@example.com',
             password='ClaveSegura123!',
@@ -101,17 +110,17 @@ class RegistroUsuariosSprint1Tests(TestCase):
             last_name='Verificado',
         )
 
-        response = self.client.get('/api/auth/registro/', {'email': 'verificado@example.com'})
+        response = self.client.get('/api/register/', {'email': 'verificado@example.com'})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(response.data['registrado'])
-        self.assertEqual(response.data['usuario']['email'], 'verificado@example.com')
+        self.assertTrue(response.data['registered'])
+        self.assertEqual(response.data['user']['email'], 'verificado@example.com')
 
-    def test_get_registro_responde_false_si_email_no_existe(self):
-        response = self.client.get('/api/auth/registro/', {'email': 'noexiste@example.com'})
+    def test_get_register_returns_false_when_email_does_not_exist(self):
+        response = self.client.get('/api/register/', {'email': 'noexiste@example.com'})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertFalse(response.data['registrado'])
+        self.assertFalse(response.data['registered'])
         self.assertEqual(response.data['email'], 'noexiste@example.com')
 
     def test_nuevo_token_invalida_token_anterior_del_mismo_tipo(self):
@@ -147,11 +156,11 @@ class RegistroUsuariosSprint1Tests(TestCase):
         )
         self.client.force_authenticate(user=usuario)
 
-        response_get = self.client.get('/api/auth/perfil/')
+        response_get = self.client.get('/api/profile/')
         self.assertEqual(response_get.status_code, status.HTTP_200_OK)
         self.assertEqual(response_get.data['email'], 'crud@example.com')
 
-        response_put = self.client.put('/api/auth/perfil/', {
+        response_put = self.client.put('/api/profile/', {
             'first_name': 'Crud',
             'last_name': 'Actualizado',
             'phone': '+51999111222',
@@ -161,14 +170,14 @@ class RegistroUsuariosSprint1Tests(TestCase):
         self.assertEqual(usuario.last_name, 'Actualizado')
         self.assertEqual(usuario.phone, '+51999111222')
 
-        response_patch = self.client.patch('/api/auth/perfil/', {
+        response_patch = self.client.patch('/api/profile/', {
             'phone': '+51999111333',
         }, format='json')
         self.assertEqual(response_patch.status_code, status.HTTP_200_OK)
         usuario.refresh_from_db()
         self.assertEqual(usuario.phone, '+51999111333')
 
-        response_delete = self.client.delete('/api/auth/perfil/')
+        response_delete = self.client.delete('/api/profile/')
         self.assertEqual(response_delete.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Usuario.objects.filter(email='crud@example.com').exists())
 
@@ -189,7 +198,7 @@ class RegistroUsuariosSprint1Tests(TestCase):
         UserRole.objects.get_or_create(user=admin, role=rol_admin, defaults={'assigned_by': None})
 
         self.client.force_authenticate(user=admin)
-        response = self.client.put(f'/api/auth/usuarios/{usuario.id}/roles/', {
+        response = self.client.put(f'/api/users/{usuario.id}/roles/', {
             'roles': ['ADMIN'],
         }, format='json')
 
@@ -213,7 +222,7 @@ class RegistroUsuariosSprint1Tests(TestCase):
         )
 
         self.client.force_authenticate(user=usuario)
-        response = self.client.put(f'/api/auth/usuarios/{objetivo.id}/roles/', {
+        response = self.client.put(f'/api/users/{objetivo.id}/roles/', {
             'roles': ['ADMIN'],
         }, format='json')
 

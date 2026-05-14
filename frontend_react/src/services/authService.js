@@ -18,8 +18,10 @@ export const authService = {
   register: async (userData) => {
     const response = await api.post('register/', userData);
     if (response.data.tokens) {
-      localStorage.setItem('access_token', response.data.tokens.acceso);
-      localStorage.setItem('refresh_token', response.data.tokens.refresco);
+      const accessToken = response.data.tokens.access;
+      const refreshToken = response.data.tokens.refresh;
+      localStorage.setItem('access_token', accessToken);
+      localStorage.setItem('refresh_token', refreshToken);
       notifyAuthChange();
     }
     return response.data;
@@ -30,7 +32,7 @@ export const authService = {
 
     try {
       if (refreshToken) {
-        await api.post('logout/', { refresco: refreshToken });
+        await api.post('logout/', { refresh: refreshToken });
       }
     } finally {
       localStorage.removeItem('access_token');

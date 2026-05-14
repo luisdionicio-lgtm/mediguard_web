@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
-import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -18,11 +16,6 @@ const Profile = () => {
     };
     fetchProfile();
   }, []);
-
-  const handleLogout = async () => {
-    await authService.logout();
-    navigate('/login', { replace: true });
-  };
 
   return (
     <div className="simple-page-container">

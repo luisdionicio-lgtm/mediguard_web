@@ -52,10 +52,9 @@ function Register() {
         last_name,
         email: form.email,
         phone: form.phone.trim(),
-        contrasena: form.password
+        password: form.password
       });
       navigate('/dashboard');
-      window.location.reload();
     } catch (err) {
       if (err.response?.data) {
         const data = err.response.data;
@@ -63,8 +62,8 @@ function Register() {
           setError('El correo ya está registrado.');
         } else if (data.phone) {
           setError(Array.isArray(data.phone) ? data.phone[0] : 'El numero de telefono no es valido o ya esta registrado.');
-        } else if (data.contrasena) {
-          setError(Array.isArray(data.contrasena) ? data.contrasena[0] : 'La contraseña no cumple con los requisitos.');
+        } else if (data.password) {
+          setError(Array.isArray(data.password) ? data.password[0] : 'La contraseña no cumple con los requisitos.');
         } else if (data.error) {
           setError(data.error);
         } else {

@@ -22,8 +22,7 @@ function Login() {
     try {
       await authService.login(email, password);
       navigate('/dashboard');
-      window.location.reload(); // Refresh to update Navbar
-    } catch (err) {
+    } catch {
       setError('Credenciales incorrectas o error en el servidor.');
     } finally {
       setLoading(false);
@@ -93,7 +92,7 @@ function Login() {
           </form>
 
           <div className="auth-links">
-            ¿No tienes una cuenta? <Link to="/registro">Regístrate aquí</Link>
+            ¿No tienes una cuenta? <Link to="/register">Regístrate aquí</Link>
           </div>
         </div>
       </div>

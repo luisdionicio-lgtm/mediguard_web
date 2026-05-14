@@ -26,7 +26,7 @@ function Home() {
                   <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
               </button>
-              <Link to="/registro" className="btn btn-secondary">
+              <Link to="/register" className="btn btn-secondary">
                 Registrarse en la Web
               </Link>
             </div>
@@ -222,7 +222,7 @@ function Home() {
             y prepárate para descargar la aplicación móvil de MediGuard AI.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/registro" className="btn btn-outline-white btn-lg" style={{ padding: '1rem 2.5rem', fontSize: '1.125rem' }}>
+            <Link to="/register" className="btn btn-outline-white btn-lg" style={{ padding: '1rem 2.5rem', fontSize: '1.125rem' }}>
               Crear cuenta web gratuita
             </Link>
             <button className="btn btn-white btn-lg" style={{ padding: '1rem 2.5rem', fontSize: '1.125rem' }}>

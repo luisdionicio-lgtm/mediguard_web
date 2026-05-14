@@ -5,6 +5,10 @@ backend_django/db.sqlite3
 backend_django/*.pyc
 frontend_react/skills
 
+# ─── AI Skills / Agents ─────────────────
+/skills/
+.skills/
+
 # ─── React ───────────────────────────────────────────────────────────────────
 frontend_react/node_modules/
 frontend_react/dist/

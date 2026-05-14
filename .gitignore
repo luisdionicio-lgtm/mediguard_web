@@ -3,6 +3,7 @@ backend_django/venv/
 backend_django/.venv/
 backend_django/db.sqlite3
 backend_django/*.pyc
+frontend_react/skills
 
 # ─── React ───────────────────────────────────────────────────────────────────
 frontend_react/node_modules/

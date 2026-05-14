@@ -1,19 +1,45 @@
-# -*- coding: utf-8 -*-
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_root(request):
+    base_url = request.build_absolute_uri('/api/')
+    auth_base_url = request.build_absolute_uri('/api/auth/')
+
+    return Response({
+        'mensaje': 'MediGuard AI API',
+        'auth': {
+            'registro': f'{auth_base_url}registro/',
+            'register': f'{base_url}register/',
+            'login': f'{base_url}login/',
+            'token_refresco': f'{auth_base_url}token/refresco/',
+            'perfil': f'{base_url}profile/',
+            'cerrar_sesion': f'{base_url}logout/',
+            'usuarios': f'{base_url}users/',
+        },
+        'contenido': {
+            'guias': f'{base_url}guides/',
+            'hospitales': f'{base_url}hospitals/',
+            'noticias': f'{base_url}news/',
+        },
+        'emergencia': {
+            'numeros': f'{base_url}emergency-numbers/',
+            'sos': f'{base_url}sos-events/',
+            'contactos': f'{base_url}emergency-contacts/',
+        },
+    })
+
 
 urlpatterns = [
-    # Panel de administración Django
     path('admin/', admin.site.urls),
-
-    # ── API REST ─────────────────────────────────────────────────────────────
-    # Autenticación y usuarios
-    path('api/auth/', include('users.urls')), # Mantenemos retrocompatibilidad
-    path('api/', include('users.urls')), # Añade endpoints directos /api/login, /api/register, /api/profile
-    
-    # Contenido (Guides, Hospitals, News)
+    path('api/', api_root, name='api-root'),
+    path('api/auth/', include('users.urls')),
+    path('api/', include('users.urls')),
     path('api/', include('content.urls')),
-    
-    # Emergencia
     path('api/', include('emergency.urls')),
 ]

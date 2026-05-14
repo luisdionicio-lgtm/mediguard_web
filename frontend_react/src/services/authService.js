@@ -1,11 +1,16 @@
 import api from './api';
 
+const notifyAuthChange = () => {
+  window.dispatchEvent(new Event('auth-change'));
+};
+
 export const authService = {
   login: async (email, password) => {
     const response = await api.post('login/', { email, password });
     if (response.data.access) {
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
+      notifyAuthChange();
     }
     return response.data;
   },
@@ -15,13 +20,23 @@ export const authService = {
     if (response.data.tokens) {
       localStorage.setItem('access_token', response.data.tokens.acceso);
       localStorage.setItem('refresh_token', response.data.tokens.refresco);
+      notifyAuthChange();
     }
     return response.data;
   },
 
-  logout: () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+  logout: async () => {
+    const refreshToken = localStorage.getItem('refresh_token');
+
+    try {
+      if (refreshToken) {
+        await api.post('logout/', { refresco: refreshToken });
+      }
+    } finally {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      notifyAuthChange();
+    }
   },
 
   getProfile: async () => {

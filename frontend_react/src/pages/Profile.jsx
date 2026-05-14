@@ -19,9 +19,9 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
-  const handleLogout = () => {
-    authService.logout();
-    window.location.href = '/login'; // Use href for a hard redirect that clears state and navigates
+  const handleLogout = async () => {
+    await authService.logout();
+    navigate('/login', { replace: true });
   };
 
   return (
@@ -38,12 +38,8 @@ const Profile = () => {
         ) : (
           <p>Cargando información del perfil...</p>
         )}
-        <button onClick={handleLogout} className="btn btn-primary" style={{ marginTop: '30px', width: '100%' }}>
-          Cerrar Sesión
-        </button>
       </div>
     </div>
   );
 };
-
 export default Profile;

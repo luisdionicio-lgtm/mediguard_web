@@ -19,6 +19,7 @@ urlpatterns = [
 
     # Rutas solicitadas en la nueva estructura
     path('register/', VistaRegistro.as_view(), name='register'),
+    path('logout/', VistaCerrarSesion.as_view(), name='logout'),
     path('users/', VistaListarUsuarios.as_view(), name='users-list'),
     path('profile/', VistaPerfil.as_view(), name='profile'),
 ]

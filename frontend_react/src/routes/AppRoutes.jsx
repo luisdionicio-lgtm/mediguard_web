@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Home from '../pages/Home';
@@ -10,6 +11,22 @@ import Hospitals from '../pages/Hospitals';
 import News from '../pages/News';
 import Profile from '../pages/Profile';
 import PrivateRoute from '../components/PrivateRoute';
+import { authService } from '../services/authService';
+
+function LogoutRoute() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const closeSession = async () => {
+      await authService.logout();
+      navigate('/login', { replace: true });
+    };
+
+    closeSession();
+  }, [navigate]);
+
+  return null;
+}
 
 function AppRoutes() {
   return (
@@ -20,6 +37,8 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Register />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/logout" element={<LogoutRoute />} />
         
         {/* Rutas Privadas */}
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />

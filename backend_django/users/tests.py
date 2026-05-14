@@ -35,6 +35,28 @@ class RegistroUsuariosSprint1Tests(TestCase):
         self.assertTrue(AuditLog.objects.filter(user=usuario, action='USER_REGISTERED').exists())
         self.assertIn('tokens', response.data)
 
+    def test_registro_directo_api_guarda_telefono_en_sqlite(self):
+        response = self.client.post('/api/register/', {
+            'first_name': 'Luis',
+            'last_name': 'Prueba',
+            'email': 'luis.prueba@example.com',
+            'phone': '+51999123456',
+            'contrasena': 'ClaveSegura123!',
+        }, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        usuario = Usuario.objects.get(email='luis.prueba@example.com')
+        self.assertEqual(usuario.phone, '+51999123456')
+        self.assertEqual(response.data['usuario']['phone'], '+51999123456')
+
+    def test_api_root_muestra_endpoints_creados(self):
+        response = self.client.get('/api/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('register', response.data['auth'])
+        self.assertIn('login', response.data['auth'])
+        self.assertIn('cerrar_sesion', response.data['auth'])
+
     def test_login_funciona_con_email_y_password(self):
         Usuario.objects.create_user(
             email='usuario@example.com',

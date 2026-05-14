@@ -4,7 +4,9 @@ import { authService } from '../services/authService';
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,6 +16,24 @@ function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    setIsAuthenticated(authService.isAuthenticated());
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setIsAuthenticated(authService.isAuthenticated());
+    };
+
+    window.addEventListener('auth-change', handleAuthChange);
+    return () => window.removeEventListener('auth-change', handleAuthChange);
+  }, []);
+
+  const handleLogout = async () => {
+    await authService.logout();
+    navigate('/login', { replace: true });
+  };
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
@@ -32,10 +52,13 @@ function Navbar() {
       </div>
 
       <div className="nav-actions">
-        {authService.isAuthenticated() ? (
+        {isAuthenticated ? (
           <>
             <Link to="/dashboard" className="nav-link">Dashboard</Link>
             <Link to="/profile" className="btn btn-primary">Mi Perfil</Link>
+            <button type="button" className="btn btn-secondary" onClick={handleLogout}>
+              Cerrar Sesion
+            </button>
           </>
         ) : (
           <>

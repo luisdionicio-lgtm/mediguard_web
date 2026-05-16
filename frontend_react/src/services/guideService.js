@@ -1,8 +1,7 @@
-import api from './api';
+import { userGuideService } from './user/guideService';
 
 export const guideService = {
   getAll: async () => {
-    const response = await api.get('guides/');
-    return response.data;
+    return userGuideService.getAll();
   }
 };

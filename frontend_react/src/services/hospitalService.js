@@ -1,8 +1,7 @@
-import api from './api';
+import { userHospitalService } from './user/hospitalService';
 
 export const hospitalService = {
   getAll: async () => {
-    const response = await api.get('hospitals/');
-    return response.data;
+    return userHospitalService.getAll();
   }
 };

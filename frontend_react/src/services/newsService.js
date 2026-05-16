@@ -1,8 +1,7 @@
-import api from './api';
+import { userNewsService } from './user/newsService';
 
 export const newsService = {
   getAll: async () => {
-    const response = await api.get('news/');
-    return response.data;
+    return userNewsService.getAll();
   }
 };

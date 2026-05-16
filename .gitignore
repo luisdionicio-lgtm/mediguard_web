@@ -21,6 +21,7 @@ frontend_react/dist/
 *.env
 .env
 .env.*
+!frontend_react/.env.example
 .DS_Store
 docs/axios-fetch-audit.local.md
 

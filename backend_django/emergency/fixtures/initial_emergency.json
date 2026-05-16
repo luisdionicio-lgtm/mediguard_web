@@ -1,0 +1,56 @@
+[
+  {
+    "model": "emergency.numeroservicioemergencia",
+    "pk": 1,
+    "fields": {
+      "nombre": "Policia Nacional del Peru",
+      "telefono": "105",
+      "tipo_servicio": "policia",
+      "codigo_pais": "PE",
+      "descripcion": "Central de emergencias policiales para reportar delitos, accidentes y situaciones de riesgo.",
+      "activo": true,
+      "prioridad": 1,
+      "icono": "police",
+      "url_sitio_web": "https://www.policia.gob.pe/",
+      "horario_atencion": "24/7",
+      "creado_en": "2026-05-16T11:00:00Z",
+      "actualizado_en": "2026-05-16T11:00:00Z"
+    }
+  },
+  {
+    "model": "emergency.numeroservicioemergencia",
+    "pk": 2,
+    "fields": {
+      "nombre": "SAMU",
+      "telefono": "106",
+      "tipo_servicio": "ambulancia",
+      "codigo_pais": "PE",
+      "descripcion": "Servicio de atencion movil de urgencias para emergencias medicas.",
+      "activo": true,
+      "prioridad": 2,
+      "icono": "ambulance",
+      "url_sitio_web": "https://www.gob.pe/samu",
+      "horario_atencion": "24/7",
+      "creado_en": "2026-05-16T11:05:00Z",
+      "actualizado_en": "2026-05-16T11:05:00Z"
+    }
+  },
+  {
+    "model": "emergency.numeroservicioemergencia",
+    "pk": 3,
+    "fields": {
+      "nombre": "Cuerpo General de Bomberos Voluntarios del Peru",
+      "telefono": "116",
+      "tipo_servicio": "bomberos",
+      "codigo_pais": "PE",
+      "descripcion": "Atencion de incendios, rescates, accidentes y otras emergencias.",
+      "activo": true,
+      "prioridad": 3,
+      "icono": "fire",
+      "url_sitio_web": "https://www.bomberosperu.gob.pe/",
+      "horario_atencion": "24/7",
+      "creado_en": "2026-05-16T11:10:00Z",
+      "actualizado_en": "2026-05-16T11:10:00Z"
+    }
+  }
+]

@@ -22,7 +22,9 @@ frontend_react/dist/
 .env
 .env.*
 .DS_Store
+docs/axios-fetch-audit.local.md
 
 # ─── Archivos sensibles — NUNCA subir ────────────────────────────────────────
 *.sqlite3
 *.db
+    

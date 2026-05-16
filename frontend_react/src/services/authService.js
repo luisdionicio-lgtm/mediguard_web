@@ -1,29 +1,38 @@
-import api from './api';
+import userApi from '../api/userApi';
 
 const notifyAuthChange = () => {
   window.dispatchEvent(new Event('auth-change'));
 };
 
+const persistAuthData = (data) => {
+  const accessToken = data.access || data.accessToken || data.tokens?.access;
+  const refreshToken = data.refresh || data.refreshToken || data.tokens?.refresh;
+
+  if (accessToken) {
+    localStorage.setItem('access_token', accessToken);
+  }
+  if (refreshToken) {
+    localStorage.setItem('refresh_token', refreshToken);
+  }
+  if (data.user) {
+    localStorage.setItem('user', JSON.stringify(data.user));
+  }
+
+  if (accessToken) {
+    notifyAuthChange();
+  }
+};
+
 export const authService = {
   login: async (email, password) => {
-    const response = await api.post('login/', { email, password });
-    if (response.data.access) {
-      localStorage.setItem('access_token', response.data.access);
-      localStorage.setItem('refresh_token', response.data.refresh);
-      notifyAuthChange();
-    }
+    const response = await userApi.post('login/', { email, password });
+    persistAuthData(response.data);
     return response.data;
   },
   
   register: async (userData) => {
-    const response = await api.post('register/', userData);
-    if (response.data.tokens) {
-      const accessToken = response.data.tokens.access;
-      const refreshToken = response.data.tokens.refresh;
-      localStorage.setItem('access_token', accessToken);
-      localStorage.setItem('refresh_token', refreshToken);
-      notifyAuthChange();
-    }
+    const response = await userApi.post('register/', userData);
+    persistAuthData(response.data);
     return response.data;
   },
 
@@ -32,17 +41,19 @@ export const authService = {
 
     try {
       if (refreshToken) {
-        await api.post('logout/', { refresh: refreshToken });
+        // TODO: ajustar payload si Spring Boot define otro contrato para invalidar refresh tokens.
+        await userApi.post('logout/', { refresh: refreshToken });
       }
     } finally {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
       notifyAuthChange();
     }
   },
 
   getProfile: async () => {
-    const response = await api.get('profile/');
+    const response = await userApi.get('profile/');
     return response.data;
   },
 

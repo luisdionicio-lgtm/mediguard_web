@@ -1,4 +1,5 @@
 import userApi from '../api/userApi';
+import { profileService } from './user/profileService';
 
 const notifyAuthChange = () => {
   window.dispatchEvent(new Event('auth-change'));
@@ -53,8 +54,7 @@ export const authService = {
   },
 
   getProfile: async () => {
-    const response = await userApi.get('profile/');
-    return response.data;
+    return profileService.getProfile();
   },
 
   isAuthenticated: () => {

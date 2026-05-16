@@ -19,8 +19,19 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/login/", "/api/register/").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/profile/").authenticated()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/guides/**",
+                                "/api/hospitals/**",
+                                "/api/news/**",
+                                "/api/emergencies/**"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/login/**",
+                                "/api/register/**"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/profile/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/logout/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())

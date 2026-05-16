@@ -1,19 +1,49 @@
+import { useEffect, useState } from 'react';
+import { hospitalService } from '../services/hospitalService';
 import '../styles/Dashboard.css';
 
 const Hospitals = () => {
+  const [hospitals, setHospitals] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const loadHospitals = async () => {
+      try {
+        const data = await hospitalService.getAll();
+        setHospitals(data);
+      } catch {
+        setError('No se pudieron cargar los centros medicos.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadHospitals();
+  }, []);
+
   return (
     <div className="simple-page-container">
       <h1 className="section-title">Centros <span className="highlight">Médicos</span></h1>
       <p className="section-subtitle">Encuentra los hospitales más cercanos.</p>
+
+      {isLoading && <p className="section-subtitle">Cargando centros medicos...</p>}
+      {error && <p className="section-subtitle">{error}</p>}
+      {!isLoading && !error && hospitals.length === 0 && (
+        <p className="section-subtitle">No hay centros medicos disponibles.</p>
+      )}
+
       <div className="dashboard-grid">
-        <div className="dashboard-card secondary">
-          <h3>Hospital Rebagliati</h3>
-          <p>Av. Edgardo Rebagliati Martins 490, Jesús María.</p>
-        </div>
-        <div className="dashboard-card secondary">
-          <h3>Clínica Ricardo Palma</h3>
-          <p>Av. Javier Prado Este 1066, San Isidro.</p>
-        </div>
+        {hospitals.map((hospital) => (
+          <div className="dashboard-card secondary" key={hospital.id}>
+            <h3>{hospital.name}</h3>
+            <p>{hospital.address}</p>
+            {hospital.phone && <p>Telefono: {hospital.phone}</p>}
+            {hospital.latitude && hospital.longitude && (
+              <p>Ubicacion: {hospital.latitude}, {hospital.longitude}</p>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

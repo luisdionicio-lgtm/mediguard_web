@@ -10,6 +10,7 @@ import Guides from '../pages/Guides';
 import Hospitals from '../pages/Hospitals';
 import News from '../pages/News';
 import Profile from '../pages/Profile';
+import Emergencies from '../pages/Emergencies';
 import PrivateRoute from '../components/PrivateRoute';
 import { authService } from '../services/authService';
 
@@ -45,6 +46,7 @@ function AppRoutes() {
         <Route path="/hospitals" element={<PrivateRoute><Hospitals /></PrivateRoute>} />
         <Route path="/news" element={<PrivateRoute><News /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/emergencies" element={<PrivateRoute><Emergencies /></PrivateRoute>} />
       </Routes>
 
       <Footer />

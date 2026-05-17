@@ -27,18 +27,29 @@ const Guides = () => {
       <h1 className="section-title">Guías de <span className="highlight">Primeros Auxilios</span></h1>
       <p className="section-subtitle">Instrucciones paso a paso para emergencias.</p>
 
-      {isLoading && <p className="section-subtitle">Cargando guias...</p>}
-      {error && <p className="section-subtitle">{error}</p>}
+      {isLoading && (
+        <div className="status-message loading">
+          <p className="section-subtitle">Cargando guías...</p>
+        </div>
+      )}
+      {error && (
+        <div className="status-message error">
+          <p className="section-subtitle" style={{ color: '#EF4444' }}>{error}</p>
+        </div>
+      )}
       {!isLoading && !error && guides.length === 0 && (
-        <p className="section-subtitle">No hay guias disponibles.</p>
+        <div className="status-message empty">
+          <p className="section-subtitle">No hay guías disponibles.</p>
+        </div>
       )}
 
       <div className="dashboard-grid">
         {guides.map((guide) => (
           <div className="dashboard-card primary" key={guide.id}>
+            <div className="card-icon">📖</div>
             <h3>{guide.title}</h3>
-            <p>{guide.description}</p>
-            <p>{guide.content}</p>
+            {guide.description && <p><strong>Descripción:</strong> {guide.description}</p>}
+            {guide.content && <p>{guide.content}</p>}
           </div>
         ))}
       </div>

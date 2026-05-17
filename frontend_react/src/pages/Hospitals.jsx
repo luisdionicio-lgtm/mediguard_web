@@ -27,20 +27,31 @@ const Hospitals = () => {
       <h1 className="section-title">Centros <span className="highlight">Médicos</span></h1>
       <p className="section-subtitle">Encuentra los hospitales más cercanos.</p>
 
-      {isLoading && <p className="section-subtitle">Cargando centros medicos...</p>}
-      {error && <p className="section-subtitle">{error}</p>}
+      {isLoading && (
+        <div className="status-message loading">
+          <p className="section-subtitle">Cargando centros médicos...</p>
+        </div>
+      )}
+      {error && (
+        <div className="status-message error">
+          <p className="section-subtitle" style={{ color: '#EF4444' }}>{error}</p>
+        </div>
+      )}
       {!isLoading && !error && hospitals.length === 0 && (
-        <p className="section-subtitle">No hay centros medicos disponibles.</p>
+        <div className="status-message empty">
+          <p className="section-subtitle">No hay centros médicos disponibles.</p>
+        </div>
       )}
 
       <div className="dashboard-grid">
         {hospitals.map((hospital) => (
           <div className="dashboard-card secondary" key={hospital.id}>
+            <div className="card-icon">🏥</div>
             <h3>{hospital.name}</h3>
-            <p>{hospital.address}</p>
-            {hospital.phone && <p>Telefono: {hospital.phone}</p>}
+            {hospital.address && <p><strong>Dirección:</strong> {hospital.address}</p>}
+            {hospital.phone && <p><strong>Teléfono:</strong> {hospital.phone}</p>}
             {hospital.latitude && hospital.longitude && (
-              <p>Ubicacion: {hospital.latitude}, {hospital.longitude}</p>
+              <p><strong>Ubicación:</strong> {hospital.latitude}, {hospital.longitude}</p>
             )}
           </div>
         ))}

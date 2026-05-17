@@ -2,9 +2,16 @@ import userApi from '../../api/userApi';
 
 export const profileService = {
   getProfile: async () => {
-    const response = await userApi.get('profile/');
-    return response.data;
+    try {
+      const response = await userApi.get('profile/');
+      return response.data;
+    } catch (error) {
+      // Fallback to local storage user data
+      const localUser = localStorage.getItem('user');
+      if (localUser) {
+        return JSON.parse(localUser);
+      }
+      throw error;
+    }
   },
-
-  // TODO: agregar updateProfile(data) cuando exista contrato Spring Boot y uso real en UI.
 };

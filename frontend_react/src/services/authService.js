@@ -26,13 +26,20 @@ const persistAuthData = (data) => {
 
 export const authService = {
   login: async (email, password) => {
-    const response = await userApi.post('login/', { email, password });
+    // We map password to contrasena for the new backend
+    const response = await userApi.post('usuarios/login', { email, contrasena: password });
     persistAuthData(response.data);
     return response.data;
   },
-  
+
   register: async (userData) => {
-    const response = await userApi.post('register/', userData);
+    // Map first_name to nombre, and password to contrasena
+    const payload = {
+      nombre: userData.first_name + (userData.last_name ? ' ' + userData.last_name : ''),
+      email: userData.email,
+      contrasena: userData.password
+    };
+    const response = await userApi.post('usuarios/registro', payload);
     persistAuthData(response.data);
     return response.data;
   },

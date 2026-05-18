@@ -369,3 +369,5 @@ Esto valida la regla: al emitir un nuevo token del mismo tipo, los anteriores qu
   - crear registro de auditoria;
   - invalidar tokens previos.
 - La tabla pivote `user_roles` usa `CompositePrimaryKey` para respetar la PK compuesta `(user_id, role_id)`.
+
+# Test workflow

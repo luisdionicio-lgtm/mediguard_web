@@ -3,93 +3,198 @@ import '../styles/Dashboard.css';
 
 const Dashboard = () => {
   return (
-    <div className="dashboard-container page-container">
-      <div className="dashboard-header animate-fade-in">
-        <h1 className="section-title">Tu Dashboard <span className="highlight">Médico</span></h1>
-        <p className="section-subtitle">Acceso rápido a herramientas de emergencia y primeros auxilios de nivel profesional</p>
-      </div>
-
-      <div className="dashboard-premium-grid">
-        {/* Card 1: Guides */}
-        <div className="premium-card animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <div className="premium-card-image">
-            <img src="/images/first_aid_guides.png" alt="Guías de Primeros Auxilios" />
-            <div className="premium-card-overlay">
-              <span className="card-badge bg-primary">Esencial</span>
-            </div>
-          </div>
-          <div className="premium-card-content">
-            <div className="card-icon-wrapper text-primary">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path><path d="M12 8v6"></path><path d="M9 11h6"></path></svg>
-            </div>
-            <h3>Primeros Auxilios</h3>
-            <p>Aprende cómo actuar ante emergencias médicas vitales como RCP, quemaduras severas, y control de hemorragias.</p>
-            <div className="premium-card-actions">
-              <Link to="/guides" className="btn btn-primary btn-full">Acceder a Guías</Link>
-            </div>
-          </div>
+    <div className="dashboard-container page-container" style={{ padding: '80px 5% 60px', maxWidth: '1400px', margin: '0 auto' }}>
+      
+      {/* Udemy-style Hero Banner */}
+      <div className="udemy-hero animate-fade-in" style={{ backgroundColor: 'var(--blue-deep)', borderRadius: 'var(--radius-xl)', padding: '3rem', color: 'var(--white)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ zIndex: 2, maxWidth: '600px' }}>
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', fontWeight: '800' }}>¡Hola, Luis! Bienvenido a tu academia</h1>
+          <p style={{ fontSize: '1.1rem', color: 'var(--teal-light)', marginBottom: '2rem', lineHeight: '1.6' }}>
+            Aprende a salvar vidas con nuestros cursos interactivos. Desarrolla habilidades críticas de primeros auxilios y prepárate para cualquier emergencia.
+          </p>
+          <Link to="/guides" className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem', backgroundColor: 'var(--teal-primary)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', fontWeight: '700', textDecoration: 'none', display: 'inline-block' }}>
+            Explorar catálogo de cursos
+          </Link>
         </div>
         
-        {/* Card 2: Hospitals */}
-        <div className="premium-card animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <div className="premium-card-image">
-            <img src="/images/nearby_hospitals.png" alt="Centros Médicos Cercanos" />
-            <div className="premium-card-overlay">
-              <span className="card-badge bg-secondary">Geolocalización</span>
-            </div>
-          </div>
-          <div className="premium-card-content">
-            <div className="card-icon-wrapper text-secondary">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path><path d="M12 7v6"></path><path d="M9 10h6"></path></svg>
-            </div>
-            <h3>Centros Médicos Cercanos</h3>
-            <p>Encuentra de manera rápida hospitales, clínicas y centros de trauma más cercanos a tu ubicación en tiempo real.</p>
-            <div className="premium-card-actions">
-              <Link to="/hospitals" className="btn btn-secondary btn-full">Consultar Mapa</Link>
-            </div>
-          </div>
-        </div>
+        {/* Decoración gráfica */}
+        <div style={{ position: 'absolute', right: '-50px', top: '-50px', width: '300px', height: '300px', backgroundColor: 'var(--teal-dark)', borderRadius: '50%', opacity: 0.5, zIndex: 1 }}></div>
+        <div style={{ position: 'absolute', right: '150px', bottom: '-80px', width: '200px', height: '200px', backgroundColor: 'var(--teal-primary)', borderRadius: '50%', opacity: 0.3, zIndex: 1 }}></div>
+      </div>
 
-        {/* Card 3: News */}
-        <div className="premium-card animate-fade-in" style={{ animationDelay: '0.3s' }}>
-          <div className="premium-card-image">
-            <img src="/images/health_news.png" alt="Noticias de Salud" />
-            <div className="premium-card-overlay">
-              <span className="card-badge bg-dark">Actualidad</span>
-            </div>
-          </div>
-          <div className="premium-card-content">
-            <div className="card-icon-wrapper text-dark">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path><path d="M18 14h-8"></path><path d="M15 18h-5"></path></svg>
-            </div>
-            <h3>Noticias de Salud</h3>
-            <p>Mantente informado sobre alertas epidemiológicas, nuevas investigaciones y recomendaciones de salud pública.</p>
-            <div className="premium-card-actions">
-              <Link to="/news" className="btn btn-outline-dark btn-full">Ver Noticias</Link>
-            </div>
-          </div>
+      {/* Seguir Aprendiendo (My Learning) */}
+      <div className="dashboard-section animate-fade-in" style={{ animationDelay: '0.1s', marginBottom: '3rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.5rem', color: 'var(--blue-deep)', fontWeight: '800' }}>Seguir aprendiendo</h2>
+          <Link to="/profile" style={{ color: 'var(--teal-primary)', fontWeight: '700', textDecoration: 'none' }}>Mi aprendizaje</Link>
         </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+          
+          {/* Curso en progreso */}
+          <div className="udemy-card" style={{ border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', backgroundColor: 'var(--white)', transition: 'box-shadow 0.3s', cursor: 'pointer' }}>
+            <div style={{ position: 'relative', height: '170px' }}>
+              <img src="/images/first_aid_guides.png" alt="RCP Básico" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.3s' }} className="play-overlay">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="white" stroke="none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              </div>
+            </div>
+            <div style={{ padding: '1rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--blue-deep)', marginBottom: '0.5rem', lineHeight: '1.3' }}>RCP y Reanimación Básica (Adultos e Infantes)</h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--blue-mid)', marginBottom: '0.75rem' }}>Dr. Carlos Martínez • Paramédico Certificado</p>
+              
+              {/* Barra de progreso */}
+              <div style={{ marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.25rem', color: 'var(--blue-mid)', fontWeight: '600' }}>
+                  <span>45% completado</span>
+                </div>
+                <div style={{ width: '100%', height: '4px', backgroundColor: 'var(--gray-200)', borderRadius: '2px', overflow: 'hidden' }}>
+                  <div style={{ width: '45%', height: '100%', backgroundColor: 'var(--teal-primary)' }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Quick Tools adaptado al diseño */}
+          <div style={{ border: '1px solid var(--teal-light)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', backgroundColor: 'var(--teal-surface)', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: 'var(--teal-dark)', fontWeight: '800' }}>Atajos Rápidos</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flexGrow: 1 }}>
+              <Link to="/guides" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', textDecoration: 'none', backgroundColor: 'var(--white)', color: 'var(--blue-deep)', fontWeight: '600', borderRadius: 'var(--radius-md)', border: '1px solid var(--teal-light)', transition: 'background-color 0.2s' }}>
+                <span style={{ fontSize: '1.2rem' }}>📖</span> Biblioteca de Guías
+              </Link>
+              <Link to="/news" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', textDecoration: 'none', backgroundColor: 'var(--white)', color: 'var(--blue-deep)', fontWeight: '600', borderRadius: 'var(--radius-md)', border: '1px solid var(--teal-light)', transition: 'background-color 0.2s' }}>
+                <span style={{ fontSize: '1.2rem' }}>📰</span> Noticias y Prevención
+              </Link>
+              <Link to="/hospitals" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', textDecoration: 'none', backgroundColor: 'var(--white)', color: 'var(--blue-deep)', fontWeight: '600', borderRadius: 'var(--radius-md)', border: '1px solid var(--teal-light)', transition: 'background-color 0.2s' }}>
+                <span style={{ fontSize: '1.2rem' }}>🏥</span> Mapa de Centros Médicos
+              </Link>
+            </div>
+          </div>
 
-        {/* Card 4: Profile */}
-        <div className="premium-card animate-fade-in" style={{ animationDelay: '0.4s' }}>
-          <div className="premium-card-image">
-            <img src="/images/health_profile.png" alt="Mi Perfil Médico" />
-            <div className="premium-card-overlay">
-              <span className="card-badge bg-primary">Privado</span>
-            </div>
-          </div>
-          <div className="premium-card-content">
-            <div className="card-icon-wrapper text-primary">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </div>
-            <h3>Mi Perfil Médico</h3>
-            <p>Administra tu información médica confidencial, contactos de emergencia y parámetros vitales base de forma segura.</p>
-            <div className="premium-card-actions">
-              <Link to="/profile" className="btn btn-primary btn-full">Gestionar Perfil</Link>
-            </div>
-          </div>
         </div>
       </div>
+
+      {/* Cursos Recomendados */}
+      <div className="dashboard-section animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '3rem' }}>
+        <h2 style={{ fontSize: '1.5rem', color: 'var(--blue-deep)', fontWeight: '800', marginBottom: '1.5rem' }}>Los estudiantes también están viendo</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
+          
+          {/* Udemy Course Card 1 */}
+          <div className="udemy-card-hover" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)', overflow: 'hidden', backgroundColor: 'var(--white)', cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ height: '150px' }}>
+                <img src="/images/health_news.png" alt="Control de Hemorragias" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <div style={{ padding: '1rem', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--blue-deep)', marginBottom: '0.25rem', lineHeight: '1.3' }}>Control Avanzado de Hemorragias (Stop the Bleed)</h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--blue-light)', marginBottom: '0.5rem' }}>Dra. Elena Vargas</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#b4690e' }}>4.9</span>
+                  <span style={{ color: '#b4690e', fontSize: '0.8rem' }}>⭐⭐⭐⭐⭐</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--blue-light)' }}>(2,845)</span>
+                </div>
+                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ backgroundColor: '#eceb98', color: '#3d3c0a', fontSize: '0.7rem', fontWeight: '700', padding: '0.2rem 0.5rem', borderRadius: '3px' }}>Más vendido</span>
+                  <span style={{ fontWeight: '800', color: 'var(--blue-deep)', fontSize: '1rem' }}>Gratis</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Udemy Course Card 2 */}
+          <div className="udemy-card-hover" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)', overflow: 'hidden', backgroundColor: 'var(--white)', cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ height: '150px', backgroundColor: 'var(--red-light)' }}>
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem' }}>🔥</div>
+              </div>
+              <div style={{ padding: '1rem', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--blue-deep)', marginBottom: '0.25rem', lineHeight: '1.3' }}>Tratamiento de Quemaduras de 1er y 2do grado</h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--blue-light)', marginBottom: '0.5rem' }}>Instituto Nacional de Salud</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#b4690e' }}>4.7</span>
+                  <span style={{ color: '#b4690e', fontSize: '0.8rem' }}>⭐⭐⭐⭐½</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--blue-light)' }}>(1,120)</span>
+                </div>
+                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ backgroundColor: 'var(--teal-light)', color: 'var(--teal-dark)', fontSize: '0.7rem', fontWeight: '700', padding: '0.2rem 0.5rem', borderRadius: '3px' }}>Básico</span>
+                  <span style={{ fontWeight: '800', color: 'var(--blue-deep)', fontSize: '1rem' }}>Gratis</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Udemy Course Card 3 */}
+          <div className="udemy-card-hover" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)', overflow: 'hidden', backgroundColor: 'var(--white)', cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ height: '150px', backgroundColor: 'var(--blue-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontSize: '3rem' }}>🤐</div>
+              </div>
+              <div style={{ padding: '1rem', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--blue-deep)', marginBottom: '0.25rem', lineHeight: '1.3' }}>Maniobra de Heimlich y Atragantamientos</h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--blue-light)', marginBottom: '0.5rem' }}>Academia MediGuard</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#b4690e' }}>4.8</span>
+                  <span style={{ color: '#b4690e', fontSize: '0.8rem' }}>⭐⭐⭐⭐⭐</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--blue-light)' }}>(5,302)</span>
+                </div>
+                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontWeight: '800', color: 'var(--blue-deep)', fontSize: '1rem' }}>Gratis</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Udemy Course Card 4 */}
+          <div className="udemy-card-hover" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)', overflow: 'hidden', backgroundColor: 'var(--white)', cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ height: '150px', backgroundColor: 'var(--gray-200)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontSize: '3rem' }}>😵</div>
+              </div>
+              <div style={{ padding: '1rem', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--blue-deep)', marginBottom: '0.25rem', lineHeight: '1.3' }}>Cómo actuar ante Desmayos y Convulsiones</h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--blue-light)', marginBottom: '0.5rem' }}>Cruz Roja Internacional</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#b4690e' }}>4.6</span>
+                  <span style={{ color: '#b4690e', fontSize: '0.8rem' }}>⭐⭐⭐⭐½</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--blue-light)' }}>(890)</span>
+                </div>
+                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ backgroundColor: 'var(--blue-light)', color: 'white', fontSize: '0.7rem', fontWeight: '700', padding: '0.2rem 0.5rem', borderRadius: '3px' }}>Nuevo</span>
+                  <span style={{ fontWeight: '800', color: 'var(--blue-deep)', fontSize: '1rem' }}>Gratis</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Guías Rápidas como "Categorías populares" en Udemy */}
+      <div className="dashboard-section animate-fade-in" style={{ animationDelay: '0.3s', marginBottom: '3rem' }}>
+        <h2 style={{ fontSize: '1.5rem', color: 'var(--blue-deep)', fontWeight: '800', marginBottom: '1.5rem' }}>Categorías principales</h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+          <Link to="/guides" className="quick-guide-chip" style={{ padding: '1rem 1.5rem', backgroundColor: 'var(--white)', border: '1px solid var(--blue-deep)', borderRadius: 'var(--radius-md)', fontWeight: '700', color: 'var(--blue-deep)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s', flexGrow: 1, justifyContent: 'center' }}>
+            <span style={{ fontSize: '1.5rem' }}>❤️</span> RCP y Reanimación
+          </Link>
+          <Link to="/guides" className="quick-guide-chip" style={{ padding: '1rem 1.5rem', backgroundColor: 'var(--white)', border: '1px solid var(--blue-deep)', borderRadius: 'var(--radius-md)', fontWeight: '700', color: 'var(--blue-deep)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s', flexGrow: 1, justifyContent: 'center' }}>
+            <span style={{ fontSize: '1.5rem' }}>🔥</span> Quemaduras
+          </Link>
+          <Link to="/guides" className="quick-guide-chip" style={{ padding: '1rem 1.5rem', backgroundColor: 'var(--white)', border: '1px solid var(--blue-deep)', borderRadius: 'var(--radius-md)', fontWeight: '700', color: 'var(--blue-deep)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s', flexGrow: 1, justifyContent: 'center' }}>
+            <span style={{ fontSize: '1.5rem' }}>🩸</span> Hemorragias
+          </Link>
+          <Link to="/guides" className="quick-guide-chip" style={{ padding: '1rem 1.5rem', backgroundColor: 'var(--white)', border: '1px solid var(--blue-deep)', borderRadius: 'var(--radius-md)', fontWeight: '700', color: 'var(--blue-deep)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s', flexGrow: 1, justifyContent: 'center' }}>
+            <span style={{ fontSize: '1.5rem' }}>🚨</span> Accidentes
+          </Link>
+        </div>
+      </div>
+      
+      {/* Botón Flotante de Chat/Asistente (estilo plataforma educativa) */}
+      <div style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: 100 }}>
+         <button style={{ width: '60px', height: '60px', backgroundColor: 'var(--teal-primary)', borderRadius: '50%', border: 'none', boxShadow: 'var(--shadow-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: 'white', cursor: 'pointer', transition: 'transform 0.3s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+           💬
+         </button>
+      </div>
+
     </div>
   );
 };

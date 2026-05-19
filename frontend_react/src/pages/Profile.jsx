@@ -44,7 +44,7 @@ const Profile = () => {
           </p>
         </div>
         <div className="profile-badge">
-          {profile.roles ? profile.roles.join(', ') : 'Paciente Premium'}
+          Estudiante / Ciudadano
         </div>
       </div>
 
@@ -62,68 +62,65 @@ const Profile = () => {
             </li>
             <li>
               <span className="info-label">Teléfono</span>
-              <span className="info-value">{profile.phone || '+51 987 654 321'}</span>
+              <span className="info-value">{profile.phone || 'No registrado'}</span>
             </li>
             <li>
-              <span className="info-label">Fecha de Nacimiento</span>
-              <span className="info-value">15 / 08 / 1990</span>
-            </li>
-            <li>
-              <span className="info-label">Tipo de Sangre</span>
-              <span className="info-value" style={{color: 'var(--red-emergency)'}}>O+</span>
+              <span className="info-label">Miembro desde</span>
+              <span className="info-value">Reciente</span>
             </li>
           </ul>
         </div>
 
-        {/* Section: Emergency Contacts */}
+        {/* Section: Learning Progress */}
         <div className="profile-section">
           <div className="profile-section-header">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red-emergency)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.13.96.35 1.9.66 2.8a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.27-1.27a2 2 0 0 1 2.11-.45c.9.31 1.84.53 2.8.66A2 2 0 0 1 22 16.92z"></path></svg>
-            <h2>Contactos de Emergencia</h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--teal-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            <h2>Mi Progreso Educativo</h2>
           </div>
           <ul className="info-list">
             <li>
-              <span className="info-label">María Pérez (Madre)</span>
-              <span className="info-value">+51 912 345 678</span>
+              <span className="info-label">Cursos Completados</span>
+              <span className="info-value">0</span>
             </li>
             <li>
-              <span className="info-label">Carlos Gómez (Hermano)</span>
-              <span className="info-value">+51 998 877 665</span>
+              <span className="info-label">Certificados Obtenidos</span>
+              <span className="info-value">Ninguno</span>
+            </li>
+            <li>
+              <span className="info-label">Guías Leídas</span>
+              <span className="info-value">2</span>
             </li>
           </ul>
-          <button className="btn btn-outline-white" style={{borderColor: 'var(--gray-200)', color: 'var(--blue-deep)', width: '100%', marginTop: '1rem'}}>
-            + Añadir Contacto
+          <button className="btn" style={{backgroundColor: 'transparent', border: '1px solid var(--teal-primary)', color: 'var(--teal-primary)', width: '100%', marginTop: '1rem', padding: '0.75rem', borderRadius: 'var(--radius-md)', fontWeight: '600', transition: 'all 0.3s'}} onMouseOver={(e) => {e.target.style.backgroundColor='var(--teal-primary)'; e.target.style.color='white'}} onMouseOut={(e) => {e.target.style.backgroundColor='transparent'; e.target.style.color='var(--teal-primary)'}}>
+            Ver Historial de Cursos
           </button>
         </div>
 
-        {/* Section: Health Status */}
+        {/* Section: Emergency Contacts */}
         <div className="profile-section" style={{ gridColumn: '1 / -1' }}>
           <div className="profile-section-header">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-            <h2>Estado de Salud General</h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red-emergency)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.13.96.35 1.9.66 2.8a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.27-1.27a2 2 0 0 1 2.11-.45c.9.31 1.84.53 2.8.66A2 2 0 0 1 22 16.92z"></path></svg>
+            <h2>Mis Contactos de Emergencia</h2>
           </div>
-          <div className="health-status-cards">
-            <div className="status-card">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path></svg>
-              <div className="status-card-value">72 <span style={{fontSize: '1rem', color: 'var(--blue-light)'}}>bpm</span></div>
-              <div className="status-card-label">Ritmo Cardíaco</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
+            <div style={{ padding: '1.25rem', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--white)', boxShadow: 'var(--shadow-sm)' }}>
+              <div>
+                <p style={{ fontWeight: '700', color: 'var(--blue-deep)', margin: '0 0 0.25rem 0' }}>María Pérez</p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--blue-light)', margin: 0 }}>Madre</p>
+              </div>
+              <span style={{ color: 'var(--teal-primary)', fontWeight: '600', backgroundColor: 'var(--teal-surface)', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-full)', fontSize: '0.9rem' }}>+51 912 345 678</span>
             </div>
-            <div className="status-card">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-              <div className="status-card-value">120/80</div>
-              <div className="status-card-label">Presión Arterial</div>
-            </div>
-            <div className="status-card">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
-              <div className="status-card-value">Ninguna</div>
-              <div className="status-card-label">Alergias Registradas</div>
-            </div>
-            <div className="status-card">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-              <div className="status-card-value">Limpio</div>
-              <div className="status-card-label">Historial Médico</div>
+            <div style={{ padding: '1.25rem', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--white)', boxShadow: 'var(--shadow-sm)' }}>
+              <div>
+                <p style={{ fontWeight: '700', color: 'var(--blue-deep)', margin: '0 0 0.25rem 0' }}>Carlos Gómez</p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--blue-light)', margin: 0 }}>Hermano</p>
+              </div>
+              <span style={{ color: 'var(--teal-primary)', fontWeight: '600', backgroundColor: 'var(--teal-surface)', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-full)', fontSize: '0.9rem' }}>+51 998 877 665</span>
             </div>
           </div>
+          <button className="btn" style={{backgroundColor: 'transparent', border: '1px solid var(--gray-300)', color: 'var(--blue-deep)', marginTop: '2rem', padding: '0.75rem 1.5rem', borderRadius: 'var(--radius-md)', fontWeight: '600', transition: 'all 0.3s'}} onMouseOver={(e) => {e.target.style.backgroundColor='var(--gray-100)'}} onMouseOut={(e) => {e.target.style.backgroundColor='transparent'}}>
+            + Añadir Nuevo Contacto
+          </button>
         </div>
       </div>
     </div>

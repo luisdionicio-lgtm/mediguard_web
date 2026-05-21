@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const userApi = axios.create({
-  baseURL: import.meta.env.VITE_SPRING_API_URL || 'http://127.0.0.1:8081/api/',
+  baseURL: import.meta.env.VITE_DJANGO_API_URL || 'http://127.0.0.1:8000/api/',
   headers: {
     'Content-Type': 'application/json',
   },

@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'emergency',
     'content',
+    'categorias',
+    'cursos',
 ]
 
 MIDDLEWARE = [

@@ -28,5 +28,10 @@ docs/axios-fetch-audit.local.md
 # ─── Archivos sensibles — NUNCA subir ────────────────────────────────────────
 *.sqlite3
 *.db
-    
+
+#── Otros ───────────────────────────────────────────────────────────────────
 .claude/
+
+# Ignorar la carpeta de documentación 
+docs/
+/docs/

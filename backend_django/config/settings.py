@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'emergency',
     'content',
+    'categorias',
+    'cursos',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +92,7 @@ else:
             'ENGINE': DB_ENGINE,
             'NAME': config('DB_NAME', default='mediguard'),
             'USER': config('DB_USER', default='postgres'),
-            'PASSWORD': config('DB_PASSWORD', default='postgres'),
+            'PASSWORD': config('DB_PASSWORD', default='AdminPostgres_2026'),
             'HOST': config('DB_HOST', default='localhost'),
             'PORT': config('DB_PORT', default='5432'),
         }

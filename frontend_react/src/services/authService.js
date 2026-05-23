@@ -26,21 +26,26 @@ const persistAuthData = (data) => {
 
 export const authService = {
   login: async (email, password) => {
-    // We map password to contrasena for the new backend
-    const response = await userApi.post('usuarios/login', { email, contrasena: password });
+    const response = await userApi.post('login/', { email, password });
     persistAuthData(response.data);
+    
+    // Fetch profile immediately to store user details in localStorage
+    const profileResponse = await userApi.get('profile/');
+    localStorage.setItem('user', JSON.stringify(profileResponse.data));
+    
     return response.data;
   },
 
   register: async (userData) => {
-    // Map first_name to nombre, and password to contrasena
     const payload = {
-      nombre: userData.first_name + (userData.last_name ? ' ' + userData.last_name : ''),
+      first_name: userData.first_name,
+      last_name: userData.last_name,
       email: userData.email,
-      contrasena: userData.password
+      phone: userData.phone,
+      password: userData.password
     };
-    const response = await userApi.post('usuarios/registro', payload);
-    persistAuthData(response.data);
+    const response = await userApi.post('register/', payload);
+    // Note: Do not auto-persist token/user on registration as requested
     return response.data;
   },
 
@@ -49,7 +54,6 @@ export const authService = {
 
     try {
       if (refreshToken) {
-        // TODO: ajustar payload si Spring Boot define otro contrato para invalidar refresh tokens.
         await userApi.post('logout/', { refresh: refreshToken });
       }
     } finally {

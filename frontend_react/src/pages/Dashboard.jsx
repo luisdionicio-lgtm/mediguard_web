@@ -1,14 +1,28 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
+  const [userName] = useState(() => {
+    const localUser = localStorage.getItem('user');
+    if (localUser) {
+      try {
+        const userObj = JSON.parse(localUser);
+        return userObj.first_name || userObj.nombre?.split(' ')[0] || 'Usuario';
+      } catch (e) {
+        console.error('Error parsing user from localStorage', e);
+      }
+    }
+    return 'Usuario';
+  });
+
   return (
     <div className="dashboard-container page-container" style={{ padding: '80px 5% 60px', maxWidth: '1400px', margin: '0 auto' }}>
       
       {/* Udemy-style Hero Banner */}
       <div className="udemy-hero animate-fade-in" style={{ backgroundColor: 'var(--blue-deep)', borderRadius: 'var(--radius-xl)', padding: '3rem', color: 'var(--white)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', position: 'relative', overflow: 'hidden' }}>
         <div style={{ zIndex: 2, maxWidth: '600px' }}>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', fontWeight: '800' }}>¡Hola, Luis! Bienvenido a tu academia</h1>
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', fontWeight: '800', color: 'var(--white)', textShadow: 'none', background: 'none' }}>¡Hola, {userName}! Bienvenido a tu academia</h1>
           <p style={{ fontSize: '1.1rem', color: 'var(--teal-light)', marginBottom: '2rem', lineHeight: '1.6' }}>
             Aprende a salvar vidas con nuestros cursos interactivos. Desarrolla habilidades críticas de primeros auxilios y prepárate para cualquier emergencia.
           </p>

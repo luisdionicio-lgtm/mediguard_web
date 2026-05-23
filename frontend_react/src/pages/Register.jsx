@@ -54,7 +54,7 @@ function Register() {
         phone: form.phone.trim(),
         password: form.password
       });
-      navigate('/dashboard');
+      navigate('/login', { state: { successMessage: 'Registro exitoso, ahora inicia sesión.' } });
     } catch (err) {
       if (err.response?.data) {
         const data = err.response.data;

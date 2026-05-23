@@ -1,27 +1,46 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../services/authService';
 
 function Login() {
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState(location.state?.successMessage || '');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMsg('');
 
-    if (!email || !password) {
-      setError('Por favor, completa todos los campos.');
+    if (!email.trim()) {
+      setError('El correo electrónico es obligatorio.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setError('Por favor, ingresa un correo electrónico válido.');
+      return;
+    }
+
+    if (!password) {
+      setError('La contraseña es obligatoria.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
       return;
     }
 
     setLoading(true);
     try {
-      await authService.login(email, password);
-      navigate('/dashboard');
+      await authService.login(email.trim(), password);
+      navigate('/');
     } catch {
       setError('Credenciales incorrectas o error en el servidor.');
     } finally {
@@ -51,6 +70,7 @@ function Login() {
           </div>
 
           <form onSubmit={handleLogin}>
+            {successMsg && <div className="success-message" style={{color: 'var(--teal-primary)', marginBottom: '1rem', fontWeight: 'bold'}}>{successMsg}</div>}
             {error && <div className="error-message" style={{color: '#EF4444', marginBottom: '1rem'}}>{error}</div>}
             <div className="form-group">
               <label className="form-label">Correo Electrónico</label>

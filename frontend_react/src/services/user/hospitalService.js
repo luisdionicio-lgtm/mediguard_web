@@ -1,8 +1,8 @@
-import userApi from '../../api/userApi';
+import springApi from '../../api/springApi';
 
 export const userHospitalService = {
   getAll: async () => {
-    const response = await userApi.get('hospitals/');
+    const response = await springApi.get('hospitals/');
     return response.data;
   },
 };

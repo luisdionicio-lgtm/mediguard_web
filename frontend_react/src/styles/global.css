@@ -694,6 +694,83 @@ img {
   text-decoration: underline;
 }
 
+/* --- Error message ---
+   POR QUÉ clase en lugar de inline style: reutilizable, respeta el design system,
+   permite animación de entrada. Un error visual debe ser notorio pero no agresivo. */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--red-hover);
+  background-color: var(--red-light);
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+  animation: fadeInUp 0.25s ease;
+}
+
+/* --- Toggle ver/ocultar contraseña ---
+   POR QUÉ absolute posicionado a la derecha: sigue el patrón estándar de todos los
+   sistemas de diseño (Material, Ant, Radix). El usuario ya sabe buscarlo ahí. */
+.password-toggle {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--blue-light);
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  transition: color 0.2s ease;
+  line-height: 0;
+}
+
+.password-toggle:hover {
+  color: var(--teal-primary);
+}
+
+/* POR QUÉ padding-right extra: evita que el texto del input se superponga con el botón */
+.form-input--has-toggle {
+  padding-right: 3rem;
+}
+
+/* --- Botón full-width ---
+   POR QUÉ clase separada: mantiene .btn reutilizable en otros contextos sin forzar ancho */
+.btn--full {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* --- Estado deshabilitado del botón ---
+   POR QUÉ !important en transform/box-shadow: el :hover no debe "levantar" el botón
+   cuando está disabled — sería confuso indicar interactividad en un elemento bloqueado */
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* --- Spinner de carga ---
+   POR QUÉ animation solo en rotate: traducción o escala distraerían del texto
+   al lado. El spin minimalista comunica "proceso activo" sin ruido visual. */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
 /* ===== Footer ===== */
 .footer {
   background-color: var(--blue-deep);

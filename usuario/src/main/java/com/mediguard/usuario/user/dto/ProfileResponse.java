@@ -12,6 +12,9 @@ public record ProfileResponse(
         String lastName,
         String email,
         String phone,
+        @JsonProperty("avatar_url")
+        String avatarUrl,
+        String bio,
         List<String> roles
 ) {
 }

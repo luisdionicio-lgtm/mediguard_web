@@ -1,17 +1,8 @@
-import userApi from '../../api/userApi';
+import springApi from '../../api/springApi';
 
 export const profileService = {
   getProfile: async () => {
-    try {
-      const response = await userApi.get('profile/');
-      return response.data;
-    } catch (error) {
-      // Fallback to local storage user data
-      const localUser = localStorage.getItem('user');
-      if (localUser) {
-        return JSON.parse(localUser);
-      }
-      throw error;
-    }
+    const response = await springApi.get('profile/');
+    return response.data;
   },
 };

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../services/authService';
+import { getApiErrorMessage } from '../services/errorService';
 
 function Login() {
   const location = useLocation();
@@ -41,8 +42,8 @@ function Login() {
     try {
       await authService.login(email.trim(), password);
       navigate('/');
-    } catch {
-      setError('Credenciales incorrectas o error en el servidor.');
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Credenciales incorrectas o error en el servidor.'));
     } finally {
       setLoading(false);
     }

@@ -112,6 +112,8 @@ class Usuario(AbstractBaseUser):
         ],
     )
     password = models.CharField('password', max_length=255, db_column='password_hash')
+    avatar_url = models.URLField(max_length=500, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
     last_login = models.DateTimeField(blank=True, null=True, db_column='last_login_at')

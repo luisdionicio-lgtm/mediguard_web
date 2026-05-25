@@ -1,8 +1,15 @@
-import userApi from '../api/userApi';
+import springApi from '../api/springApi';
 import { profileService } from './user/profileService';
 
 const notifyAuthChange = () => {
   window.dispatchEvent(new Event('auth-change'));
+};
+
+const clearAuthData = () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  localStorage.removeItem('user');
+  notifyAuthChange();
 };
 
 const persistAuthData = (data) => {
@@ -26,11 +33,11 @@ const persistAuthData = (data) => {
 
 export const authService = {
   login: async (email, password) => {
-    const response = await userApi.post('login/', { email, password });
+    const response = await springApi.post('login/', { email, password });
     persistAuthData(response.data);
     
     // Fetch profile immediately to store user details in localStorage
-    const profileResponse = await userApi.get('profile/');
+    const profileResponse = await springApi.get('profile/');
     localStorage.setItem('user', JSON.stringify(profileResponse.data));
     
     return response.data;
@@ -44,23 +51,18 @@ export const authService = {
       phone: userData.phone,
       password: userData.password
     };
-    const response = await userApi.post('register/', payload);
+    const response = await springApi.post('register/', payload);
     // Note: Do not auto-persist token/user on registration as requested
     return response.data;
   },
 
   logout: async () => {
-    const refreshToken = localStorage.getItem('refresh_token');
-
     try {
-      if (refreshToken) {
-        await userApi.post('logout/', { refresh: refreshToken });
+      if (localStorage.getItem('access_token')) {
+        await springApi.post('logout/');
       }
     } finally {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('user');
-      notifyAuthChange();
+      clearAuthData();
     }
   },
 

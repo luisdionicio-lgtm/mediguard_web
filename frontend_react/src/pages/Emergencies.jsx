@@ -1,11 +1,31 @@
 import { useEffect, useState } from 'react';
 import { emergencyService } from '../services/emergencyService';
+import { getApiErrorMessage } from '../services/errorService';
 import '../styles/Dashboard.css';
+
+const getCurrentPosition = () => new Promise((resolve) => {
+  if (!navigator.geolocation) {
+    resolve({});
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => resolve({
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+    }),
+    () => resolve({}),
+    { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+  );
+});
 
 const Emergencies = () => {
   const [emergencies, setEmergencies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sosLoading, setSosLoading] = useState(false);
+  const [sosMessage, setSosMessage] = useState('');
+  const [sosError, setSosError] = useState('');
 
   useEffect(() => {
     const loadEmergencies = async () => {
@@ -22,6 +42,28 @@ const Emergencies = () => {
     loadEmergencies();
   }, []);
 
+  const handleCreateSos = async () => {
+    setSosMessage('');
+    setSosError('');
+    setSosLoading(true);
+
+    try {
+      const position = await getCurrentPosition();
+      await emergencyService.createSosEvent({
+        status: 'activado',
+        device: navigator.userAgent.slice(0, 100),
+        notes: 'SOS activado desde la web',
+        notified_contacts: 0,
+        ...position,
+      });
+      setSosMessage('Evento SOS registrado correctamente.');
+    } catch (err) {
+      setSosError(getApiErrorMessage(err, 'No se pudo registrar el evento SOS.'));
+    } finally {
+      setSosLoading(false);
+    }
+  };
+
   return (
     <div className="simple-page-container">
       <div className="dashboard-header animate-fade-in" style={{ marginBottom: '40px' }}>
@@ -29,6 +71,22 @@ const Emergencies = () => {
           Contactos de <span className="highlight" style={{ color: 'var(--red-emergency)' }}>Emergencia</span>
         </h1>
         <p className="section-subtitle">Líneas de ayuda crítica y servicios vitales disponibles las 24 horas.</p>
+        <div style={{ marginTop: '1.5rem', display: 'grid', justifyItems: 'center', gap: '0.75rem' }}>
+          <button
+            type="button"
+            className="btn btn-emergency"
+            onClick={handleCreateSos}
+            disabled={sosLoading}
+            style={{ padding: '0.9rem 1.5rem', fontWeight: 800 }}
+          >
+            {sosLoading ? 'Registrando SOS...' : 'Activar SOS'}
+          </button>
+          {(sosMessage || sosError) && (
+            <p className="section-subtitle" style={{ color: sosError ? '#EF4444' : 'var(--teal-primary)', margin: 0 }}>
+              {sosError || sosMessage}
+            </p>
+          )}
+        </div>
       </div>
 
       {isLoading && (

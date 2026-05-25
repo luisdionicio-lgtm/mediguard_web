@@ -6,12 +6,13 @@ import jakarta.validation.constraints.NotBlank;
 
 public record RegisterRequest(
         @JsonProperty("first_name")
-        @NotBlank String firstName,
+        @NotBlank(message = "El nombre es obligatorio.") String firstName,
         @JsonProperty("last_name")
-        @NotBlank String lastName,
-        @Email @NotBlank String email,
-        @NotBlank String phone,
+        @NotBlank(message = "El apellido es obligatorio.") String lastName,
+        @Email(message = "El formato del correo no es válido.")
+        @NotBlank(message = "El correo es obligatorio.") String email,
+        @NotBlank(message = "El teléfono es obligatorio.") String phone,
         @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-        @NotBlank String password
+        @NotBlank(message = "La contraseña es obligatoria.") String password
 ) {
 }

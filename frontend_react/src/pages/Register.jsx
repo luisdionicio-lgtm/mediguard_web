@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
+import { getApiErrorMessage } from '../services/errorService';
 
 function Register() {
   const [form, setForm] = useState({
@@ -58,7 +59,9 @@ function Register() {
     } catch (err) {
       if (err.response?.data) {
         const data = err.response.data;
-        if (data.email) {
+        if (data.errors) {
+          setError(getApiErrorMessage(err, 'Error al registrar la cuenta. Verifica los datos.'));
+        } else if (data.email) {
           setError('El correo ya está registrado.');
         } else if (data.phone) {
           setError(Array.isArray(data.phone) ? data.phone[0] : 'El numero de telefono no es valido o ya esta registrado.');
@@ -66,6 +69,8 @@ function Register() {
           setError(Array.isArray(data.password) ? data.password[0] : 'La contraseña no cumple con los requisitos.');
         } else if (data.error) {
           setError(data.error);
+        } else if (data.message) {
+          setError(data.message);
         } else {
           setError('Error al registrar la cuenta. Verifica los datos.');
         }

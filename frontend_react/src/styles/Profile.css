@@ -1,0 +1,155 @@
+.profile-container {
+  padding: 120px 5% 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 80vh;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background: var(--white);
+  padding: 3rem;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 2rem;
+  border: 1px solid var(--gray-200);
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, var(--teal-primary), var(--blue-deep));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-size: 3rem;
+  box-shadow: var(--shadow-lg);
+  border: 6px solid var(--teal-light);
+}
+
+.profile-title {
+  flex-grow: 1;
+}
+
+.profile-title h1 {
+  font-size: 2.5rem;
+  color: var(--blue-deep);
+  margin-bottom: 0.5rem;
+}
+
+.profile-title p {
+  color: var(--blue-light);
+  font-size: 1.125rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-badge {
+  background: var(--teal-light);
+  color: var(--teal-dark);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.profile-section {
+  background: var(--white);
+  padding: 2.5rem;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+}
+
+.profile-section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--gray-100);
+  padding-bottom: 1rem;
+}
+
+.profile-section-header svg {
+  color: var(--teal-primary);
+}
+
+.profile-section-header h2 {
+  font-size: 1.5rem;
+  color: var(--blue-deep);
+}
+
+.info-list {
+  list-style: none;
+}
+
+.info-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.info-list li:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: var(--blue-light);
+  font-weight: 600;
+}
+
+.info-value {
+  color: var(--blue-deep);
+  font-weight: 700;
+}
+
+.health-status-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.status-card {
+  background: var(--gray-50);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  text-align: center;
+}
+
+.status-card-value {
+  font-size: 2rem;
+  color: var(--teal-primary);
+  font-weight: 800;
+  margin: 0.5rem 0;
+}
+
+.status-card-label {
+  color: var(--blue-light);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}

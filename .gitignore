@@ -3,6 +3,11 @@ backend_django/venv/
 backend_django/.venv/
 backend_django/db.sqlite3
 backend_django/*.pyc
+frontend_react/skills
+
+# ─── AI Skills / Agents ─────────────────
+/skills/
+.skills/
 
 # ─── React ───────────────────────────────────────────────────────────────────
 frontend_react/node_modules/
@@ -16,8 +21,21 @@ frontend_react/dist/
 *.env
 .env
 .env.*
+!frontend_react/.env.example
 .DS_Store
+docs/axios-fetch-audit.local.md
 
 # ─── Archivos sensibles — NUNCA subir ────────────────────────────────────────
 *.sqlite3
 *.db
+
+#── Otros ───────────────────────────────────────────────────────────────────
+.claude/
+
+# Ignorar la carpeta de documentación 
+docs/
+/docs/
+
+# ─── Documentacion local de arquitectura / skills ───────────────────────────
+local_architecture/
+/local_architecture/

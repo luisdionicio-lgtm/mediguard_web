@@ -1,20 +1,52 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { authService } from '../services/authService';
+import { getApiErrorMessage } from '../services/errorService';
 
 function Login() {
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState(location.state?.successMessage || '');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccessMsg('');
 
-    if (!email || !password) {
-      alert('Por favor, completa todos los campos.');
+    if (!email.trim()) {
+      setError('El correo electrónico es obligatorio.');
       return;
     }
 
-    // Existing functionality kept intact
-    alert('Login validado correctamente');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setError('Por favor, ingresa un correo electrónico válido.');
+      return;
+    }
+
+    if (!password) {
+      setError('La contraseña es obligatoria.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await authService.login(email.trim(), password);
+      navigate('/');
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Credenciales incorrectas o error en el servidor.'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,6 +71,8 @@ function Login() {
           </div>
 
           <form onSubmit={handleLogin}>
+            {successMsg && <div className="success-message" style={{color: 'var(--teal-primary)', marginBottom: '1rem', fontWeight: 'bold'}}>{successMsg}</div>}
+            {error && <div className="error-message" style={{color: '#EF4444', marginBottom: '1rem'}}>{error}</div>}
             <div className="form-group">
               <label className="form-label">Correo Electrónico</label>
               <div className="form-input-container">
@@ -73,13 +107,13 @@ function Login() {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-              Ingresar a mi cuenta
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>
+              {loading ? 'Cargando...' : 'Ingresar a mi cuenta'}
             </button>
           </form>
 
           <div className="auth-links">
-            ¿No tienes una cuenta? <Link to="/registro">Regístrate aquí</Link>
+            ¿No tienes una cuenta? <Link to="/register">Regístrate aquí</Link>
           </div>
         </div>
       </div>

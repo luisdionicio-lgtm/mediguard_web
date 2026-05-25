@@ -16,7 +16,7 @@ function Footer() {
           <ul className="footer-links">
             <li><Link to="/">Inicio</Link></li>
             <li><Link to="/login">Iniciar Sesión</Link></li>
-            <li><Link to="/registro">Crear Cuenta</Link></li>
+            <li><Link to="/register">Crear Cuenta</Link></li>
           </ul>
         </div>
 

@@ -12,16 +12,15 @@ class SerializadorRol(serializers.ModelSerializer):
 
 
 class SerializadorRegistro(serializers.ModelSerializer):
-    contrasena = serializers.CharField(
+    password = serializers.CharField(
         write_only=True,
         required=True,
         validators=[validate_password],
-        source='password',
     )
 
     class Meta:
         model = Usuario
-        fields = ['first_name', 'last_name', 'email', 'phone', 'contrasena']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'password']
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},

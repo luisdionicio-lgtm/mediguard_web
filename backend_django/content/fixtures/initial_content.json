@@ -1,0 +1,122 @@
+[
+  {
+    "model": "content.guide",
+    "pk": 1,
+    "fields": {
+      "title": "RCP basica para adultos",
+      "description": "Pasos iniciales para asistir a una persona adulta en paro cardiorrespiratorio.",
+      "category": "RCP",
+      "content": "Verifica que el lugar sea seguro. Comprueba si la persona responde y respira. Llama a emergencias. Inicia compresiones toracicas fuertes y rapidas en el centro del pecho hasta que llegue ayuda.",
+      "image": null,
+      "created_at": "2026-05-16T10:00:00Z",
+      "updated_at": "2026-05-16T10:00:00Z"
+    }
+  },
+  {
+    "model": "content.guide",
+    "pk": 2,
+    "fields": {
+      "title": "Control de hemorragias",
+      "description": "Acciones recomendadas para controlar sangrados externos mientras llega asistencia.",
+      "category": "Hemorragias",
+      "content": "Usa guantes o una barrera si es posible. Aplica presion directa sobre la herida con una gasa o tela limpia. Eleva la zona si no hay sospecha de fractura. No retires vendajes empapados; coloca otros encima.",
+      "image": null,
+      "created_at": "2026-05-16T10:05:00Z",
+      "updated_at": "2026-05-16T10:05:00Z"
+    }
+  },
+  {
+    "model": "content.guide",
+    "pk": 3,
+    "fields": {
+      "title": "Primeros auxilios para quemaduras",
+      "description": "Medidas seguras para atender quemaduras leves y reconocer signos de gravedad.",
+      "category": "Quemaduras",
+      "content": "Enfria la zona con agua corriente durante varios minutos. Retira accesorios cercanos antes de que aparezca hinchazon. No apliques cremas, hielo ni revientes ampollas. Busca ayuda medica si la quemadura es extensa o profunda.",
+      "image": null,
+      "created_at": "2026-05-16T10:10:00Z",
+      "updated_at": "2026-05-16T10:10:00Z"
+    }
+  },
+  {
+    "model": "content.hospital",
+    "pk": 1,
+    "fields": {
+      "name": "Hospital Nacional Edgardo Rebagliati Martins",
+      "address": "Av. Edgardo Rebagliati 490, Jesus Maria, Lima",
+      "phone": "014112300",
+      "latitude": "-12.078371",
+      "longitude": "-77.040864",
+      "operating_hours": "24/7",
+      "is_active": true,
+      "created_at": "2026-05-16T10:15:00Z",
+      "updated_at": "2026-05-16T10:15:00Z"
+    }
+  },
+  {
+    "model": "content.hospital",
+    "pk": 2,
+    "fields": {
+      "name": "Hospital Nacional Arzobispo Loayza",
+      "address": "Av. Alfonso Ugarte 848, Lima",
+      "phone": "016149606",
+      "latitude": "-12.051019",
+      "longitude": "-77.043868",
+      "operating_hours": "24/7",
+      "is_active": true,
+      "created_at": "2026-05-16T10:20:00Z",
+      "updated_at": "2026-05-16T10:20:00Z"
+    }
+  },
+  {
+    "model": "content.hospital",
+    "pk": 3,
+    "fields": {
+      "name": "Instituto Nacional de Salud del Nino San Borja",
+      "address": "Av. Javier Prado Este 3101, San Borja, Lima",
+      "phone": "012301700",
+      "latitude": "-12.089123",
+      "longitude": "-76.992881",
+      "operating_hours": "24/7",
+      "is_active": true,
+      "created_at": "2026-05-16T10:25:00Z",
+      "updated_at": "2026-05-16T10:25:00Z"
+    }
+  },
+  {
+    "model": "content.news",
+    "pk": 1,
+    "fields": {
+      "title": "Campana nacional de vacunacion",
+      "summary": "Autoridades de salud refuerzan la vacunacion preventiva en centros publicos.",
+      "content": "La campana prioriza a ninos, adultos mayores y personas con condiciones de riesgo. Se recomienda revisar los puntos de atencion disponibles y acudir con documento de identidad.",
+      "image": null,
+      "published_date": "2026-05-16T10:30:00Z",
+      "is_active": true
+    }
+  },
+  {
+    "model": "content.news",
+    "pk": 2,
+    "fields": {
+      "title": "Prevencion de dengue en temporada de lluvias",
+      "summary": "Se recomienda eliminar recipientes con agua acumulada y proteger zonas de almacenamiento.",
+      "content": "Las medidas principales son lavar, tapar y voltear recipientes. Ante fiebre persistente, dolor muscular o sarpullido, se debe acudir a un establecimiento de salud.",
+      "image": null,
+      "published_date": "2026-05-16T10:35:00Z",
+      "is_active": true
+    }
+  },
+  {
+    "model": "content.news",
+    "pk": 3,
+    "fields": {
+      "title": "Recomendaciones ante golpes de calor",
+      "summary": "Hidratacion, sombra y atencion temprana reducen riesgos durante altas temperaturas.",
+      "content": "Evita exposicion prolongada al sol, usa ropa ligera y bebe agua con frecuencia. Si aparecen confusion, desmayo o piel muy caliente, busca atencion inmediata.",
+      "image": null,
+      "published_date": "2026-05-16T10:40:00Z",
+      "is_active": true
+    }
+  }
+]

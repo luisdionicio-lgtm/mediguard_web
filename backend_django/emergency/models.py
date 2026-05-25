@@ -36,6 +36,8 @@ class ContactoEmergencia(models.Model):
         VECINO   = 'vecino',   'Vecino/a'
         OTRO     = 'otro',     'Otro'
 
+    objects = models.Manager()
+
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -126,6 +128,8 @@ class EventoSOS(models.Model):
         ACTIVADO      = 'activado',      'Activado'
         RESUELTO      = 'resuelto',      'Resuelto'
         FALSA_ALARMA  = 'falsa_alarma',  'Falsa Alarma'
+
+    objects = models.Manager()
 
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -248,6 +252,8 @@ class NumeroServicioEmergencia(models.Model):
         BOMBEROS   = 'bomberos',   'Bomberos'
         GENERAL    = 'general',    'Emergencias General'
         OTRO       = 'otro',       'Otro'
+
+    objects = models.Manager()
 
     nombre = models.CharField(
         max_length=100,

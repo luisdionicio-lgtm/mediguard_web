@@ -15,10 +15,10 @@ from .serializers import (
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# VistaRegistro
-# POST /api/auth/registro/           → crea usuario
-# GET  /api/auth/registro/?email=... → verifica si un usuario fue registrado
-# Publica — no requiere autenticacion (AllowAny).
+# Register view
+# POST /api/register/           -> create user
+# GET  /api/register/?email=... -> check whether an email is registered
+# Public endpoint.
 # ─────────────────────────────────────────────────────────────────────────────
 class VistaRegistro(generics.ListCreateAPIView):
     queryset = Usuario.objects.all()
@@ -30,27 +30,27 @@ class VistaRegistro(generics.ListCreateAPIView):
 
         if request.user and request.user.is_authenticated and not email:
             return Response({
-                'registrado': True,
-                'usuario': SerializadorUsuario(request.user).data,
+                'registered': True,
+                'user': SerializadorUsuario(request.user).data,
             }, status=status.HTTP_200_OK)
 
         if not email:
             return Response(
-                {'error': 'Para verificar un registro envia el parametro ?email=correo@dominio.com.'},
+                {'error': 'Send the ?email=user@example.com query parameter to check registration.'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         usuario = Usuario.objects.filter(email__iexact=email).first()
         if not usuario:
             return Response({
-                'registrado': False,
+                'registered': False,
                 'email': email,
-                'mensaje': 'No existe un usuario registrado con ese correo.',
+                'message': 'No registered user exists with that email.',
             }, status=status.HTTP_200_OK)
 
         return Response({
-            'registrado': True,
-            'usuario': {
+            'registered': True,
+            'user': {
                 'id': str(usuario.id),
                 'first_name': usuario.first_name,
                 'last_name': usuario.last_name,
@@ -67,33 +67,27 @@ class VistaRegistro(generics.ListCreateAPIView):
         serializador.is_valid(raise_exception=True)
         usuario = serializador.save()
 
-        # Generar tokens tras registro exitoso
         refresh = RefreshToken.for_user(usuario)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+        usuario_data = SerializadorUsuario(usuario).data
 
         return Response({
-            'usuario': SerializadorUsuario(usuario).data,
+            'user': usuario_data,
             'tokens': {
-                'acceso': str(refresh.access_token),
-                'refresco': str(refresh),
+                'access': access_token,
+                'refresh': refresh_token,
             }
         }, status=status.HTTP_201_CREATED)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# VistaPerfil
-# GET    /api/auth/perfil/  → retorna datos del usuario autenticado
-# PUT    /api/auth/perfil/  → reemplaza first_name, last_name, phone
-# PATCH  /api/auth/perfil/  → actualiza parcialmente first_name, last_name, phone
-# DELETE /api/auth/perfil/  → elimina la cuenta autenticada
-# Privada — requiere Bearer token.
-# Usa get_serializer_class para devolver el serializador correcto según el método.
-# ─────────────────────────────────────────────────────────────────────────────
+# Profile view
+# GET/PUT/PATCH/DELETE /api/profile/
 class VistaPerfil(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'put', 'patch', 'delete']
 
     def get_object(self):
-        # El usuario autenticado ya viene en request.user — no necesita query extra.
         return self.request.user
 
     def get_serializer_class(self):
@@ -107,12 +101,8 @@ class VistaPerfil(generics.RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# VistaRolesUsuario
-# GET /api/auth/usuarios/<id>/roles/       → consulta roles de un usuario
-# PUT/PATCH /api/auth/usuarios/<id>/roles/ → reemplaza roles del usuario
-# Privada — requiere Bearer token de un usuario ADMIN.
-# ─────────────────────────────────────────────────────────────────────────────
+# User roles view
+# GET/PUT/PATCH /api/users/<id>/roles/
 class VistaRolesUsuario(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -120,9 +110,9 @@ class VistaRolesUsuario(APIView):
         return generics.get_object_or_404(Usuario, id=usuario_id)
 
     def validar_admin(self, request):
-        if not request.user.is_staff:
+        if not getattr(request.user, 'is_staff', False):
             return Response(
-                {'error': 'Solo un usuario ADMIN puede consultar o modificar roles.'},
+                {'error': 'Only an ADMIN user can read or modify roles.'},
                 status=status.HTTP_403_FORBIDDEN,
             )
         return None
@@ -169,35 +159,42 @@ class VistaRolesUsuario(APIView):
         return Response(SerializadorUsuario(usuario).data, status=status.HTTP_200_OK)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# VistaCerrarSesion
-# POST /api/auth/cerrar-sesion/  { "refresco": "<refresh_token>" }
-# Privada — requiere Bearer token.
-# Invalida el refresh token en la blacklist de simplejwt.
-# El access token expira naturalmente en 60 minutos (no hay manera de revocarlo
-# sin blacklist global — no es necesario para esta fase).
-# ─────────────────────────────────────────────────────────────────────────────
+# Logout view
+# POST /api/logout/ { "refresh": "<refresh_token>" }
 class VistaCerrarSesion(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        token_refresco = request.data.get('refresco')
+        refresh_token = request.data.get('refresh')
 
-        if not token_refresco:
+        if not refresh_token:
             return Response(
-                {'error': 'El campo "refresco" es requerido.'},
+                {'error': 'The "refresh" field is required.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
-            token = RefreshToken(token_refresco)
+            token = RefreshToken(refresh_token)
             token.blacklist()
             return Response(
-                {'mensaje': 'Sesión cerrada correctamente.'},
+                {'message': 'Session closed successfully.'},
                 status=status.HTTP_200_OK
             )
         except Exception:
             return Response(
-                {'error': 'Token inválido o ya expirado.'},
+                {'error': 'Invalid or expired token.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+# Users list view
+# GET /api/users/ -> list users, ADMIN only
+class VistaListarUsuarios(generics.ListAPIView):
+    queryset = Usuario.objects.all().order_by('-created_at')
+    serializer_class = SerializadorUsuario
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        if not getattr(self.request.user, 'is_staff', False):
+            return Usuario.objects.none()
+        return super().get_queryset()
+

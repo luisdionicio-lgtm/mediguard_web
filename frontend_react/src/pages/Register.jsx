@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { authService } from '../services/authService';
+import { getApiErrorMessage } from '../services/errorService';
 
 function Register() {
   const [form, setForm] = useState({
     name: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
   });
@@ -16,21 +19,67 @@ function Register() {
     });
   };
 
-  const handleRegister = (e) => {
-    e.preventDefault();
+  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-    if (!form.name || !form.email || !form.password || !form.confirmPassword) {
-      alert('Por favor, completa todos los campos.');
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!form.name || !form.email || !form.phone || !form.password || !form.confirmPassword) {
+      setError('Por favor, completa todos los campos.');
+      return;
+    }
+
+    if (!/^\+?\d{7,15}$/.test(form.phone.trim())) {
+      setError('Ingresa un numero de telefono valido. Ejemplo: +51999888777');
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      alert('Las contraseñas no coinciden. Por favor, verifica e inténtalo de nuevo.');
+      setError('Las contraseñas no coinciden. Por favor, verifica e inténtalo de nuevo.');
       return;
     }
 
-    // Existing functionality kept intact
-    alert('Registro validado correctamente');
+    const nameParts = form.name.trim().split(' ');
+    const first_name = nameParts[0];
+    const last_name = nameParts.slice(1).join(' ') || first_name; // Fallback to first_name if no last_name is provided to avoid validation errors
+
+    setLoading(true);
+    try {
+      await authService.register({
+        first_name,
+        last_name,
+        email: form.email,
+        phone: form.phone.trim(),
+        password: form.password
+      });
+      navigate('/login', { state: { successMessage: 'Registro exitoso, ahora inicia sesión.' } });
+    } catch (err) {
+      if (err.response?.data) {
+        const data = err.response.data;
+        if (data.errors) {
+          setError(getApiErrorMessage(err, 'Error al registrar la cuenta. Verifica los datos.'));
+        } else if (data.email) {
+          setError('El correo ya está registrado.');
+        } else if (data.phone) {
+          setError(Array.isArray(data.phone) ? data.phone[0] : 'El numero de telefono no es valido o ya esta registrado.');
+        } else if (data.password) {
+          setError(Array.isArray(data.password) ? data.password[0] : 'La contraseña no cumple con los requisitos.');
+        } else if (data.error) {
+          setError(data.error);
+        } else if (data.message) {
+          setError(data.message);
+        } else {
+          setError('Error al registrar la cuenta. Verifica los datos.');
+        }
+      } else {
+        setError('Error de conexión con el servidor.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Basic password strength indicator
@@ -67,6 +116,7 @@ function Register() {
           </div>
 
           <form onSubmit={handleRegister}>
+            {error && <div className="error-message" style={{color: '#EF4444', marginBottom: '1rem'}}>{error}</div>}
             <div className="form-group">
               <label className="form-label">Nombre Completo</label>
               <div className="form-input-container">
@@ -98,6 +148,23 @@ function Register() {
                   className="form-input"
                   placeholder="ejemplo@correo.com"
                   value={form.email}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Numero de Telefono</label>
+              <div className="form-input-container">
+                <svg className="form-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.13.96.35 1.9.66 2.8a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.27-1.27a2 2 0 0 1 2.11-.45c.9.31 1.84.53 2.8.66A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <input
+                  type="tel"
+                  name="phone"
+                  className="form-input"
+                  placeholder="+51999888777"
+                  value={form.phone}
                   onChange={handleChange}
                 />
               </div>
@@ -148,8 +215,8 @@ function Register() {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-              Completar Registro
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>
+              {loading ? 'Registrando...' : 'Completar Registro'}
             </button>
           </form>
 

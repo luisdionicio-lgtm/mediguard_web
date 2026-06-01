@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
+from io import StringIO
+
+from django.contrib.sessions.backends.db import SessionStore
+from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import TestCase
+from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -241,3 +247,103 @@ class RegistroUsuariosSprint1Tests(TestCase):
         self.assertEqual(audit.entity_type, 'admin')
         self.assertEqual(audit.metadata['assigned_role'], 'ADMIN')
         self.assertIn('ADMIN', audit.metadata['roles'])
+
+
+@override_settings(DEBUG=True)
+class PurgeTestUsersCommandTests(TestCase):
+    def setUp(self):
+        self.rol_ciudadano, _ = Rol.objects.get_or_create(
+            name=Rol.Nombre.CIUDADANO,
+            defaults={'description': 'Usuario estándar del sistema'},
+        )
+        self.rol_admin, _ = Rol.objects.get_or_create(
+            name=Rol.Nombre.ADMIN,
+            defaults={'description': 'Administrador del sistema'},
+        )
+
+    def test_dry_run_no_elimina_usuario(self):
+        usuario = Usuario.objects.create_user(
+            email='test@example.com',
+            password='ClaveSegura123!',
+            first_name='Test',
+            last_name='User',
+        )
+
+        output = StringIO()
+        call_command('purge_test_users', '--emails', usuario.email, '--dry-run', stdout=output)
+
+        self.assertTrue(Usuario.objects.filter(email='test@example.com').exists())
+        self.assertIn('Modo: DRY-RUN', output.getvalue())
+        self.assertIn('Usuario encontrado: test@example.com', output.getvalue())
+
+    def test_confirm_elimina_usuario_no_staff(self):
+        usuario = Usuario.objects.create_user(
+            email='delete@example.com',
+            password='ClaveSegura123!',
+            first_name='Delete',
+            last_name='User',
+        )
+
+        call_command('purge_test_users', '--emails', usuario.email, '--confirm')
+
+        self.assertFalse(Usuario.objects.filter(email='delete@example.com').exists())
+
+    def test_bloquea_staff_sin_include_staff(self):
+        admin = Usuario.objects.create_superuser(
+            email='admin-blocked@example.com',
+            password='ClaveSegura123!',
+            first_name='Admin',
+            last_name='Blocked',
+        )
+        Usuario.objects.create_superuser(
+            email='admin-other@example.com',
+            password='ClaveSegura123!',
+            first_name='Admin',
+            last_name='Other',
+        )
+
+        with self.assertRaisesMessage(CommandError, 'staff/superuser'):
+            call_command('purge_test_users', '--emails', admin.email, '--confirm')
+
+        self.assertTrue(Usuario.objects.filter(email='admin-blocked@example.com').exists())
+
+    def test_bloquea_ultimo_superusuario(self):
+        admin = Usuario.objects.create_superuser(
+            email='last-admin@example.com',
+            password='ClaveSegura123!',
+            first_name='Last',
+            last_name='Admin',
+        )
+
+        with self.assertRaisesMessage(CommandError, 'ultimo superusuario'):
+            call_command('purge_test_users', '--emails', admin.email, '--confirm', '--include-staff')
+
+        self.assertTrue(Usuario.objects.filter(email='last-admin@example.com').exists())
+
+    def test_bloquea_usuario_con_sesion_activa_detectada(self):
+        usuario = Usuario.objects.create_user(
+            email='active-session@example.com',
+            password='ClaveSegura123!',
+            first_name='Active',
+            last_name='Session',
+        )
+        session = SessionStore()
+        session['_auth_user_id'] = str(usuario.id)
+        session.save()
+
+        with self.assertRaisesMessage(CommandError, 'sesion activa'):
+            call_command('purge_test_users', '--emails', usuario.email, '--confirm')
+
+        self.assertTrue(Usuario.objects.filter(email='active-session@example.com').exists())
+
+    @override_settings(DEBUG=False)
+    def test_bloquea_produccion_sin_allow_production(self):
+        usuario = Usuario.objects.create_user(
+            email='prod@example.com',
+            password='ClaveSegura123!',
+            first_name='Prod',
+            last_name='User',
+        )
+
+        with self.assertRaisesMessage(CommandError, 'DEBUG=False'):
+            call_command('purge_test_users', '--emails', usuario.email, '--dry-run')

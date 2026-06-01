@@ -1,0 +1,20 @@
+# Este workflow ejecuta pruebas con Node y publica el paquete en GitHub Packages o npm
+# Se activa al hacer push a main o al crear una release
+
+name: Node.js Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: cd frontend_react && npm ci
+

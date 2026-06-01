@@ -5,8 +5,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public record LoginRequest(
-        @Email @NotBlank String email,
-        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-        @NotBlank String password
-) {
+                @Email(message = "El formato del correo no es válido.") @NotBlank(message = "El correo es obligatorio.") String email,
+                @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) @NotBlank(message = "La contraseña es obligatoria.") String password) {
 }

@@ -1,36 +1,50 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
+  const [userName] = useState(() => {
+    const localUser = localStorage.getItem('user');
+    if (localUser) {
+      try {
+        const userObj = JSON.parse(localUser);
+        return userObj.first_name || userObj.nombre?.split(' ')[0] || 'Usuario';
+      } catch (e) {
+        console.error('Error parsing user from localStorage', e);
+      }
+    }
+    return 'Usuario';
+  });
+
   return (
     <div className="dashboard-container page-container" style={{ padding: '80px 5% 60px', maxWidth: '1400px', margin: '0 auto' }}>
-      
+
       {/* Udemy-style Hero Banner */}
       <div className="udemy-hero animate-fade-in" style={{ backgroundColor: 'var(--blue-deep)', borderRadius: 'var(--radius-xl)', padding: '3rem', color: 'var(--white)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', position: 'relative', overflow: 'hidden' }}>
         <div style={{ zIndex: 2, maxWidth: '600px' }}>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', fontWeight: '800' }}>¡Hola, Luis! Bienvenido a tu academia</h1>
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', fontWeight: '800', color: 'var(--white)', textShadow: 'none', background: 'none' }}>¡Hola, {userName}! Bienvenido a tu academia</h1>
           <p style={{ fontSize: '1.1rem', color: 'var(--teal-light)', marginBottom: '2rem', lineHeight: '1.6' }}>
             Aprende a salvar vidas con nuestros cursos interactivos. Desarrolla habilidades críticas de primeros auxilios y prepárate para cualquier emergencia.
           </p>
           <Link to="/guides" className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.1rem', backgroundColor: 'var(--teal-primary)', color: 'white', border: 'none', borderRadius: 'var(--radius-md)', fontWeight: '700', textDecoration: 'none', display: 'inline-block' }}>
             Explorar catálogo de cursos
           </Link>
-        </div>
-        
+        </div >
+
         {/* Decoración gráfica */}
-        <div style={{ position: 'absolute', right: '-50px', top: '-50px', width: '300px', height: '300px', backgroundColor: 'var(--teal-dark)', borderRadius: '50%', opacity: 0.5, zIndex: 1 }}></div>
+        < div style={{ position: 'absolute', right: '-50px', top: '-50px', width: '300px', height: '300px', backgroundColor: 'var(--teal-dark)', borderRadius: '50%', opacity: 0.5, zIndex: 1 }}></div >
         <div style={{ position: 'absolute', right: '150px', bottom: '-80px', width: '200px', height: '200px', backgroundColor: 'var(--teal-primary)', borderRadius: '50%', opacity: 0.3, zIndex: 1 }}></div>
-      </div>
+      </div >
 
       {/* Seguir Aprendiendo (My Learning) */}
-      <div className="dashboard-section animate-fade-in" style={{ animationDelay: '0.1s', marginBottom: '3rem' }}>
+      < div className="dashboard-section animate-fade-in" style={{ animationDelay: '0.1s', marginBottom: '3rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <h2 style={{ fontSize: '1.5rem', color: 'var(--blue-deep)', fontWeight: '800' }}>Seguir aprendiendo</h2>
           <Link to="/profile" style={{ color: 'var(--teal-primary)', fontWeight: '700', textDecoration: 'none' }}>Mi aprendizaje</Link>
         </div>
-        
+
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-          
+
           {/* Curso en progreso */}
           <div className="udemy-card" style={{ border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', backgroundColor: 'var(--white)', transition: 'box-shadow 0.3s', cursor: 'pointer' }}>
             <div style={{ position: 'relative', height: '170px' }}>
@@ -42,7 +56,7 @@ const Dashboard = () => {
             <div style={{ padding: '1rem' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--blue-deep)', marginBottom: '0.5rem', lineHeight: '1.3' }}>RCP y Reanimación Básica (Adultos e Infantes)</h3>
               <p style={{ fontSize: '0.85rem', color: 'var(--blue-mid)', marginBottom: '0.75rem' }}>Dr. Carlos Martínez • Paramédico Certificado</p>
-              
+
               {/* Barra de progreso */}
               <div style={{ marginBottom: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.25rem', color: 'var(--blue-mid)', fontWeight: '600' }}>
@@ -54,7 +68,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Quick Tools adaptado al diseño */}
           <div style={{ border: '1px solid var(--teal-light)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', backgroundColor: 'var(--teal-surface)', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: 'var(--teal-dark)', fontWeight: '800' }}>Atajos Rápidos</h3>
@@ -72,13 +86,13 @@ const Dashboard = () => {
           </div>
 
         </div>
-      </div>
+      </div >
 
       {/* Cursos Recomendados */}
-      <div className="dashboard-section animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '3rem' }}>
+      < div className="dashboard-section animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '3rem' }}>
         <h2 style={{ fontSize: '1.5rem', color: 'var(--blue-deep)', fontWeight: '800', marginBottom: '1.5rem' }}>Los estudiantes también están viendo</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
-          
+
           {/* Udemy Course Card 1 */}
           <div className="udemy-card-hover" style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-md)', overflow: 'hidden', backgroundColor: 'var(--white)', cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -167,10 +181,10 @@ const Dashboard = () => {
           </div>
 
         </div>
-      </div>
+      </div >
 
       {/* Guías Rápidas como "Categorías populares" en Udemy */}
-      <div className="dashboard-section animate-fade-in" style={{ animationDelay: '0.3s', marginBottom: '3rem' }}>
+      < div className="dashboard-section animate-fade-in" style={{ animationDelay: '0.3s', marginBottom: '3rem' }}>
         <h2 style={{ fontSize: '1.5rem', color: 'var(--blue-deep)', fontWeight: '800', marginBottom: '1.5rem' }}>Categorías principales</h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
           <Link to="/guides" className="quick-guide-chip" style={{ padding: '1rem 1.5rem', backgroundColor: 'var(--white)', border: '1px solid var(--blue-deep)', borderRadius: 'var(--radius-md)', fontWeight: '700', color: 'var(--blue-deep)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s', flexGrow: 1, justifyContent: 'center' }}>
@@ -186,16 +200,16 @@ const Dashboard = () => {
             <span style={{ fontSize: '1.5rem' }}>🚨</span> Accidentes
           </Link>
         </div>
-      </div>
-      
-      {/* Botón Flotante de Chat/Asistente (estilo plataforma educativa) */}
-      <div style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: 100 }}>
-         <button style={{ width: '60px', height: '60px', backgroundColor: 'var(--teal-primary)', borderRadius: '50%', border: 'none', boxShadow: 'var(--shadow-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: 'white', cursor: 'pointer', transition: 'transform 0.3s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
-           💬
-         </button>
-      </div>
+      </div >
 
-    </div>
+      {/* Botón Flotante de Chat/Asistente (estilo plataforma educativa) */}
+      < div style={{ position: 'fixed', bottom: '30px', right: '30px', zIndex: 100 }}>
+        <button style={{ width: '60px', height: '60px', backgroundColor: 'var(--teal-primary)', borderRadius: '50%', border: 'none', boxShadow: 'var(--shadow-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: 'white', cursor: 'pointer', transition: 'transform 0.3s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+          💬
+        </button>
+      </div >
+
+    </div >
   );
 };
 

@@ -8,6 +8,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+<<<<<<< HEAD
+=======
+import jakarta.persistence.PrePersist;
+>>>>>>> 92916b03964f6989ee835b660d14314239d117b0
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.List;
@@ -63,7 +67,11 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<UserRoleEntity> userRoles;
 
+<<<<<<< HEAD
     protected UserEntity() {
+=======
+    public UserEntity() {
+>>>>>>> 92916b03964f6989ee835b660d14314239d117b0
     }
 
     public UUID getId() { return id; }
@@ -92,4 +100,20 @@ public class UserEntity {
     public void setVerified(Boolean verified) { this.verified = verified; }
     public void setLastLoginAt(Instant lastLoginAt) { this.lastLoginAt = lastLoginAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+<<<<<<< HEAD
+=======
+
+    @PrePersist
+    void prePersist() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+        if (active == null) {
+            active = true;
+        }
+        if (verified == null) {
+            verified = false;
+        }
+    }
+>>>>>>> 92916b03964f6989ee835b660d14314239d117b0
 }

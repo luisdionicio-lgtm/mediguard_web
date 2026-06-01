@@ -1,0 +1,3 @@
+com\mediguard\usuario\user\controller\UsuarioController.class
+com\mediguard\usuario\user\repository\UsuarioRepository.class
+com\mediguard\usuario\user\entity\Usuario.class

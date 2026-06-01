@@ -35,3 +35,7 @@ docs/axios-fetch-audit.local.md
 # Ignorar la carpeta de documentación 
 docs/
 /docs/
+
+# ─── Documentacion local de arquitectura / skills ───────────────────────────
+local_architecture/
+/local_architecture/

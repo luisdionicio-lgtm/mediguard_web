@@ -1,8 +1,15 @@
-import userApi from '../api/userApi';
+import springApi from '../api/springApi';
 import { profileService } from './user/profileService';
 
 const notifyAuthChange = () => {
   window.dispatchEvent(new Event('auth-change'));
+};
+
+const clearAuthData = () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  localStorage.removeItem('user');
+  notifyAuthChange();
 };
 
 const persistAuthData = (data) => {
@@ -26,37 +33,36 @@ const persistAuthData = (data) => {
 
 export const authService = {
   login: async (email, password) => {
-    // We map password to contrasena for the new backend
-    const response = await userApi.post('usuarios/login', { email, contrasena: password });
+    const response = await springApi.post('login/', { email, password });
     persistAuthData(response.data);
+
+    // Fetch profile immediately to store user details in localStorage
+    const profileResponse = await springApi.get('profile/');
+    localStorage.setItem('user', JSON.stringify(profileResponse.data));
+
     return response.data;
   },
 
   register: async (userData) => {
-    // Map first_name to nombre, and password to contrasena
     const payload = {
-      nombre: userData.first_name + (userData.last_name ? ' ' + userData.last_name : ''),
+      first_name: userData.first_name,
+      last_name: userData.last_name,
       email: userData.email,
-      contrasena: userData.password
+      phone: userData.phone,
+      password: userData.password
     };
-    const response = await userApi.post('usuarios/registro', payload);
-    persistAuthData(response.data);
+    const response = await springApi.post('register/', payload);
+    // Note: Do not auto-persist token/user on registration as requested
     return response.data;
   },
 
   logout: async () => {
-    const refreshToken = localStorage.getItem('refresh_token');
-
     try {
-      if (refreshToken) {
-        // TODO: ajustar payload si Spring Boot define otro contrato para invalidar refresh tokens.
-        await userApi.post('logout/', { refresh: refreshToken });
+      if (localStorage.getItem('access_token')) {
+        await springApi.post('logout/');
       }
     } finally {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('user');
-      notifyAuthChange();
+      clearAuthData();
     }
   },
 

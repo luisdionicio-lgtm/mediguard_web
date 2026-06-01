@@ -1,11 +1,31 @@
 import { useEffect, useState } from 'react';
 import { emergencyService } from '../services/emergencyService';
+import { getApiErrorMessage } from '../services/errorService';
 import '../styles/Dashboard.css';
+
+const getCurrentPosition = () => new Promise((resolve) => {
+  if (!navigator.geolocation) {
+    resolve({});
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => resolve({
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+    }),
+    () => resolve({}),
+    { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+  );
+});
 
 const Emergencies = () => {
   const [emergencies, setEmergencies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sosLoading, setSosLoading] = useState(false);
+  const [sosMessage, setSosMessage] = useState('');
+  const [sosError, setSosError] = useState('');
 
   useEffect(() => {
     const loadEmergencies = async () => {
@@ -22,6 +42,28 @@ const Emergencies = () => {
     loadEmergencies();
   }, []);
 
+  const handleCreateSos = async () => {
+    setSosMessage('');
+    setSosError('');
+    setSosLoading(true);
+
+    try {
+      const position = await getCurrentPosition();
+      await emergencyService.createSosEvent({
+        status: 'activado',
+        device: navigator.userAgent.slice(0, 100),
+        notes: 'SOS activado desde la web',
+        notified_contacts: 0,
+        ...position,
+      });
+      setSosMessage('Evento SOS registrado correctamente.');
+    } catch (err) {
+      setSosError(getApiErrorMessage(err, 'No se pudo registrar el evento SOS.'));
+    } finally {
+      setSosLoading(false);
+    }
+  };
+
   return (
     <div className="simple-page-container">
       <div className="dashboard-header animate-fade-in" style={{ marginBottom: '40px' }}>
@@ -29,6 +71,22 @@ const Emergencies = () => {
           Contactos de <span className="highlight" style={{ color: 'var(--red-emergency)' }}>Emergencia</span>
         </h1>
         <p className="section-subtitle">Líneas de ayuda crítica y servicios vitales disponibles las 24 horas.</p>
+        <div style={{ marginTop: '1.5rem', display: 'grid', justifyItems: 'center', gap: '0.75rem' }}>
+          <button
+            type="button"
+            className="btn btn-emergency"
+            onClick={handleCreateSos}
+            disabled={sosLoading}
+            style={{ padding: '0.9rem 1.5rem', fontWeight: 800 }}
+          >
+            {sosLoading ? 'Registrando SOS...' : 'Activar SOS'}
+          </button>
+          {(sosMessage || sosError) && (
+            <p className="section-subtitle" style={{ color: sosError ? '#EF4444' : 'var(--teal-primary)', margin: 0 }}>
+              {sosError || sosMessage}
+            </p>
+          )}
+        </div>
       </div>
 
       {isLoading && (
@@ -37,7 +95,7 @@ const Emergencies = () => {
           <p className="section-subtitle" style={{ marginTop: '10px' }}>Cargando directorio de emergencia...</p>
         </div>
       )}
-      
+
       {error && (
         <div className="status-message error animate-fade-in" style={{ textAlign: 'center', padding: '40px' }}>
           <p className="section-subtitle" style={{ color: '#EF4444' }}>{error}</p>
@@ -52,10 +110,10 @@ const Emergencies = () => {
 
       <div className="dashboard-premium-grid">
         {emergencies.map((emergency, index) => (
-          <div 
-            className="premium-card animate-fade-in" 
-            key={emergency.id} 
-            style={{ 
+          <div
+            className="premium-card animate-fade-in"
+            key={emergency.id}
+            style={{
               animationDelay: `${0.1 * (index + 1)}s`,
               borderTop: '6px solid var(--red-emergency)'
             }}
@@ -77,7 +135,7 @@ const Emergencies = () => {
               <h3 style={{ fontSize: '1.35rem', color: 'var(--blue-deep)', fontWeight: '700', marginBottom: '0.5rem' }}>
                 {emergency.name}
               </h3>
-              
+
               {emergency.serviceType && (
                 <p style={{ color: 'var(--teal-primary)', fontWeight: '700', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
                   {emergency.serviceType}
@@ -91,8 +149,8 @@ const Emergencies = () => {
               )}
 
               <div className="premium-card-actions" style={{ marginTop: 'auto' }}>
-                <a 
-                  href={`tel:${emergency.phone}`} 
+                <a
+                  href={`tel:${emergency.phone}`}
                   className="btn btn-emergency btn-full"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 >

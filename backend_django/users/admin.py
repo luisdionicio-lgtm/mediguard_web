@@ -27,7 +27,7 @@ class AdministradorUsuario(UserAdmin):
 
     fieldsets = (
         ('Credenciales', {'fields': ('email', 'password')}),
-        ('Datos personales', {'fields': ('first_name', 'last_name', 'phone')}),
+        ('Datos personales', {'fields': ('first_name', 'last_name', 'phone', 'avatar_url', 'bio')}),
         ('Roles y permisos', {'fields': ('roles_display', 'is_staff', 'is_superuser')}),
         ('Estado', {'fields': ('is_active', 'is_verified')}),
         ('Auditoria', {'fields': ('id', 'last_login', 'created_at', 'updated_at')}),

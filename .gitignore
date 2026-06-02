@@ -39,3 +39,13 @@ docs/
 # ─── Documentacion local de arquitectura / skills ───────────────────────────
 local_architecture/
 /local_architecture/
+
+# Ignorar recursos locales _______________________________
+/application.properties
+/application-example.properties
+
+# Ignorar todo el contenido generado por Maven
+/target/
+# Ignorar archivos del plugin de compilación de Maven
+/target/maven-status/
+/target/maven-status/maven-compiler-plugin/

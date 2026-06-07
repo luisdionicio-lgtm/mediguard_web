@@ -41,3 +41,7 @@ local_architecture/
 /local_architecture/
 
 usuario/target/
+
+
+# Google / OAuth
+application.properties

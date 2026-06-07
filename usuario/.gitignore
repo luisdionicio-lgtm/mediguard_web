@@ -32,6 +32,16 @@ build/
 ### VS Code ###
 .vscode/
 
-# Google / OAuth
-application.properties
 
+target/
+
+# Spring Boot config sensible
+src/main/resources/application.properties
+
+*.json
+*.pem
+
+# logs
+*.log
+
+# build

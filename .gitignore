@@ -45,3 +45,14 @@ usuario/target/
 
 # Google / OAuth
 application.properties
+
+# Spring Boot config sensible
+src/main/resources/application.properties
+
+*.json
+*.pem
+
+# logs
+*.log
+
+# build

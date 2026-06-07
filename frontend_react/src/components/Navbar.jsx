@@ -1,29 +1,25 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../services/authService';
 
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-  const navigate = useNavigate();
+function Navbar({ hideNav = false }) {
+  const [scrolled, setScrolled]           = useState(false);
+  const [isAuth, setIsAuth]               = useState(authService.isAuthenticated());
+  const [theme, setTheme]                 = useState(localStorage.getItem('theme') || 'light');
+  const [mobileOpen, setMobileOpen]       = useState(false);
+  const navigate   = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => {
-    const handleAuthChange = () => {
-      setIsAuthenticated(authService.isAuthenticated());
-    };
-
-    window.addEventListener('auth-change', handleAuthChange);
-    return () => window.removeEventListener('auth-change', handleAuthChange);
+    const onAuth = () => setIsAuth(authService.isAuthenticated());
+    window.addEventListener('auth-change', onAuth);
+    return () => window.removeEventListener('auth-change', onAuth);
   }, []);
 
   useEffect(() => {
@@ -31,70 +27,133 @@ function Navbar() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
-  };
+  // Close mobile menu on route change
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
 
-  const handleLogout = async () => {
-    await authService.logout();
-    navigate('/login', { replace: true });
-  };
+  const toggleTheme  = () => setTheme(p => p === 'light' ? 'dark' : 'light');
+  const handleLogout = async () => { await authService.logout(); navigate('/login', { replace: true }); };
+
+  const navLinks = [
+    { label: 'La App',       href: '/#features' },
+    { label: 'Beneficios',   href: '/#benefits' },
+    { label: 'El Proyecto',  href: '/#about' },
+  ];
 
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <div className="nav-brand">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#CCFBF1"/>
-          <path d="M15 11H13V9C13 8.44772 12.5523 8 12 8C11.4477 8 11 8.44772 11 9V11H9C8.44772 11 8 11.4477 8 12C8 12.5523 8.44772 13 9 13H11V15C11 15.5523 11.4477 16 12 16C12.5523 16 13 15.5523 13 15V13H15C15.5523 13 16 12.5523 16 12C16 11.4477 15.5523 11 15 11Z" fill="#0D9488"/>
-        </svg>
-        <Link to="/" className="logo-text">MediGuard AI</Link>
-      </div>
+    <>
+      <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
+        {/* Brand */}
+        <Link to="/" className="nav-brand">
+          <div className="nav-brand-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+          <span className="logo-text">Medi<em>Guard</em> AI</span>
+        </Link>
 
-      <div className="nav-links">
-        <a href="/#features" className="nav-link">La App</a>
-        <a href="/#benefits" className="nav-link">Beneficios</a>
-        <a href="/#about" className="nav-link">El Proyecto</a>
-      </div>
-
-      <div className="nav-actions">
-        {/* Theme Toggle Button */}
-        <button 
-          onClick={toggleTheme} 
-          className="btn btn-secondary" 
-          style={{ padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)' }}
-          aria-label="Alternar tema"
-          type="button"
-        >
-          {theme === 'light' ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-          )}
-        </button>
-
-        {isAuthenticated ? (
-          <>
-            <Link to="/dashboard" className="btn btn-secondary">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-              Dashboard
-            </Link>
-            <Link to="/profile" className="btn btn-primary">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              Mi Perfil
-            </Link>
-            <button type="button" className="btn btn-emergency" onClick={handleLogout}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-              Cerrar Sesión
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" className="btn btn-secondary">Ingresar</Link>
-            <Link to="/register" className="btn btn-primary">Crear Cuenta</Link>
-          </>
+        {/* Center links — hidden on auth pages */}
+        {!hideNav && (
+          <div className="nav-links">
+            {navLinks.map(l => (
+              <a key={l.href} href={l.href} className="nav-link">{l.label}</a>
+            ))}
+          </div>
         )}
-      </div>
-    </nav>
+
+        {/* Actions */}
+        <div className="nav-actions">
+          {/* Theme toggle */}
+          <button
+            className="nav-theme-btn"
+            onClick={toggleTheme}
+            aria-label="Alternar tema"
+            type="button"
+          >
+            {theme === 'light' ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            )}
+          </button>
+
+          {isAuth ? (
+            <>
+              <Link to="/dashboard" className="btn btn-ghost btn-sm">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Dashboard
+              </Link>
+              <Link to="/profile" className="btn btn-outline btn-sm">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Mi Perfil
+              </Link>
+              <button type="button" className="btn btn-emergency btn-sm" onClick={handleLogout}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Salir
+              </button>
+            </>
+          ) : hideNav ? (
+            /* On auth pages: minimal actions */
+            pathname === '/login' ? (
+              <Link to="/register" className="btn btn-primary btn-sm">Crear cuenta</Link>
+            ) : (
+              <Link to="/login" className="btn btn-outline btn-sm">Ingresar</Link>
+            )
+          ) : (
+            <>
+              <Link to="/login"    className="btn btn-ghost btn-sm">Ingresar</Link>
+              <Link to="/register" className="btn btn-primary btn-sm">Crear cuenta</Link>
+            </>
+          )}
+
+          {/* Hamburger — only for public pages */}
+          {!hideNav && (
+            <button
+              className="nav-hamburger"
+              onClick={() => setMobileOpen(p => !p)}
+              aria-label="Menú"
+              type="button"
+            >
+              {mobileOpen ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              )}
+            </button>
+          )}
+        </div>
+      </nav>
+
+      {/* Mobile menu */}
+      {!hideNav && (
+        <div className={`nav-mobile-menu${mobileOpen ? ' open' : ''}`}>
+          {navLinks.map(l => (
+            <a key={l.href} href={l.href} className="nav-mobile-link">{l.label}</a>
+          ))}
+          <div className="nav-mobile-divider" />
+          {isAuth ? (
+            <>
+              <Link to="/dashboard" className="nav-mobile-link">Dashboard</Link>
+              <Link to="/profile"   className="nav-mobile-link">Mi Perfil</Link>
+              <button type="button" className="nav-mobile-link" style={{ border: 'none', background: 'none', textAlign: 'left', cursor: 'pointer', color: 'var(--error)' }} onClick={handleLogout}>Cerrar sesión</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login"    className="nav-mobile-link">Ingresar</Link>
+              <Link to="/register" className="nav-mobile-link" style={{ color: 'var(--brand)', fontWeight: 600 }}>Crear cuenta gratis</Link>
+            </>
+          )}
+        </div>
+      )}
+    </>
   );
 }
 

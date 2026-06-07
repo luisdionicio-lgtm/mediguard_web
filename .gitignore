@@ -39,3 +39,5 @@ docs/
 # ─── Documentacion local de arquitectura / skills ───────────────────────────
 local_architecture/
 /local_architecture/
+
+usuario/target/

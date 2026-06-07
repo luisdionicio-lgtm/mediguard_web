@@ -47,6 +47,7 @@ C:\Users\ronny\Desktop\2026-1 4CICLO\ProyectoIntegrador\mediguard_web\usuario\sr
 C:\Users\ronny\Desktop\2026-1 4CICLO\ProyectoIntegrador\mediguard_web\usuario\src\main\java\com\mediguard\usuario\user\repository\RoleRepository.java
 C:\Users\ronny\Desktop\2026-1 4CICLO\ProyectoIntegrador\mediguard_web\usuario\src\main\java\com\mediguard\usuario\user\repository\SosEventRepository.java
 C:\Users\ronny\Desktop\2026-1 4CICLO\ProyectoIntegrador\mediguard_web\usuario\src\main\java\com\mediguard\usuario\user\repository\UserRepository.java
+C:\Users\ronny\Desktop\2026-1 4CICLO\ProyectoIntegrador\mediguard_web\usuario\src\main\java\com\mediguard\usuario\user\repository\UserRoleRepository.java
 C:\Users\ronny\Desktop\2026-1 4CICLO\ProyectoIntegrador\mediguard_web\usuario\src\main\java\com\mediguard\usuario\user\repository\UsuarioRepository.java
 C:\Users\ronny\Desktop\2026-1 4CICLO\ProyectoIntegrador\mediguard_web\usuario\src\main\java\com\mediguard\usuario\user\repository\VerificationTokenRepository.java
 C:\Users\ronny\Desktop\2026-1 4CICLO\ProyectoIntegrador\mediguard_web\usuario\src\main\java\com\mediguard\usuario\user\security\CorsConfig.java

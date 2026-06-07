@@ -49,7 +49,8 @@ export const authService = {
       last_name: userData.last_name,
       email: userData.email,
       phone: userData.phone,
-      password: userData.password
+      password: userData.password,
+      user_type: userData.user_type
     };
     const response = await springApi.post('register/', payload);
     // Note: Do not auto-persist token/user on registration as requested

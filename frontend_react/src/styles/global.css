@@ -219,10 +219,7 @@ button { font-family: inherit; }
   transition: box-shadow 0.2s, background 0.2s;
   gap: 24px;
 }
-
-.navbar.scrolled {
-  box-shadow: var(--navbar-shadow);
-}
+.navbar.scrolled { box-shadow: var(--navbar-shadow); }
 
 /* Brand */
 .nav-brand {
@@ -231,7 +228,6 @@ button { font-family: inherit; }
   gap: 9px;
   flex-shrink: 0;
 }
-
 .nav-brand-icon {
   width: 32px;
   height: 32px;
@@ -243,7 +239,6 @@ button { font-family: inherit; }
   flex-shrink: 0;
 }
 .nav-brand-icon svg { color: #fff; }
-
 .logo-text {
   font-family: var(--font-heading);
   font-size: 1rem;
@@ -256,7 +251,7 @@ button { font-family: inherit; }
   color: var(--brand);
 }
 
-/* Center nav */
+/* Center nav links */
 .nav-links {
   display: flex;
   align-items: center;
@@ -264,7 +259,6 @@ button { font-family: inherit; }
   flex: 1;
   justify-content: center;
 }
-
 .nav-link {
   font-family: var(--font-heading);
   font-size: 0.875rem;
@@ -274,14 +268,8 @@ button { font-family: inherit; }
   border-radius: var(--r-md);
   transition: color 0.15s, background 0.15s;
 }
-.nav-link:hover {
-  color: var(--text-primary);
-  background: var(--surface-2);
-}
-.nav-link.active {
-  color: var(--brand);
-  background: var(--brand-subtle);
-}
+.nav-link:hover  { color: var(--text-primary); background: var(--surface-2); }
+.nav-link.active { color: var(--brand); background: var(--brand-subtle); }
 
 /* Actions */
 .nav-actions {
@@ -289,6 +277,11 @@ button { font-family: inherit; }
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+.nav-auth-desktop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Theme toggle */
@@ -325,10 +318,7 @@ button { font-family: inherit; }
   cursor: pointer;
   transition: var(--transition);
 }
-.nav-hamburger:hover {
-  border-color: var(--brand);
-  color: var(--brand);
-}
+.nav-hamburger:hover { border-color: var(--brand); color: var(--brand); }
 
 /* Mobile menu */
 .nav-mobile-menu {
@@ -354,15 +344,12 @@ button { font-family: inherit; }
   border-radius: var(--r-md);
   transition: var(--transition);
 }
-.nav-mobile-link:hover {
-  background: var(--surface-2);
-  color: var(--text-primary);
-}
-.nav-mobile-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 8px 0;
-}
+.nav-mobile-link:hover { background: var(--surface-2); color: var(--text-primary); }
+.nav-mobile-link.danger { color: var(--error); }
+.nav-mobile-link.danger:hover { background: var(--error-light); }
+.nav-mobile-link.accent { color: var(--brand); font-weight: 700; }
+.nav-mobile-link.accent:hover { background: var(--brand-subtle); }
+.nav-mobile-divider { height: 1px; background: var(--border); margin: 8px 0; }
 
 /* ============================================================
    BUTTONS
@@ -669,7 +656,134 @@ button { font-family: inherit; }
 }
 .cta-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
 .cta-title { font-size: clamp(1.75rem, 3vw, 2.25rem); color: #fff; margin-bottom: 1rem; font-weight: 800; }
-.cta-desc  { font-size: 1.0625rem; margin-bottom: 2.25rem; opacity: 0.85; }
+.cta-desc    { font-size: 1.0625rem; margin-bottom: 2.25rem; opacity: 0.85; }
+.cta-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   HOME — Hero extras
+   ============================================================ */
+.hero-brand-word {
+  background: linear-gradient(135deg, var(--brand) 20%, var(--brand-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-brand-word em { font-style: italic; }
+
+.btn-hero {
+  padding: 0.875rem 1.75rem;
+  font-size: 1.0625rem;
+  border-radius: var(--r-lg);
+}
+
+.hero-scroll-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--brand);
+  transition: gap 0.2s ease, color 0.2s ease;
+}
+.hero-scroll-link:hover {
+  gap: 0.75rem;
+  color: var(--brand-hover);
+}
+
+/* ============================================================
+   HOME — Benefits section
+   ============================================================ */
+.benefits-section { background: var(--surface); }
+.benefits-inner {
+  padding: 5.5rem 5%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 2rem;
+  text-align: center;
+}
+.benefit-item    { padding: 1rem; }
+.benefit-emoji   { font-size: 2.5rem; margin-bottom: 1rem; line-height: 1; }
+.benefit-title   { font-size: 1.125rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
+.benefit-desc    { font-size: 0.9375rem; color: var(--text-muted); line-height: 1.55; }
+
+/* ============================================================
+   HOME — About section
+   ============================================================ */
+.about-section {
+  background: var(--teal-surface);
+  border-radius: var(--r-xl);
+  margin: 0 5% 4rem;
+  padding: 4rem;
+}
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 4rem;
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.about-section-title { text-align: left; margin-bottom: 1.5rem; font-size: 2rem; }
+.about-desc {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+.about-tech-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.about-tech-tag {
+  padding: 0.4rem 0.875rem;
+  background: var(--surface);
+  border: 1px solid var(--teal-light);
+  border-radius: var(--r-full);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--brand-dark);
+  font-family: var(--font-heading);
+}
+
+.about-team-card {
+  background: var(--surface);
+  padding: 2.5rem;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-md);
+}
+.about-team-title {
+  font-size: 1.375rem;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.about-team-list   { list-style: none; padding: 0; }
+.about-team-member {
+  padding: 1rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.about-team-member:not(:last-child) { border-bottom: 1px solid var(--border); }
+.about-team-name { font-weight: 700; color: var(--text-secondary); font-size: 0.9375rem; }
+.about-team-role {
+  font-size: 0.8125rem;
+  color: var(--brand);
+  background: var(--brand-subtle);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--r-full);
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
 
 /* ============================================================
    AUTH PAGES (Login & Register)
@@ -1272,136 +1386,133 @@ button { font-family: inherit; }
    FOOTER
    ============================================================ */
 .footer {
-  background: var(--text-primary);
-  color: var(--text-muted);
-  padding: 0;
+  background: #0f172a;
+  color: #64748b;
 }
-
-[data-theme="dark"] .footer { background: #060b14; }
-
+.footer-accent {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(13,158,117,0.3), transparent);
+}
 .footer-body {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 3rem;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 4rem 5% 3rem;
+  padding: 4rem 5%;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 2.5rem;
 }
 
-.footer-brand-col {}
-.footer-logo-row {
+/* Brand */
+.footer-brand-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 9px;
+  margin-bottom: 1rem;
 }
-.footer-logo-dot {
-  width: 28px; height: 28px;
+.footer-brand-icon {
+  width: 32px;
+  height: 32px;
   background: var(--brand);
-  border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
-.footer-logo-dot svg { color: #fff; width: 14px; height: 14px; }
-.footer-logo-name {
+.footer-brand-icon svg { color: #fff; }
+.footer-brand-name {
   font-family: var(--font-heading);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 800;
   color: #fff;
+  letter-spacing: -0.3px;
 }
+.footer-brand-name em { font-style: normal; color: var(--brand); }
 .footer-brand-desc {
   font-size: 0.875rem;
   color: #64748b;
   line-height: 1.65;
-  max-width: 300px;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 .footer-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(13,158,117,0.12);
-  border: 1px solid rgba(13,158,117,0.2);
-  border-radius: var(--r-full);
-  padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  border-radius: 9999px;
+  padding: 4px 12px;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--brand);
-  font-family: var(--font-heading);
+  color: #94a3b8;
 }
 .footer-badge-dot {
-  width: 5px; height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--brand);
-  animation: pulse 2s infinite;
+  flex-shrink: 0;
 }
 
-.footer-col-title {
+/* Columns */
+.footer-section-title {
   font-family: var(--font-heading);
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: #94a3b8;
-  margin-bottom: 14px;
+  letter-spacing: 0.1em;
+  color: #475569;
+  margin-bottom: 1rem;
 }
-.footer-link-list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
-.footer-link-list a {
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+.footer-link {
   font-size: 0.875rem;
   color: #64748b;
   transition: color 0.15s;
 }
-.footer-link-list a:hover { color: #fff; }
+.footer-link:hover { color: #fff; }
 
-.footer-team-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.footer-team-item {
+/* Team */
+.footer-team-list { display: flex; flex-direction: column; gap: 14px; list-style: none; }
+.footer-team-item { display: flex; align-items: center; gap: 10px; }
+.footer-team-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-.footer-team-avatar {
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  background: rgba(13,158,117,0.15);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--brand);
+  justify-content: center;
   font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
   flex-shrink: 0;
 }
-.footer-team-info {}
-.footer-team-name { font-size: 0.8125rem; color: #94a3b8; font-weight: 500; }
-.footer-team-role { font-size: 0.6875rem; color: #475569; }
+.footer-team-avatar.av-ld { background: #6366f1; }
+.footer-team-avatar.av-rq { background: #14b8a6; }
+.footer-team-avatar.av-jo { background: #8b5cf6; }
+.footer-team-name { font-size: 0.875rem; font-weight: 600; color: #cbd5e1; line-height: 1.2; }
+.footer-team-role { font-size: 0.75rem; color: #475569; }
 
-.footer-bottom {
-  border-top: 1px solid rgba(255,255,255,0.06);
-  padding: 1.25rem 5%;
-}
+/* Bottom bar */
+.footer-bottom { border-top: 1px solid rgba(255,255,255,0.05); padding: 20px 5%; }
 .footer-bottom-inner {
   max-width: 1280px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.footer-copyright {
-  font-size: 0.8125rem;
-  color: #475569;
-}
-.footer-built-with {
+  gap: 12px;
   font-size: 0.75rem;
-  color: #475569;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  color: #334155;
 }
-.footer-built-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--brand);
-}
+.footer-bottom-right { display: flex; align-items: center; gap: 8px; }
+.footer-bottom-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand); }
 
 /* ============================================================
    LEGACY AUTH (backward compat)
@@ -1508,10 +1619,11 @@ button { font-family: inherit; }
 }
 
 @media (max-width: 900px) {
-  .nav-links { display: none; }
-  .nav-hamburger { display: flex; }
-  .auth-wrapper { max-width: 500px; }
-  .auth-brand   { display: none; }
+  .nav-links       { display: none; }
+  .nav-hamburger   { display: flex; }
+  .nav-auth-desktop { display: none; }
+  .auth-wrapper    { max-width: 500px; }
+  .auth-brand      { display: none; }
 }
 
 @media (max-width: 768px) {
@@ -1519,7 +1631,12 @@ button { font-family: inherit; }
   .hero-content { grid-template-columns: 1fr; gap: 3rem; text-align: center; }
   .hero-text p  { margin: 0 auto 2rem; }
   .hero-buttons { justify-content: center; }
+  .hero-scroll-link { margin-top: 1.5rem; }
   .stats-grid   { grid-template-columns: 1fr; gap: 2rem; }
+  .about-section { margin: 0 4% 3rem; padding: 2.5rem; }
+  .about-grid   { gap: 2rem; }
+  .about-section-title { text-align: center; }
+  .about-tech-tags { justify-content: center; }
   .footer-body  { grid-template-columns: 1fr; gap: 2rem; }
   .auth-card    { grid-template-columns: 1fr; }
   .auth-visual  { padding: 2.5rem 2rem; text-align: center; }

@@ -10,6 +10,7 @@ frontend_react/skills
 .skills/
 
 # ─── React ───────────────────────────────────────────────────────────────────
+node_modules/
 frontend_react/node_modules/
 frontend_react/dist/
 

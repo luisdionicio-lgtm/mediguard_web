@@ -1,44 +1,49 @@
 import { Link } from 'react-router-dom';
+import { Shield } from 'lucide-react';
+
+const PLATFORM = [
+  { label: 'Inicio',           href: '/' },
+  { label: 'Funcionalidades',  href: '/#features' },
+  { label: 'Beneficios',       href: '/#benefits' },
+  { label: 'El Proyecto',      href: '/#about' },
+];
+
+const ACCOUNT = [
+  { label: 'Ingresar',     to: '/login' },
+  { label: 'Crear cuenta', to: '/register' },
+  { label: 'Dashboard',    to: '/dashboard' },
+  { label: 'Mi Perfil',    to: '/profile' },
+];
+
+const TEAM = [
+  { initials: 'LD', name: 'Luis Dionicio',  role: 'Frontend Dev', cls: 'av-ld' },
+  { initials: 'RQ', name: 'Rony Quintana',  role: 'Mobile Dev',   cls: 'av-rq' },
+  { initials: 'JO', name: 'Jeronimo Ortiz', role: 'Backend Dev',  cls: 'av-jo' },
+];
 
 function Footer() {
   const year = new Date().getFullYear();
 
-  const platform = [
-    { label: 'Inicio',        href: '/' },
-    { label: 'Funcionalidades', href: '/#features' },
-    { label: 'Beneficios',    href: '/#benefits' },
-    { label: 'El Proyecto',   href: '/#about' },
-  ];
-
-  const account = [
-    { label: 'Ingresar',       to: '/login' },
-    { label: 'Crear cuenta',   to: '/register' },
-    { label: 'Dashboard',      to: '/dashboard' },
-    { label: 'Mi Perfil',      to: '/profile' },
-  ];
-
-  const team = [
-    { initials: 'LD', name: 'Luis Dionicio',   role: 'Frontend Dev' },
-    { initials: 'RQ', name: 'Rony Quintana',   role: 'Mobile Dev' },
-    { initials: 'JO', name: 'Jeronimo Ortiz',  role: 'Backend Dev' },
-  ];
-
   return (
     <footer className="footer">
+
+      <div className="footer-accent" />
+
       <div className="footer-body">
-        {/* Brand col */}
-        <div className="footer-brand-col">
-          <div className="footer-logo-row">
-            <div className="footer-logo-dot">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
+
+        {/* Brand */}
+        <div>
+          <div className="footer-brand-logo">
+            <div className="footer-brand-icon">
+              <Shield size={14} strokeWidth={2.5} />
             </div>
-            <span className="footer-logo-name">MediGuard AI</span>
+            <span className="footer-brand-name">
+              Medi<em>Guard</em> AI
+            </span>
           </div>
           <p className="footer-brand-desc">
             Plataforma médica inteligente que pone la asistencia vital en tu bolsillo.
-            Prevención, primeros auxilios y conexión con servicios de salud, todo en un solo lugar.
+            Prevención, primeros auxilios y conexión con servicios de salud.
           </p>
           <span className="footer-badge">
             <span className="footer-badge-dot" />
@@ -46,38 +51,38 @@ function Footer() {
           </span>
         </div>
 
-        {/* Platform col */}
+        {/* Plataforma */}
         <div>
-          <p className="footer-col-title">Plataforma</p>
-          <ul className="footer-link-list">
-            {platform.map(l => (
+          <p className="footer-section-title">Plataforma</p>
+          <ul className="footer-links">
+            {PLATFORM.map(l => (
               <li key={l.href}>
-                <a href={l.href}>{l.label}</a>
+                <a href={l.href} className="footer-link">{l.label}</a>
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Account col */}
+        {/* Mi cuenta */}
         <div>
-          <p className="footer-col-title">Mi cuenta</p>
-          <ul className="footer-link-list">
-            {account.map(l => (
+          <p className="footer-section-title">Mi cuenta</p>
+          <ul className="footer-links">
+            {ACCOUNT.map(l => (
               <li key={l.to}>
-                <Link to={l.to}>{l.label}</Link>
+                <Link to={l.to} className="footer-link">{l.label}</Link>
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Team col */}
+        {/* Equipo Scrum */}
         <div>
-          <p className="footer-col-title">Equipo Scrum</p>
+          <p className="footer-section-title">Equipo Scrum</p>
           <ul className="footer-team-list">
-            {team.map(m => (
+            {TEAM.map(m => (
               <li key={m.name} className="footer-team-item">
-                <div className="footer-team-avatar">{m.initials}</div>
-                <div className="footer-team-info">
+                <div className={`footer-team-avatar ${m.cls}`}>{m.initials}</div>
+                <div>
                   <p className="footer-team-name">{m.name}</p>
                   <p className="footer-team-role">{m.role}</p>
                 </div>
@@ -87,15 +92,14 @@ function Footer() {
         </div>
       </div>
 
+      {/* Bottom bar */}
       <div className="footer-bottom">
         <div className="footer-bottom-inner">
-          <span className="footer-copyright">
-            © {year} MediGuard AI. Todos los derechos reservados.
-          </span>
-          <span className="footer-built-with">
-            <span className="footer-built-dot" />
-            React · Django · IA — Proyecto Académico
-          </span>
+          <span>© {year} MediGuard AI. Todos los derechos reservados.</span>
+          <div className="footer-bottom-right">
+            <span className="footer-bottom-dot" />
+            <span>React · Spring Boot · IA — Proyecto Académico</span>
+          </div>
         </div>
       </div>
     </footer>

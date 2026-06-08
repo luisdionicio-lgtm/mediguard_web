@@ -1,13 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import {
+  Shield, LayoutDashboard, User, LogOut,
+  Menu, X, Moon, Sun,
+} from 'lucide-react';
 import { authService } from '../services/authService';
 
+const NAV_LINKS = [
+  { label: 'La App',      href: '/#features' },
+  { label: 'Beneficios',  href: '/#benefits' },
+  { label: 'El Proyecto', href: '/#about' },
+];
+
 function Navbar({ hideNav = false }) {
-  const [scrolled, setScrolled]           = useState(false);
-  const [isAuth, setIsAuth]               = useState(authService.isAuthenticated());
-  const [theme, setTheme]                 = useState(localStorage.getItem('theme') || 'light');
-  const [mobileOpen, setMobileOpen]       = useState(false);
-  const navigate   = useNavigate();
+  const [scrolled,   setScrolled]   = useState(false);
+  const [isAuth,     setIsAuth]     = useState(authService.isAuthenticated());
+  const [theme,      setTheme]      = useState(localStorage.getItem('theme') || 'light');
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate     = useNavigate();
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -27,106 +37,86 @@ function Navbar({ hideNav = false }) {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  // Close mobile menu on route change
   useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   const toggleTheme  = () => setTheme(p => p === 'light' ? 'dark' : 'light');
   const handleLogout = async () => { await authService.logout(); navigate('/login', { replace: true }); };
 
-  const navLinks = [
-    { label: 'La App',       href: '/#features' },
-    { label: 'Beneficios',   href: '/#benefits' },
-    { label: 'El Proyecto',  href: '/#about' },
-  ];
-
   return (
     <>
       <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
+
         {/* Brand */}
         <Link to="/" className="nav-brand">
           <div className="nav-brand-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
+            <Shield size={16} strokeWidth={2.5} />
           </div>
-          <span className="logo-text">Medi<em>Guard</em> AI</span>
+          <span className="logo-text">
+            Medi<em>Guard</em> AI
+          </span>
         </Link>
 
-        {/* Center links — hidden on auth pages */}
+        {/* Links centrados — solo en páginas públicas */}
         {!hideNav && (
           <div className="nav-links">
-            {navLinks.map(l => (
-              <a key={l.href} href={l.href} className="nav-link">{l.label}</a>
+            {NAV_LINKS.map(l => (
+              <a key={l.href} href={l.href} className="nav-link">
+                {l.label}
+              </a>
             ))}
           </div>
         )}
 
         {/* Actions */}
         <div className="nav-actions">
+
           {/* Theme toggle */}
           <button
-            className="nav-theme-btn"
+            type="button"
             onClick={toggleTheme}
             aria-label="Alternar tema"
-            type="button"
+            className="nav-theme-btn"
           >
-            {theme === 'light' ? (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-              </svg>
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="5" />
-                <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-              </svg>
-            )}
+            {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
           </button>
 
-          {isAuth ? (
-            <>
-              <Link to="/dashboard" className="btn btn-ghost btn-sm">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                Dashboard
-              </Link>
-              <Link to="/profile" className="btn btn-outline btn-sm">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                Mi Perfil
-              </Link>
-              <button type="button" className="btn btn-emergency btn-sm" onClick={handleLogout}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                Salir
-              </button>
-            </>
-          ) : hideNav ? (
-            /* On auth pages: minimal actions */
-            pathname === '/login' ? (
-              <Link to="/register" className="btn btn-primary btn-sm">Crear cuenta</Link>
+          {/* Auth buttons — ocultos en mobile vía CSS */}
+          <div className="nav-auth-desktop">
+            {isAuth ? (
+              <>
+                <Link to="/dashboard" className="btn btn-ghost btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <LayoutDashboard size={14} /> Dashboard
+                </Link>
+                <Link to="/profile" className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <User size={14} /> Mi Perfil
+                </Link>
+                <button type="button" onClick={handleLogout} className="btn btn-emergency btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <LogOut size={14} /> Salir
+                </button>
+              </>
+            ) : hideNav ? (
+              pathname === '/login' ? (
+                <Link to="/register" className="btn btn-primary btn-sm">Crear cuenta</Link>
+              ) : (
+                <Link to="/login" className="btn btn-outline btn-sm">Ingresar</Link>
+              )
             ) : (
-              <Link to="/login" className="btn btn-outline btn-sm">Ingresar</Link>
-            )
-          ) : (
-            <>
-              <Link to="/login"    className="btn btn-ghost btn-sm">Ingresar</Link>
-              <Link to="/register" className="btn btn-primary btn-sm">Crear cuenta</Link>
-            </>
-          )}
+              <>
+                <Link to="/login" className="btn btn-ghost btn-sm">Ingresar</Link>
+                <Link to="/register" className="btn btn-primary btn-sm">Crear cuenta</Link>
+              </>
+            )}
+          </div>
 
-          {/* Hamburger — only for public pages */}
+          {/* Hamburger — visible solo en mobile vía CSS */}
           {!hideNav && (
             <button
-              className="nav-hamburger"
+              type="button"
               onClick={() => setMobileOpen(p => !p)}
               aria-label="Menú"
-              type="button"
+              className="nav-hamburger"
             >
-              {mobileOpen ? (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-              )}
+              {mobileOpen ? <X size={17} /> : <Menu size={17} />}
             </button>
           )}
         </div>
@@ -135,20 +125,33 @@ function Navbar({ hideNav = false }) {
       {/* Mobile menu */}
       {!hideNav && (
         <div className={`nav-mobile-menu${mobileOpen ? ' open' : ''}`}>
-          {navLinks.map(l => (
+          {NAV_LINKS.map(l => (
             <a key={l.href} href={l.href} className="nav-mobile-link">{l.label}</a>
           ))}
+
           <div className="nav-mobile-divider" />
+
           {isAuth ? (
             <>
-              <Link to="/dashboard" className="nav-mobile-link">Dashboard</Link>
-              <Link to="/profile"   className="nav-mobile-link">Mi Perfil</Link>
-              <button type="button" className="nav-mobile-link" style={{ border: 'none', background: 'none', textAlign: 'left', cursor: 'pointer', color: 'var(--error)' }} onClick={handleLogout}>Cerrar sesión</button>
+              <Link to="/dashboard" className="nav-mobile-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <LayoutDashboard size={14} /> Dashboard
+              </Link>
+              <Link to="/profile" className="nav-mobile-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <User size={14} /> Mi Perfil
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="nav-mobile-link danger"
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', width: '100%', fontFamily: 'inherit', fontSize: '0.9375rem', fontWeight: 500, textAlign: 'left' }}
+              >
+                <LogOut size={14} /> Cerrar sesión
+              </button>
             </>
           ) : (
             <>
-              <Link to="/login"    className="nav-mobile-link">Ingresar</Link>
-              <Link to="/register" className="nav-mobile-link" style={{ color: 'var(--brand)', fontWeight: 600 }}>Crear cuenta gratis</Link>
+              <Link to="/login" className="nav-mobile-link">Ingresar</Link>
+              <Link to="/register" className="nav-mobile-link accent">Crear cuenta gratis</Link>
             </>
           )}
         </div>

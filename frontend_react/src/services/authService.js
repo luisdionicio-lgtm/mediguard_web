@@ -1,5 +1,8 @@
+import axios from 'axios';
 import springApi from '../api/springApi';
 import { profileService } from './user/profileService';
+
+const DJANGO_BASE = import.meta.env.VITE_DJANGO_API_URL || 'http://127.0.0.1:8000/api/';
 
 const notifyAuthChange = () => {
   window.dispatchEvent(new Event('auth-change'));
@@ -9,6 +12,7 @@ const clearAuthData = () => {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('user');
+  localStorage.removeItem('django_access_token');
   notifyAuthChange();
 };
 
@@ -33,13 +37,28 @@ const persistAuthData = (data) => {
 
 export const authService = {
   login: async (email, password) => {
+    // 1. Login en Spring Boot
     const response = await springApi.post('login/', { email, password });
     persistAuthData(response.data);
-    
-    // Fetch profile immediately to store user details in localStorage
+
+    // 2. Obtener perfil (incluye roles)
     const profileResponse = await springApi.get('profile/');
-    localStorage.setItem('user', JSON.stringify(profileResponse.data));
-    
+    const user = profileResponse.data;
+    localStorage.setItem('user', JSON.stringify(user));
+
+    // 3. Si es ADMIN, también autenticar en Django para el panel admin
+    if (Array.isArray(user.roles) && user.roles.includes('ADMIN')) {
+      try {
+        const djangoRes = await axios.post(`${DJANGO_BASE}login/`, { email, password });
+        const djangoToken = djangoRes.data?.access || djangoRes.data?.tokens?.access;
+        if (djangoToken) {
+          localStorage.setItem('django_access_token', djangoToken);
+        }
+      } catch {
+        // No bloquea el login si Django falla
+      }
+    }
+
     return response.data;
   },
 
@@ -73,5 +92,31 @@ export const authService = {
 
   isAuthenticated: () => {
     return !!localStorage.getItem('access_token');
-  }
+  },
+
+  getCurrentUser: () => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch {
+      return {};
+    }
+  },
+
+  getUserRoles: () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      return user.roles || [];
+    } catch {
+      return [];
+    }
+  },
+
+  isAdmin: () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      return Array.isArray(user.roles) && user.roles.includes('ADMIN');
+    } catch {
+      return false;
+    }
+  },
 };

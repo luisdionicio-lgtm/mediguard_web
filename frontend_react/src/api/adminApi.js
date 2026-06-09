@@ -8,7 +8,8 @@ const adminApi = axios.create({
 });
 
 adminApi.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
+  // Usar el token de Django (no el de Spring Boot) para el panel admin
+  const token = localStorage.getItem('django_access_token') || localStorage.getItem('access_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

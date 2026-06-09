@@ -8,7 +8,8 @@ import { authService } from '../services/authService';
 
 const NAV_LINKS = [
   { label: 'La App',      href: '/#features' },
-  { label: 'Beneficios',  href: '/#benefits' },
+  { label: 'Recursos',    href: '/#recursos' },
+  { label: 'Cursos',      href: '/#cursos' },
   { label: 'El Proyecto', href: '/#about' },
 ];
 

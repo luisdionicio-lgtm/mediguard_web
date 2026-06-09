@@ -49,10 +49,15 @@ export default function Login() {
     try {
       await authService.login(email.trim(), password);
       setBtnState('success');
-      setTimeout(() => navigate('/'), 950);
+      const destination = authService.isAdmin() ? '/admin/dashboard' : '/dashboard';
+      setTimeout(() => navigate(destination), 950);
     } catch (err) {
       setBtnState('idle');
       triggerShake();
+      if (!err.response) {
+        setPwErr('No se pudo conectar con el servidor. Verifica que el backend esté activo.');
+        return;
+      }
       const msg = getApiErrorMessage(err, 'Credenciales incorrectas.');
       if (msg.toLowerCase().includes('correo') || msg.toLowerCase().includes('usuario')) {
         setEmailErr(msg);

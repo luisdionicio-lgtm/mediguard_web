@@ -113,15 +113,17 @@ export default function Register() {
     } catch (err) {
       setBtnState('idle');
       setShaking(true); setTimeout(() => setShaking(false), 380);
-      const data = err.response?.data;
-      if (data?.email) {
+      const errors = err.response?.data?.errors || {};
+      if (errors.email?.length) {
         setStep(1);
-        setFieldErr('El correo ya está registrado.');
-      } else if (data?.password) {
+        setFieldErr(errors.email[0]);
+      } else if (errors.password?.length) {
         setStep(1);
-        setFieldErr(Array.isArray(data.password) ? data.password[0] : 'La contraseña no cumple los requisitos.');
-      } else if (data?.phone) {
-        setFieldErr(Array.isArray(data.phone) ? data.phone[0] : 'El teléfono ya está registrado.');
+        setFieldErr(errors.password[0]);
+      } else if (errors.phone?.length) {
+        setFieldErr(errors.phone[0]);
+      } else if (!err.response) {
+        setError('No se pudo conectar con el servidor. Verifica que el backend esté activo.');
       } else {
         setError(getApiErrorMessage(err, 'Error al registrar la cuenta.'));
       }

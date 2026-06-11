@@ -3,6 +3,7 @@ import springApi from '../api/springApi';
 import { profileService } from './user/profileService';
 
 const DJANGO_BASE = import.meta.env.VITE_DJANGO_API_URL || 'http://127.0.0.1:8000/api/';
+const djangoPublic = axios.create({ baseURL: DJANGO_BASE });
 
 const notifyAuthChange = () => {
   window.dispatchEvent(new Event('auth-change'));
@@ -109,6 +110,28 @@ export const authService = {
     } catch {
       return [];
     }
+  },
+
+  googleLogin: async (accessToken) => {
+    const response = await djangoPublic.post('auth/google/', { access_token: accessToken });
+    const data = response.data;
+    // Normaliza al mismo formato que login() usa en persistAuthData
+    persistAuthData({
+      access: data.access_token,
+      refresh: data.refresh_token,
+      user: data.user,
+    });
+    return data;
+  },
+
+  refresh: async (refreshToken) => {
+    const response = await djangoPublic.post('auth/refresh/', { refresh: refreshToken });
+    const newAccess = response.data.access;
+    if (newAccess) {
+      localStorage.setItem('access_token', newAccess);
+      notifyAuthChange();
+    }
+    return response.data;
   },
 
   isAdmin: () => {

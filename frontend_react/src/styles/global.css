@@ -1797,3 +1797,65 @@ button { font-family: inherit; }
 .dashboard-card .card-icon { font-size: 2.5rem; margin-bottom: 1.25rem; }
 .dashboard-card h3 { font-size: 1.125rem; margin-bottom: 0.75rem; color: var(--text-primary); }
 .dashboard-card p  { color: var(--text-muted); line-height: 1.6; font-size: 0.9375rem; }
+
+/* ── Google OAuth Button ──────────────────────────────────────────────────── */
+.google-login-btn {
+  width: 100%;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #374151;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: var(--font-heading, 'Inter', sans-serif);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+  letter-spacing: 0.01em;
+}
+.google-login-btn:hover:not(:disabled) {
+  border-color: #DC2626;
+  background: #fff5f5;
+  color: #DC2626;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12);
+}
+.google-login-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.google-login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.google-login-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #DC2626;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.google-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 16px;
+  color: #9ca3af;
+  font-size: 0.8125rem;
+}
+.google-divider::before,
+.google-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}

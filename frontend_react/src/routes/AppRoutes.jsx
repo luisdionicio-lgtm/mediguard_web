@@ -12,12 +12,17 @@ import Hospitals from '../pages/Hospitals';
 import News from '../pages/News';
 import Profile from '../pages/Profile';
 import Emergencies from '../pages/Emergencies';
+import Courses from '../pages/Courses';
+import CourseDetail from '../pages/CourseDetail';
+import CourseLearn from '../pages/CourseLearn';
+import LearnGuide from '../pages/LearnGuide';
 import PrivateRoute from '../components/PrivateRoute';
 import AdminRoute from '../components/AdminRoute';
 import { authService } from '../services/authService';
 
 const AUTH_ROUTES    = ['/login', '/register'];
 const NO_SHELL_ROUTES = ['/admin/dashboard'];
+const isLearnRoute   = (path) => /^\/courses\/[^/]+\/learn/.test(path);
 
 function LogoutRoute() {
   const navigate = useNavigate();
@@ -44,22 +49,37 @@ function Layout() {
     );
   }
 
+  if (isLearnRoute(pathname)) {
+    return (
+      <Routes>
+        <Route path="/courses/:slug/learn" element={<PrivateRoute><CourseLearn /></PrivateRoute>} />
+      </Routes>
+    );
+  }
+
   return (
     <>
       <Navbar hideNav={isAuth} />
 
-      <Routes>
-        <Route path="/"            element={<Home />} />
-        <Route path="/login"       element={<Login />} />
-        <Route path="/register"    element={<Register />} />
-        <Route path="/logout"      element={<LogoutRoute />} />
-        <Route path="/dashboard"   element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/guides"      element={<PrivateRoute><Guides /></PrivateRoute>} />
-        <Route path="/hospitals"   element={<PrivateRoute><Hospitals /></PrivateRoute>} />
-        <Route path="/news"        element={<PrivateRoute><News /></PrivateRoute>} />
-        <Route path="/profile"     element={<PrivateRoute><Profile /></PrivateRoute>} />
-        <Route path="/emergencies" element={<PrivateRoute><Emergencies /></PrivateRoute>} />
-      </Routes>
+      {/* key={pathname} remonta el contenido en cada navegación para
+          disparar la transición de entrada (.route-fade en global.css) */}
+      <main key={pathname} className="route-fade" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Routes>
+          <Route path="/"            element={<Home />} />
+          <Route path="/login"       element={<Login />} />
+          <Route path="/register"    element={<Register />} />
+          <Route path="/logout"      element={<LogoutRoute />} />
+          <Route path="/dashboard"   element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/guides"      element={<PrivateRoute><Guides /></PrivateRoute>} />
+          <Route path="/hospitals"   element={<PrivateRoute><Hospitals /></PrivateRoute>} />
+          <Route path="/news"        element={<PrivateRoute><News /></PrivateRoute>} />
+          <Route path="/profile"     element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/emergencies" element={<PrivateRoute><Emergencies /></PrivateRoute>} />
+          <Route path="/aprende/:slug" element={<LearnGuide />} />
+          <Route path="/courses"       element={<PrivateRoute><Courses /></PrivateRoute>} />
+          <Route path="/courses/:slug" element={<PrivateRoute><CourseDetail /></PrivateRoute>} />
+        </Routes>
+      </main>
 
       {!isAuth && <Footer />}
     </>

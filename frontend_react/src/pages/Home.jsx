@@ -6,11 +6,27 @@ import {
   Home as IconHome, Activity, AlertCircle, Map, User,
   Bot, Send, ChevronRight,
   Droplets, Pill, Waves, Bone, Baby, Thermometer,
-  BookOpen, GraduationCap, FlaskConical, HeartPulse, Tablets,
+  Users, BookOpen, Shield, Zap, Clock, Heart,
+  PhoneCall, AlertTriangle, Siren, TrendingUp,
+  Smartphone, Star,
 } from 'lucide-react';
 import '../styles/Home.css';
 
-/* ── SVG: Apple & Android store icons ──────────────────────── */
+/*
+  PALETA 2025 — MediGuard AI
+  ─────────────────────────────────────────────────────
+  #inicio   Hero          #0d4f3c   teal oscuro vivo
+  #about    Nosotros      #ffffff   blanco
+  #recursos Guías         #0f766e   teal-700 vibrante
+  #chat     IA Chat       #eff6ff   azul cielo muy claro
+  #features ¿Cuándo?      #0c4a6e   azul océano profundo
+  #download Descarga      #f0fdf4   mint suave
+  #mision   Misión        #fafafa   blanco cálido
+  Footer                  #0f1f1c   (Footer.jsx)
+  ─────────────────────────────────────────────────────
+*/
+
+/* ── SVG Store Icons ────────────────────────────────────────── */
 function AppleIcon() {
   return (
     <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -18,7 +34,6 @@ function AppleIcon() {
     </svg>
   );
 }
-
 function AndroidIcon() {
   return (
     <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -29,260 +44,109 @@ function AndroidIcon() {
 
 /* ── Phone Mockup ───────────────────────────────────────────── */
 function PhoneMockup() {
+  const QUICK = [
+    { icon: <Heart size={22} />,       label: ['RCP',         'Adultos']    },
+    { icon: <Droplets size={22} />,    label: ['Control',     'Sangrado']   },
+    { icon: <MapPin size={22} />,      label: ['Hospitales',  'Cercanos']   },
+    { icon: <Thermometer size={22} />, label: ['Guías',       'Offline']    },
+  ];
+  const TABS = [
+    { icon: <IconHome size={18} />,    label: 'Inicio', sos: false },
+    { icon: <Activity size={18} />,    label: 'Triaje', sos: false },
+    { icon: <AlertCircle size={18} />, label: 'SOS',    sos: true  },
+    { icon: <Map size={18} />,         label: 'Mapa',   sos: false },
+    { icon: <User size={18} />,        label: 'Perfil', sos: false },
+  ];
   return (
     <div className="lp-phone" aria-hidden="true">
       <div className="lp-phone-screen">
-
         {/* Status bar */}
         <div className="lp-phone-statusbar">
           <span className="lp-phone-time">9:41</span>
-          <span className="lp-phone-emergency-badge">EMERGENCIA ACTIVA</span>
+          <span className="lp-phone-emergency-badge">EMERGENCIA</span>
         </div>
 
-        {/* SOS */}
+        {/* SOS Button con glow */}
         <div className="lp-sos-section">
           <div className="lp-sos-btn-wrap">
             <div className="lp-sos-btn">
               <span className="lp-sos-btn-text">SOS</span>
-              <span className="lp-sos-btn-sub">EMERGENCIA</span>
+              <span className="lp-sos-btn-sub">MANTENER</span>
             </div>
           </div>
-          <p className="lp-sos-hint">Mantén presionado para alertar contactos</p>
+          <p className="lp-sos-hint">Alertar contactos de emergencia</p>
         </div>
 
-        {/* Quick actions */}
-        <div className="lp-phone-actions">
-          <div className="lp-phone-action lp-phone-action-dark">
-            <Phone size={12} />
-            Llamar emergencia
-          </div>
-          <div className="lp-phone-action lp-phone-action-outline">
-            <MapPin size={12} />
-            Enviar mi ubicación
-          </div>
+        <div className="lp-phone-divider" />
+
+        {/* 2×2 acceso rápido */}
+        <div className="lp-phone-quick-grid">
+          {QUICK.map(q => (
+            <div key={q.label[0]} className="lp-phone-quick-item">
+              <span className="lp-phone-quick-icon">{q.icon}</span>
+              <span className="lp-phone-quick-label">{q.label[0]}<br />{q.label[1]}</span>
+            </div>
+          ))}
         </div>
+
+        <div className="lp-phone-divider" />
 
         {/* Tab bar */}
         <div className="lp-phone-tabbar">
-          {[
-            { icon: <IconHome size={14} />, label: 'Inicio', active: false },
-            { icon: <Activity   size={14} />, label: 'Triaje', active: false },
-            { icon: <AlertCircle size={14} />, label: 'SOS',    active: true  },
-            { icon: <Map        size={14} />, label: 'Mapa',   active: false },
-            { icon: <User       size={14} />, label: 'Perfil', active: false },
-          ].map(t => (
-            <div key={t.label} className={`lp-tab${t.active ? ' sos' : ''}`}>
+          {TABS.map(t => (
+            <div key={t.label} className={`lp-tab${t.sos ? ' sos' : ''}`}>
               <span className="lp-tab-icon">{t.icon}</span>
               <span className="lp-tab-label">{t.label}</span>
             </div>
           ))}
         </div>
-
       </div>
     </div>
   );
 }
 
-/* ── Courses email form ─────────────────────────────────────── */
-function NotifyForm() {
-  const [email,   setEmail]   = useState('');
-  const [sent,    setSent]    = useState(false);
-
-  const submit = e => {
-    e.preventDefault();
-    if (email.trim()) setSent(true);
-  };
-
-  if (sent) return (
-    <p className="lp-notify-success">
-      ¡Listo! Te avisaremos en cuanto estén disponibles.
-    </p>
-  );
-
-  return (
-    <form className="lp-notify-form" onSubmit={submit}>
-      <label htmlFor="notify-email" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
-        Tu correo electrónico
-      </label>
-      <input
-        id="notify-email"
-        type="email"
-        required
-        placeholder="tu@correo.com"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        className="lp-email-input"
-        autoComplete="email"
-      />
-      <button type="submit" className="lp-notify-btn">Notificarme</button>
-      <p className="lp-notify-count">+340 personas esperando</p>
-    </form>
-  );
-}
-
-/* ── RESOURCES data ─────────────────────────────────────────── */
-const RESOURCES = [
-  {
-    emoji: '🫀',
-    imgStyle: { background: 'linear-gradient(160deg, #e0f5ed, #c5edd8)' },
-    badge: { text: 'Gratis', cls: 'lp-badge-green' },
-    tag: 'Primeros auxilios',
-    title: 'RCP: guía paso a paso para adultos y niños',
-    desc: 'Aprende la técnica correcta de reanimación cardiopulmonar con instrucciones claras.',
-    meta: '📖 5 min de lectura',
-  },
-  {
-    emoji: '🧠',
-    imgStyle: { background: 'linear-gradient(160deg, #e3f0fc, #c0daf7)' },
-    badge: { text: 'Nuevo', cls: 'lp-badge-pink' },
-    tag: 'Salud mental',
-    title: 'Cómo manejar una crisis de ansiedad en público',
-    desc: 'Tips prácticos y técnicas de regulación que puedes aplicar en segundos.',
-    meta: '📖 4 min de lectura',
-  },
-  {
-    emoji: '🔥',
-    imgStyle: { background: 'linear-gradient(160deg, #fef6e4, #fde5a0)' },
-    badge: { text: 'Gratis', cls: 'lp-badge-green' },
-    tag: 'Emergencias comunes',
-    title: 'Quemaduras: qué hacer (y qué nunca hacer)',
-    desc: 'Los errores más frecuentes al tratar una quemadura y el protocolo correcto.',
-    meta: '📖 3 min de lectura',
-  },
-];
-
-/* ── GUIDES data ─────────────────────────────────────────────── */
-const GUIDES = [
-  {
-    icon: <Droplets size={20} />, cls: 'gi-red',
-    title: 'Control de hemorragias',
-    desc: 'Técnicas de presión directa, torniquetes y heridas de distintos tipos.',
-    meta: 'PDF · 2.1MB',
-  },
-  {
-    icon: <Pill size={20} />, cls: 'gi-green',
-    title: 'Reacciones alérgicas',
-    desc: 'Identificación de anafilaxia y uso correcto del autoinyector de epinefrina.',
-    meta: 'PDF · 1.8MB',
-  },
-  {
-    icon: <Waves size={20} />, cls: 'gi-blue',
-    title: 'Ahogamiento y obstrucción',
-    desc: 'Maniobra de Heimlich, ahogamiento parcial y total en adultos y niños.',
-    meta: 'PDF · 1.5MB',
-  },
-  {
-    icon: <Bone size={20} />, cls: 'gi-amber',
-    title: 'Fracturas y traumatismos',
-    desc: 'Inmovilización de emergencia, manejo del dolor y traslado seguro.',
-    meta: 'PDF · 1.3MB',
-  },
-  {
-    icon: <Baby size={20} />, cls: 'gi-purple',
-    title: 'Emergencias pediátricas',
-    desc: 'Protocolos específicos para lactantes y niños: dosis, técnicas y señales de alarma.',
-    meta: 'PDF · 2.4MB',
-  },
-  {
-    icon: <Thermometer size={20} />, cls: 'gi-teal',
-    title: 'Golpe de calor',
-    desc: 'Diferencias entre agotamiento y golpe de calor, enfriamiento de emergencia.',
-    meta: 'PDF · 1.1MB',
-  },
-];
-
-/* ── HOME PAGE ──────────────────────────────────────────────── */
-/* ── STATS data ─────────────────────────────────────────────── */
+/* ── Stats ──────────────────────────────────────────────────── */
 const STATS_DATA = [
-  {
-    target: 12000,
-    format: n => {
-      if (n < 1000) return `${Math.round(n)}+`;
-      const miles = Math.floor(n / 1000);
-      const resto = String(Math.round(n % 1000)).padStart(3, '0');
-      return `${miles}.${resto}+`;
-    },
-    label: 'Usuarios activos',
-    sub: '↑ en crecimiento',
-    fill: 88,   // % que llena la barra
-  },
-  {
-    target: 300,
-    format: n => `<${Math.round(n)}ms`,
-    label: 'Latencia de alerta SOS',
-    sub: 'respuesta en tiempo real',
-    fill: 72,
-  },
-  {
-    target: 40,
-    format: n => `${Math.round(n)}+`,
-    label: 'Guías offline disponibles',
-    sub: 'sin conexión a internet',
-    fill: 95,
-  },
-  {
-    target: 4.9,
-    format: n => `${n.toFixed(1)} ★`,
-    label: 'Valoración promedio',
-    sub: 'App Store & Google Play',
-    fill: 98,
-  },
+  { target: 12000, format: n => { if (n < 1000) return `${Math.round(n)}+`; const m = Math.floor(n / 1000); return `${m}.${String(Math.round(n % 1000)).padStart(3, '0')}+`; }, label: 'Usuarios activos',       sub: '↑ en crecimiento',        fill: 88 },
+  { target: 300,   format: n => `<${Math.round(n)}ms`,                                                                                                                            label: 'Latencia de alerta SOS', sub: 'respuesta en tiempo real', fill: 72 },
+  { target: 40,    format: n => `${Math.round(n)}+`,                                                                                                                               label: 'Guías offline',          sub: 'sin conexión a internet',  fill: 95 },
+  { target: 4.9,   format: n => `${n.toFixed(1)} ★`,                                                                                                                              label: 'Valoración promedio',    sub: 'App Store & Google Play',  fill: 98 },
 ];
 
-/* ── StatsSection — count-up + barra de crecimiento ─────────── */
 function StatsSection() {
-  const wrapRef   = useRef(null);
-  const [active,  setActive]   = useState(false);
+  const wrapRef = useRef(null);
+  const [active,   setActive]   = useState(false);
   const [displays, setDisplays] = useState(STATS_DATA.map(s => s.format(0)));
-  const [pops,    setPops]     = useState([false, false, false, false]);
+  const [pops,     setPops]     = useState([false, false, false, false]);
 
-  /* Observar la sección una sola vez */
   useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setActive(true); io.disconnect(); } },
-      { threshold: 0.3 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
+    const el = wrapRef.current; if (!el) return;
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setActive(true); io.disconnect(); } }, { threshold: 0.3 });
+    io.observe(el); return () => io.disconnect();
   }, []);
 
-  /* Count-up cuando entra en vista */
   useEffect(() => {
     if (!active) return;
-    const reduced  = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const DURATION = 1600;
-    const timers   = [];
-    const rafs     = [];
-
-    function ease(x) { return 1 - (1 - x) ** 4; } // easeOutQuart
-
+    const reduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const D = 1600; const timers = []; const rafs = [];
+    const ease = x => 1 - (1 - x) ** 4;
     STATS_DATA.forEach((stat, i) => {
       const t = setTimeout(() => {
-        if (reduced) {
-          setDisplays(prev => { const n = [...prev]; n[i] = stat.format(stat.target); return n; });
-          return;
-        }
+        if (reduced) { setDisplays(p => { const n = [...p]; n[i] = stat.format(stat.target); return n; }); return; }
         const start = performance.now();
         function tick() {
-          const p   = Math.min((performance.now() - start) / DURATION, 1);
-          const val = stat.target * ease(p);
-          setDisplays(prev => { const n = [...prev]; n[i] = stat.format(val); return n; });
-          if (p < 1) { const id = requestAnimationFrame(tick); rafs.push(id); }
+          const p = Math.min((performance.now() - start) / D, 1);
+          setDisplays(prev => { const n = [...prev]; n[i] = stat.format(stat.target * ease(p)); return n; });
+          if (p < 1) { rafs.push(requestAnimationFrame(tick)); }
           else {
-            /* valor final exacto + mini pop */
             setDisplays(prev => { const n = [...prev]; n[i] = stat.format(stat.target); return n; });
             setPops(prev => { const n = [...prev]; n[i] = true; return n; });
             setTimeout(() => setPops(prev => { const n = [...prev]; n[i] = false; return n; }), 350);
           }
         }
-        const id = requestAnimationFrame(tick);
-        rafs.push(id);
-      }, i * 220);
-      timers.push(t);
+        rafs.push(requestAnimationFrame(tick));
+      }, i * 220); timers.push(t);
     });
-
     return () => { timers.forEach(clearTimeout); rafs.forEach(cancelAnimationFrame); };
   }, [active]);
 
@@ -290,15 +154,10 @@ function StatsSection() {
     <div className="lp-stats-wrap" ref={wrapRef}>
       <div className="lp-stats" role="region" aria-label="Estadísticas de MediGuard AI">
         {STATS_DATA.map((s, i) => (
-          <div
-            key={s.label}
-            className={`lp-stat${active ? ' stat-visible' : ''}${pops[i] ? ' stat-pop' : ''}`}
-            style={{ '--bar-delay': `${i * 0.22}s` }}
-          >
+          <div key={s.label} className={`lp-stat${active ? ' stat-visible' : ''}${pops[i] ? ' stat-pop' : ''}`} style={{ '--bar-delay': `${i * 0.22}s` }}>
             <span className="lp-stat-num" aria-live="off">{displays[i]}</span>
             <span className="lp-stat-label">{s.label}</span>
             <span className="lp-stat-sub">{s.sub}</span>
-            {/* Barra de crecimiento */}
             <div className="lp-stat-bar" aria-hidden="true">
               <div className="lp-stat-bar-fill" style={{ '--fill': `${s.fill}%` }} />
             </div>
@@ -309,44 +168,113 @@ function StatsSection() {
   );
 }
 
-/* ────────────────────────────────────────────────────────────── */
+/* ── Data ───────────────────────────────────────────────────── */
+const RESOURCES = [
+  { slug: 'rcp',        emoji: '🫀', imgStyle: { background: 'linear-gradient(160deg,#e0f5ed,#c5edd8)' }, badge: { text: 'Gratis', cls: 'lp-badge-green' }, tag: 'Primeros auxilios',  title: 'RCP: guía paso a paso para adultos y niños',    desc: 'Aprende la técnica correcta de reanimación cardiopulmonar con instrucciones claras.', meta: '📖 5 min' },
+  { slug: 'ansiedad',   emoji: '🧠', imgStyle: { background: 'linear-gradient(160deg,#e3f0fc,#c0daf7)' }, badge: { text: 'Nuevo',  cls: 'lp-badge-pink'  }, tag: 'Salud mental',       title: 'Cómo manejar una crisis de ansiedad en público', desc: 'Tips prácticos y técnicas de regulación que puedes aplicar en segundos.',            meta: '📖 4 min' },
+  { slug: 'quemaduras', emoji: '🔥', imgStyle: { background: 'linear-gradient(160deg,#fef6e4,#fde5a0)' }, badge: { text: 'Gratis', cls: 'lp-badge-green' }, tag: 'Emergencias comunes',title: 'Quemaduras: qué hacer (y qué nunca hacer)',      desc: 'Los errores más frecuentes al tratar una quemadura y el protocolo correcto.',        meta: '📖 3 min' },
+];
+
+const GUIDES = [
+  { icon: <Droplets size={20} />,    cls: 'gi-red',    title: 'Control de hemorragias',   desc: 'Técnicas de presión directa, torniquetes y heridas de distintos tipos.',               meta: 'PDF · 2.1MB' },
+  { icon: <Pill size={20} />,        cls: 'gi-green',  title: 'Reacciones alérgicas',      desc: 'Identificación de anafilaxia y uso correcto del autoinyector de epinefrina.',         meta: 'PDF · 1.8MB' },
+  { icon: <Waves size={20} />,       cls: 'gi-blue',   title: 'Ahogamiento y obstrucción', desc: 'Maniobra de Heimlich, ahogamiento parcial y total en adultos y niños.',               meta: 'PDF · 1.5MB' },
+  { icon: <Bone size={20} />,        cls: 'gi-amber',  title: 'Fracturas y traumatismos',  desc: 'Inmovilización de emergencia, manejo del dolor y traslado seguro.',                   meta: 'PDF · 1.3MB' },
+  { icon: <Baby size={20} />,        cls: 'gi-purple', title: 'Emergencias pediátricas',   desc: 'Protocolos específicos para lactantes y niños: dosis, técnicas y señales de alarma.', meta: 'PDF · 2.4MB' },
+  { icon: <Thermometer size={20} />, cls: 'gi-teal',   title: 'Golpe de calor',            desc: 'Diferencias entre agotamiento y golpe de calor, enfriamiento de emergencia.',         meta: 'PDF · 1.1MB' },
+];
+
+const WHEN_CARDS = [
+  { icon: <Siren size={24} />,         color: '#f87171', label: 'Llama al 911',    urgency: 'URGENTE',     items: ['Dolor en el pecho o brazo izquierdo', 'Dificultad para respirar severa', 'Pérdida de conciencia', 'Convulsiones o parálisis facial'] },
+  { icon: <AlertTriangle size={24} />, color: '#fb923c', label: 'Ve a urgencias',  urgency: 'PRONTO',      items: ['Fiebre alta que no baja con medicamento', 'Herida profunda o sangrado abundante', 'Dolor abdominal severo', 'Fractura o luxación visible'] },
+  { icon: <Clock size={24} />,         color: '#fbbf24', label: 'Consulta médica', urgency: 'ESTA SEMANA', items: ['Síntomas que persisten más de 3 días', 'Infección que no mejora', 'Mareos recurrentes sin causa clara', 'Cambios en visión o audición'] },
+  { icon: <Heart size={24} />,         color: '#34d399', label: 'Autocuidado',     urgency: 'EN CASA',     items: ['Resfriado común sin fiebre alta', 'Dolor muscular post-ejercicio', 'Quemadura superficial pequeña', 'Corte leve con sangrado menor'] },
+];
+
+const TEAM = [
+  { emoji: '💻', name: 'Equipo de desarrollo', role: 'Ingeniería de Software', desc: 'Estudiantes de Tecsup construyendo tecnología que salva vidas.' },
+  { emoji: '🩺', name: 'Asesores médicos',      role: 'Salud y protocolos',    desc: 'Profesionales de salud que validan cada protocolo de emergencia.' },
+  { emoji: '🤝', name: 'Comunidad',             role: 'Usuarios y feedback',   desc: 'Más de 12,000 personas que ya confían en MediGuard AI cada día.' },
+];
+
+/* ── Eyebrow pill helper ────────────────────────────────────── */
+function EyebrowPill({ text, bg, color }) {
+  return (
+    <span style={{ display: 'inline-block', background: bg, color, padding: '4px 14px', borderRadius: 50, fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', marginBottom: 14 }}>
+      {text}
+    </span>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
 export default function Home() {
   return (
     <main id="main-content">
 
-      {/* ── 1. HERO ──────────────────────────────────────────── */}
-      <section className="lp-hero" aria-labelledby="hero-heading">
+      {/* ══════════════════════════════════════════════════════
+          1. HERO  —  MediAlert  #0D2B1A
+         ══════════════════════════════════════════════════════ */}
+      <section
+        id="inicio"
+        className="lp-hero"
+        aria-labelledby="hero-heading"
+      >
         <div className="lp-hero-inner">
 
-          {/* Left — text */}
+          {/* Columna izquierda — texto */}
           <div className="lp-hero-text">
+            {/* Badge pill */}
             <div className="lp-hero-badge">
               <span className="lp-hero-badge-dot" aria-hidden="true" />
-              Plataforma médica inteligente
+              App médica de emergencias · MediAlert
             </div>
 
+            {/* H1 tres líneas */}
             <h1 id="hero-heading" className="lp-hero-h1">
-              La asistencia vital que cabe en tu<br />
-              <span className="accent">bolsillo</span>
+              En una emergencia,<br />
+              cada segundo<br />
+              <span className="accent">puede salvarte.</span>
             </h1>
 
+            {/* Subtítulo */}
             <p className="lp-hero-p">
-              Respuesta inmediata en emergencias, guías offline de primeros auxilios y
-              geolocalización médica. Todo en una sola app diseñada para salvar vidas.
+              Respuesta SOS inmediata, guías offline de primeros auxilios y
+              geolocalización médica. Diseñada para salvar vidas.
             </p>
 
-            <a href="#download" className="lp-hero-cta">
-              <Download size={17} aria-hidden="true" />
-              Descargar app gratis
-            </a>
+            {/* Botones */}
+            <div className="lp-hero-btns">
+              <a href="#download" className="lp-hero-cta">
+                <Download size={16} aria-hidden="true" />
+                Descargar gratis
+              </a>
+              <a href="#features" className="lp-hero-cta-secondary">
+                Ver cómo funciona
+                <ChevronRight size={15} aria-hidden="true" />
+              </a>
+            </div>
 
-            <p className="lp-hero-micro" aria-label="Sin registro obligatorio para emergencias">
-              <Check size={13} aria-hidden="true" style={{ color: '#1a7a5e' }} />
-              Sin registro obligatorio para emergencias
-            </p>
+            {/* 4 Trust badges */}
+            <div className="lp-hero-trust">
+              {[
+                { icon: <Zap size={14} />,        strong: 'SOS en < 3 segundos',       muted: 'alerta instantánea' },
+                { icon: <Shield size={14} />,      strong: 'Guías offline validadas',   muted: 'sin internet necesario' },
+                { icon: <MapPin size={14} />,      strong: 'Geolocalización médica',    muted: 'hospitales cercanos' },
+                { icon: <Heart size={14} />,       strong: 'Protocolos certificados',   muted: 'revisados por médicos' },
+              ].map(b => (
+                <div key={b.strong} className="lp-trust-item">
+                  <div className="lp-trust-icon" aria-hidden="true">{b.icon}</div>
+                  <div>
+                    <span className="lp-trust-strong">{b.strong}</span>
+                    {' — '}
+                    <span className="lp-trust-muted">{b.muted}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Right — phone */}
+          {/* Columna derecha — phone mockup */}
           <div className="lp-hero-phone-col">
             <PhoneMockup />
           </div>
@@ -354,232 +282,367 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 2. STATS ─────────────────────────────────────────── */}
-      <StatsSection />
+      {/* ══════════════════════════════════════════════════════
+          2. NOSOTROS  —  blanco #ffffff
+         ══════════════════════════════════════════════════════ */}
+      <section id="about" style={{ background: '#ffffff' }} aria-labelledby="about-heading">
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 40px' }}>
 
-      {/* ── 3. RECURSOS EDUCATIVOS ───────────────────────────── */}
-      <section className="lp-resources" id="recursos" aria-labelledby="res-heading">
-
-        <div className="lp-section-header">
-          <div className="lp-section-header-left">
-            <span className="lp-eyebrow">Recursos gratuitos</span>
-            <h2 id="res-heading" className="lp-section-h2">Aprende antes de necesitarlo</h2>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <EyebrowPill text="Quiénes somos" bg="#eff6ff" color="#2563eb" />
+            <h2 id="about-heading" style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, color: '#0d4f3c', marginBottom: 16, lineHeight: 1.2 }}>
+              Construido por estudiantes,<br />inspirado por la realidad
+            </h2>
+            <p style={{ color: '#64748b', fontSize: '1.05rem', maxWidth: 600, margin: '0 auto', lineHeight: 1.75 }}>
+              MediGuard AI nació en las aulas de Tecsup con una pregunta simple:
+              ¿qué pasa cuando alguien colapsa y nadie sabe qué hacer?
+            </p>
           </div>
-          <a href="#guias" className="lp-section-link">
-            Ver todos los recursos <ChevronRight size={14} aria-hidden="true" />
-          </a>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 24, marginBottom: 72 }}>
+            {[
+              { icon: <Zap size={22} />,        bg: '#fef3c7', ic: '#d97706', title: 'El problema', text: 'Cada año miles de muertes podrían evitarse si las personas supieran responder en los primeros 4 minutos críticos.' },
+              { icon: <BookOpen size={22} />,   bg: '#dbeafe', ic: '#2563eb', title: 'La solución', text: 'Una app con protocolos médicos validados, alertas SOS y guías offline en el bolsillo de cualquier persona.' },
+              { icon: <TrendingUp size={22} />, bg: '#dcfce7', ic: '#16a34a', title: 'El impacto',  text: 'Más de 12,000 usuarios activos, 40+ guías sin internet y una comunidad que crece cada semana.' },
+            ].map(card => (
+              <div key={card.title} style={{ borderRadius: 16, padding: '28px 24px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: card.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.ic, marginBottom: 16 }}>
+                  {card.icon}
+                </div>
+                <h3 style={{ color: '#0d4f3c', fontWeight: 700, fontSize: '1rem', marginBottom: 8 }}>{card.title}</h3>
+                <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: 1.7 }}>{card.text}</p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: 28 }}>
+            <h3 style={{ color: '#0d4f3c', fontWeight: 800, fontSize: '1.25rem', marginBottom: 6 }}>Las personas detrás del proyecto</h3>
+            <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Un equipo multidisciplinario unido por una misión común</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(250px,1fr))', gap: 18 }}>
+            {TEAM.map(t => (
+              <div key={t.name} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px 20px', textAlign: 'center', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' }}>
+                <div style={{ fontSize: '2.4rem', marginBottom: 12 }}>{t.emoji}</div>
+                <p style={{ color: '#0d4f3c', fontWeight: 700, fontSize: '0.97rem', marginBottom: 4 }}>{t.name}</p>
+                <p style={{ color: '#0f766e', fontSize: '0.78rem', fontWeight: 600, marginBottom: 10 }}>{t.role}</p>
+                <p style={{ color: '#64748b', fontSize: '0.87rem', lineHeight: 1.65 }}>{t.desc}</p>
+              </div>
+            ))}
+          </div>
+
         </div>
-
-        <ul className="lp-res-cards" role="list">
-          {RESOURCES.map(r => (
-            <li key={r.title} className="lp-res-card" role="listitem">
-              {/* Gradient image area */}
-              <div className="lp-res-card-img" style={r.imgStyle} aria-hidden="true">
-                <span role="img">{r.emoji}</span>
-                <span className={`lp-res-card-badge ${r.badge.cls}`}>{r.badge.text}</span>
-              </div>
-
-              {/* Body */}
-              <div className="lp-res-card-body">
-                <span className="lp-res-card-tag">{r.tag}</span>
-                <h3 className="lp-res-card-title">{r.title}</h3>
-                <p  className="lp-res-card-desc">{r.desc}</p>
-              </div>
-
-              {/* Footer */}
-              <div className="lp-res-card-footer">
-                <span>{r.meta}</span>
-                <a href="#guias" className="lp-res-read-link">
-                  Leer <ChevronRight size={12} aria-hidden="true" />
-                </a>
-              </div>
-            </li>
-          ))}
-        </ul>
       </section>
 
-      {/* ── 4. CURSOS — COMING SOON ──────────────────────────── */}
-      <div className="lp-courses-wrap">
-        <section className="lp-courses" id="cursos" aria-labelledby="courses-heading">
+      {/* ══════════════════════════════════════════════════════
+          3. GUÍAS  —  teal vibrante #0f766e
+         ══════════════════════════════════════════════════════ */}
+      <section id="recursos" style={{ background: '#F0FDFA' }} aria-labelledby="res-heading">
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 40px' }}>
 
-          {/* Left — text */}
-          <div>
-            <div className="lp-courses-label">
-              <span className="lp-courses-dot" aria-hidden="true" />
-              Próximamente — Cursos MediGuard
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, marginBottom: 52 }}>
+            <div>
+              <EyebrowPill text="Recursos gratuitos" bg="#CCFBF1" color="#0f766e" />
+              <h2 id="res-heading" style={{ fontSize: 'clamp(1.6rem,3.5vw,2.2rem)', fontWeight: 800, color: '#134E4A', lineHeight: 1.2 }}>
+                Aprende antes de necesitarlo
+              </h2>
             </div>
-
-            <h2 id="courses-heading" className="lp-courses-h2">
-              La formación que puede salvar una vida está en camino.
-            </h2>
-
-            <p className="lp-courses-p">
-              Estamos diseñando cursos certificados de primeros auxilios, triaje doméstico
-              y respuesta a emergencias. Interactivos, offline y pensados para cualquier persona.
-            </p>
-
-            <div className="lp-courses-pills" role="list" aria-label="Temas próximos">
-              {[
-                { icon: <GraduationCap size={14} aria-hidden="true" />, text: 'Primeros auxilios básicos' },
-                { icon: <FlaskConical  size={14} aria-hidden="true" />, text: 'Triaje doméstico' },
-                { icon: <HeartPulse   size={14} aria-hidden="true" />, text: 'Emergencias pediátricas' },
-                { icon: <Tablets      size={14} aria-hidden="true" />, text: 'Medicamentos de urgencia' },
-              ].map(p => (
-                <span key={p.text} className="lp-course-pill" role="listitem">
-                  {p.icon} {p.text}
-                </span>
-              ))}
-            </div>
+            <a href="#recursos" style={{ color: '#0f766e', fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
+              Ver todos <ChevronRight size={14} />
+            </a>
           </div>
 
-          {/* Right — notify box */}
-          <div className="lp-notify-box">
-            <h3 className="lp-notify-title">Sé el primero en saber</h3>
-            <p className="lp-notify-sub">
-              Te avisamos cuando los cursos estén disponibles.
-            </p>
-            <NotifyForm />
+          {/* Cards de artículos */}
+          <ul className="lp-res-cards" role="list" style={{ marginBottom: 64 }}>
+            {RESOURCES.map(r => (
+              <li key={r.title} className="lp-res-card" role="listitem"
+                style={{ background: '#ffffff', border: '1px solid #CCFBF1' }}>
+                <Link to={`/aprende/${r.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
+                  <div className="lp-res-card-img" style={r.imgStyle} aria-hidden="true">
+                    <span role="img">{r.emoji}</span>
+                    <span className={`lp-res-card-badge ${r.badge.cls}`}>{r.badge.text}</span>
+                  </div>
+                </Link>
+                <div className="lp-res-card-body">
+                  <span className="lp-res-card-tag" style={{ color: '#0f766e' }}>{r.tag}</span>
+                  <h3 className="lp-res-card-title" style={{ color: '#134E4A' }}>{r.title}</h3>
+                  <p className="lp-res-card-desc" style={{ color: '#4B7C5E' }}>{r.desc}</p>
+                </div>
+                <div className="lp-res-card-footer" style={{ borderTop: '1px solid #CCFBF1' }}>
+                  <span style={{ color: '#6B7280' }}>{r.meta}</span>
+                  <Link to={`/aprende/${r.slug}`} className="lp-res-read-link" style={{ color: '#0f766e' }}>
+                    Leer <ChevronRight size={12} />
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {/* Divisor */}
+          <div style={{ height: 1, background: '#CCFBF1', marginBottom: 64 }} />
+
+          {/* Guías descargables */}
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <EyebrowPill text="Guías offline" bg="#CCFBF1" color="#0f766e" />
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#134E4A', marginBottom: 8 }}>Disponibles sin internet</h3>
+            <p style={{ color: '#4B7C5E', fontSize: '0.95rem' }}>En una emergencia real no siempre hay señal.</p>
           </div>
+          <ul className="lp-guides-grid" role="list">
+            {GUIDES.map(g => (
+              <li key={g.title} className="lp-guide-card" role="listitem"
+                style={{ background: '#ffffff', border: '1px solid #CCFBF1' }}>
+                <div className={`lp-guide-icon ${g.cls}`} aria-hidden="true">{g.icon}</div>
+                <h3 className="lp-guide-title" style={{ color: '#134E4A' }}>{g.title}</h3>
+                <p className="lp-guide-desc" style={{ color: '#4B7C5E' }}>{g.desc}</p>
+                <div className="lp-guide-footer">
+                  <span className="lp-guide-meta" style={{ color: '#6B7280' }}>📄 {g.meta}</span>
+                  <a href="#recursos" className="lp-guide-dl" style={{ color: '#0f766e' }}>
+                    Descargar <ChevronRight size={12} />
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
 
-        </section>
-      </div>
+        </div>
+      </section>
 
-      {/* ── 5. CHAT IA ───────────────────────────────────────── */}
-      <section className="lp-chat" id="chat" aria-labelledby="chat-heading">
-        <div className="lp-chat-inner">
+      {/* ══════════════════════════════════════════════════════
+          4. IA CHAT  —  azul cielo claro #eff6ff
+             Ventana flotante sobre fondo aéreo
+         ══════════════════════════════════════════════════════ */}
+      <section id="chat" style={{ background: '#eff6ff' }} aria-labelledby="chat-heading">
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 40px' }}>
 
-          {/* Left — description */}
-          <div className="lp-chat-text">
-            <span className="lp-eyebrow">Inteligencia artificial</span>
-            <h2 id="chat-heading" className="lp-chat-h2">
-              Un asistente médico disponible 24/7
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <EyebrowPill text="Inteligencia artificial" bg="#dbeafe" color="#1d4ed8" />
+            <h2 id="chat-heading" style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 800, color: '#0c4a6e', marginBottom: 14, lineHeight: 1.2 }}>
+              Tu asistente médico,<br />disponible 24/7
             </h2>
-            <p className="lp-chat-p">
-              Describe tus síntomas y recibe orientación inmediata basada en IA.
+            <p style={{ color: '#475569', fontSize: '1rem', maxWidth: 520, margin: '0 auto', lineHeight: 1.75 }}>
+              Describe tus síntomas y recibe orientación inmediata.
               No reemplaza al médico — te ayuda a decidir qué tan urgente es la situación.
             </p>
-
-            <ul className="lp-check-list" aria-label="Capacidades del asistente">
-              {[
-                'Evalúa síntomas y clasifica urgencia',
-                'Sugiere primeros pasos mientras esperas ayuda',
-                'Disponible sin conexión en la app',
-              ].map(item => (
-                <li key={item} className="lp-check-item">
-                  <span className="lp-check-box" aria-hidden="true">
-                    <Check size={12} strokeWidth={2.5} />
-                  </span>
-                  {item}
-                </li>
-              ))}
-            </ul>
           </div>
 
-          {/* Right — chat demo */}
-          <div className="lp-chat-window" role="region" aria-label="Demo del asistente IA">
+          {/* Ventana flotante centrada */}
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{
+              width: '100%', maxWidth: 560,
+              background: '#ffffff',
+              borderRadius: 20,
+              boxShadow: '0 24px 64px rgba(12,74,110,0.18), 0 4px 16px rgba(12,74,110,0.08)',
+              overflow: 'hidden',
+              border: '1px solid #e0f2fe',
+            }}>
+              {/* Barra de ventana — estilo macOS */}
+              <div style={{ background: '#f1f5f9', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #e2e8f0' }}>
+                <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#f87171', display: 'inline-block' }} />
+                <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#fbbf24', display: 'inline-block' }} />
+                <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#34d399', display: 'inline-block' }} />
+                <div style={{ flex: 1, textAlign: 'center' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>MediGuard IA — Asistente médico</span>
+                </div>
+              </div>
 
-            {/* Header */}
-            <div className="lp-chat-head">
-              <div className="lp-chat-avatar" aria-hidden="true">
-                <Bot size={18} />
+              {/* Header del chat */}
+              <div className="lp-chat-head" style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <div className="lp-chat-avatar" aria-hidden="true"><Bot size={18} /></div>
+                <div>
+                  <p className="lp-chat-name">MediGuard IA</p>
+                  <p className="lp-chat-online"><span className="lp-online-dot" aria-hidden="true" /> En línea · responde en segundos</p>
+                </div>
+                <div style={{ marginLeft: 'auto', background: '#f0fdf4', color: '#16a34a', fontSize: '0.72rem', fontWeight: 700, padding: '4px 10px', borderRadius: 20, border: '1px solid #bbf7d0' }}>
+                  GRATIS
+                </div>
               </div>
-              <div>
-                <p className="lp-chat-name">MediGuard IA</p>
-                <p className="lp-chat-online">
-                  <span className="lp-online-dot" aria-hidden="true" />
-                  En línea
-                </p>
+
+              {/* Mensajes */}
+              <div className="lp-chat-body" style={{ background: '#fafafa' }} aria-label="Conversación de ejemplo">
+                <div className="lp-chat-bubble lp-bubble-user" role="article">
+                  "Me duele mucho el pecho y tengo el brazo izquierdo adormecido desde hace 10 minutos"
+                </div>
+                <div className="lp-chat-bubble lp-bubble-ai" role="article">
+                  ⚠️ <strong>Prioridad alta.</strong> Estos síntomas pueden indicar un evento cardíaco. Llama a emergencias ahora mismo o pide a alguien que lo haga. Mientras esperas: siéntate, no hagas esfuerzo.
+                </div>
+                <div className="lp-chat-alert" role="alert">
+                  🚨 <strong>Activar SOS automático</strong> — Toca para alertar a tus contactos de emergencia
+                </div>
               </div>
+
+              {/* Input */}
+              <div className="lp-chat-input-row" aria-hidden="true">
+                <div className="lp-chat-input-mock">Describe tus síntomas...</div>
+                <button type="button" className="lp-chat-send-btn" tabIndex={-1} aria-hidden="true">
+                  <Send size={14} />
+                </button>
+              </div>
+
+              {/* Disclaimer */}
+              <p className="lp-chat-disclaimer" role="note">⚠️ No sustituye el diagnóstico médico profesional</p>
             </div>
+          </div>
 
-            {/* Messages */}
-            <div className="lp-chat-body" aria-label="Conversación de ejemplo">
-
-              <div className="lp-chat-bubble lp-bubble-user" role="article" aria-label="Mensaje del usuario">
-                "Me duele mucho el pecho y tengo el brazo izquierdo adormecido desde hace 10 minutos"
+          {/* Features del asistente */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 16, marginTop: 52 }}>
+            {[
+              { icon: <Shield size={20} />,   bg: '#dbeafe', color: '#1d4ed8', title: 'Validado médicamente',  desc: 'Protocolos revisados por profesionales de salud.' },
+              { icon: <Zap size={20} />,      bg: '#fef3c7', color: '#b45309', title: 'Respuesta inmediata',   desc: 'Orientación en segundos, sin esperas ni registros.' },
+              { icon: <BookOpen size={20} />, bg: '#dcfce7', color: '#15803d', title: 'Sin conexión',          desc: 'Funciona offline cuando más lo necesitas.' },
+              { icon: <Heart size={20} />,    bg: '#fce7f3', color: '#be185d', title: 'Centrado en ti',        desc: 'Personaliza tu perfil de salud y contactos SOS.' },
+            ].map(f => (
+              <div key={f.title} style={{ background: '#fff', borderRadius: 14, padding: '20px 18px', border: '1px solid #e0f2fe', boxShadow: '0 2px 8px rgba(12,74,110,0.06)' }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: f.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: f.color, marginBottom: 12 }}>
+                  {f.icon}
+                </div>
+                <p style={{ color: '#0c4a6e', fontWeight: 700, fontSize: '0.9rem', marginBottom: 6 }}>{f.title}</p>
+                <p style={{ color: '#64748b', fontSize: '0.84rem', lineHeight: 1.6 }}>{f.desc}</p>
               </div>
+            ))}
+          </div>
 
-              <div className="lp-chat-bubble lp-bubble-ai" role="article" aria-label="Respuesta del asistente">
-                ⚠️ Prioridad alta. Estos síntomas pueden indicar un evento cardíaco. Llama a emergencias ahora mismo o pide a alguien que lo haga. Mientras esperas: siéntate, no hagas esfuerzo. Si tienes aspirina disponible, mastícala (no tragar entera).
-              </div>
+        </div>
+      </section>
 
-              <div className="lp-chat-alert" role="alert">
-                🚨 <strong>Activar SOS automático</strong> — Toca para alertar a tus contactos de emergencia
-              </div>
+      {/* ══════════════════════════════════════════════════════
+          5. ¿CUÁNDO ACTUAR?  —  azul océano #0c4a6e
+         ══════════════════════════════════════════════════════ */}
+      <section id="features" style={{ background: '#0c4a6e' }} aria-labelledby="features-heading">
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 40px' }}>
 
-            </div>
-
-            {/* Input row */}
-            <div className="lp-chat-input-row" aria-hidden="true">
-              <div className="lp-chat-input-mock">Describe tus síntomas...</div>
-              <button type="button" className="lp-chat-send-btn" tabIndex={-1} aria-hidden="true">
-                <Send size={14} />
-              </button>
-            </div>
-
-            {/* Disclaimer */}
-            <p className="lp-chat-disclaimer" role="note">
-              ⚠️ No sustituye el diagnóstico médico profesional
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <EyebrowPill text="Guía rápida" bg="rgba(255,255,255,0.12)" color="#bae6fd" />
+            <h2 id="features-heading" style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 800, color: '#fff', marginBottom: 14, lineHeight: 1.2 }}>
+              ¿Cuándo actuar y cómo?
+            </h2>
+            <p style={{ color: '#7dd3fc', fontSize: '1rem', maxWidth: 520, margin: '0 auto', lineHeight: 1.75 }}>
+              No todas las situaciones requieren el mismo nivel de respuesta.
+              Aprende a identificar la urgencia antes de que llegue.
             </p>
-
           </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(230px,1fr))', gap: 20 }}>
+            {WHEN_CARDS.map(card => (
+              <div key={card.label} style={{ background: 'rgba(255,255,255,0.07)', borderRadius: 16, padding: '24px 20px', border: `1px solid ${card.color}40`, backdropFilter: 'blur(6px)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+                  <div style={{ width: 46, height: 46, borderRadius: 12, background: `${card.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.color, flexShrink: 0 }}>
+                    {card.icon}
+                  </div>
+                  <div>
+                    <p style={{ color: card.color, fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 2 }}>{card.urgency}</p>
+                    <p style={{ color: '#f0f9ff', fontWeight: 700, fontSize: '0.97rem' }}>{card.label}</p>
+                  </div>
+                </div>
+                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {card.items.map(item => (
+                    <li key={item} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', color: '#7dd3fc', fontSize: '0.86rem', lineHeight: 1.55 }}>
+                      <span style={{ color: card.color, flexShrink: 0, marginTop: 2 }}>•</span>{item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
         </div>
       </section>
 
-      {/* ── 6. GUÍAS DESCARGABLES ────────────────────────────── */}
-      <section className="lp-guides" id="guias" aria-labelledby="guides-heading">
+      {/* ══════════════════════════════════════════════════════
+          6. DESCARGA  —  mint suave #f0fdf4
+         ══════════════════════════════════════════════════════ */}
+      <section id="download" style={{ background: '#f0fdf4' }} aria-labelledby="download-heading">
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '88px 40px', textAlign: 'center' }}>
 
-        <div className="lp-guides-header">
-          <span className="lp-eyebrow">Guías offline</span>
-          <h2 id="guides-heading" className="lp-section-h2">Disponibles sin internet</h2>
-          <p className="lp-guides-sub">
-            Descarga las guías a tu dispositivo. En una emergencia real no siempre hay señal.
+          <EyebrowPill text="Descarga gratuita" bg="#dcfce7" color="#15803d" />
+          <h2 id="download-heading" style={{ fontSize: 'clamp(2rem,5vw,3rem)', fontWeight: 800, color: '#0d4f3c', marginBottom: 16, lineHeight: 1.15 }}>
+            Prepárate hoy.<br />Las emergencias no avisan.
+          </h2>
+          <p style={{ color: '#475569', fontSize: '1.05rem', maxWidth: 560, margin: '0 auto 40px', lineHeight: 1.75 }}>
+            Descarga gratis. Sin registro para usar el SOS. Sin suscripción obligatoria.
           </p>
-        </div>
 
-        <ul className="lp-guides-grid" role="list" aria-label="Catálogo de guías">
-          {GUIDES.map(g => (
-            <li key={g.title} className="lp-guide-card" role="listitem">
-              <div className={`lp-guide-icon ${g.cls}`} aria-hidden="true">
-                {g.icon}
+          {/* Ratings */}
+          <div style={{ display: 'flex', gap: 32, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 44 }}>
+            {[
+              { store: 'App Store',    rating: '4.9', reviews: '2.3k reseñas', icon: <AppleIcon /> },
+              { store: 'Google Play',  rating: '4.8', reviews: '1.8k reseñas', icon: <AndroidIcon /> },
+            ].map(s => (
+              <div key={s.store} style={{ display: 'flex', alignItems: 'center', gap: 12, background: '#fff', border: '1px solid #bbf7d0', borderRadius: 14, padding: '14px 22px', boxShadow: '0 2px 10px rgba(13,79,60,0.08)' }}>
+                <div style={{ color: '#0d4f3c' }}>{s.icon}</div>
+                <div style={{ textAlign: 'left' }}>
+                  <p style={{ color: '#0d4f3c', fontWeight: 800, fontSize: '0.95rem' }}>{s.store}</p>
+                  <p style={{ color: '#f59e0b', fontSize: '0.82rem', fontWeight: 600 }}>
+                    {'★'.repeat(5)} <span style={{ color: '#64748b' }}>{s.rating} · {s.reviews}</span>
+                  </p>
+                </div>
               </div>
-              <h3 className="lp-guide-title">{g.title}</h3>
-              <p  className="lp-guide-desc">{g.desc}</p>
-              <div className="lp-guide-footer">
-                <span className="lp-guide-meta">📄 {g.meta}</span>
-                <a href="#guias" className="lp-guide-dl" aria-label={`Descargar guía: ${g.title}`}>
-                  Descargar <ChevronRight size={12} aria-hidden="true" />
-                </a>
+            ))}
+          </div>
+
+          {/* Botones de tienda */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', marginBottom: 40 }}>
+            <a href="#download" className="lp-store-btn lp-store-dark" aria-label="Descargar en App Store">
+              <AppleIcon />
+              <div className="lp-store-texts">
+                <span className="lp-store-sm">Disponible en</span>
+                <span className="lp-store-lg">App Store</span>
               </div>
-            </li>
-          ))}
-        </ul>
+            </a>
+            <a href="#download" className="lp-store-btn lp-store-light" aria-label="Descargar en Google Play">
+              <AndroidIcon />
+              <div className="lp-store-texts">
+                <span className="lp-store-sm">Disponible en</span>
+                <span className="lp-store-lg">Google Play</span>
+              </div>
+            </a>
+          </div>
+
+          {/* Trust badges */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
+            {['100% gratuito', 'Sin anuncios', 'Sin suscripción', 'Offline disponible'].map(b => (
+              <span key={b} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#dcfce7', color: '#15803d', padding: '6px 14px', borderRadius: 50, fontSize: '0.82rem', fontWeight: 600 }}>
+                <Check size={13} strokeWidth={3} /> {b}
+              </span>
+            ))}
+          </div>
+
+        </div>
       </section>
 
-      {/* ── 7. CTA FINAL ─────────────────────────────────────── */}
-      <section className="lp-cta" id="download" aria-labelledby="cta-heading">
-        <h2 id="cta-heading" className="lp-cta-h2">
-          Prepárate hoy.<br />Las emergencias no avisan.
-        </h2>
-        <p className="lp-cta-sub">
-          Descarga gratis. Sin registro para usar el SOS. Sin suscripción obligatoria.
-        </p>
+      {/* ══════════════════════════════════════════════════════
+          7. MISIÓN  —  blanco cálido #fafafa
+         ══════════════════════════════════════════════════════ */}
+      <section id="mision" style={{ background: '#fafafa' }} aria-labelledby="mision-heading">
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: '100px 40px', textAlign: 'center' }}>
 
-        <div className="lp-cta-btns">
-          <a href="#download" className="lp-store-btn lp-store-dark" aria-label="Descargar en App Store">
-            <AppleIcon />
-            <div className="lp-store-texts">
-              <span className="lp-store-sm">Disponible en</span>
-              <span className="lp-store-lg">App Store</span>
-            </div>
-          </a>
-          <a href="#download" className="lp-store-btn lp-store-light" aria-label="Descargar en Google Play">
-            <AndroidIcon />
-            <div className="lp-store-texts">
-              <span className="lp-store-sm">Disponible en</span>
-              <span className="lp-store-lg">Google Play</span>
-            </div>
-          </a>
+          <div style={{ fontSize: '3rem', marginBottom: 20 }}>🌿</div>
+          <EyebrowPill text="Nuestra misión" bg="#dbeafe" color="#1d4ed8" />
+
+          <h2 id="mision-heading" style={{ fontSize: 'clamp(2rem,5vw,3rem)', fontWeight: 800, color: '#0d4f3c', marginBottom: 20, lineHeight: 1.15 }}>
+            El conocimiento médico<br />debe ser de todos.
+          </h2>
+
+          <p style={{ color: '#475569', fontSize: '1.1rem', lineHeight: 1.85, fontStyle: 'italic', maxWidth: 640, margin: '0 auto 12px' }}>
+            "Vivimos en un mundo donde la información puede salvar vidas,
+            pero pocas personas saben qué hacer en los primeros minutos de una emergencia.
+            MediGuard AI existe para cambiar eso."
+          </p>
+          <p style={{ color: '#94a3b8', fontSize: '0.88rem', marginBottom: 52 }}>
+            — Equipo MediGuard AI, Tecsup 2025
+          </p>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center' }}>
+            {[
+              { icon: <Shield size={16} />,    text: 'Gratuito para emergencias', bg: '#dbeafe', color: '#1d4ed8' },
+              { icon: <Users size={16} />,     text: '+12,000 usuarios activos',  bg: '#dcfce7', color: '#15803d' },
+              { icon: <BookOpen size={16} />,  text: '40+ guías validadas',       bg: '#fef3c7', color: '#b45309' },
+              { icon: <PhoneCall size={16} />, text: 'SOS en menos de 300ms',     bg: '#fce7f3', color: '#be185d' },
+            ].map(b => (
+              <div key={b.text} style={{ display: 'flex', alignItems: 'center', gap: 8, background: b.bg, color: b.color, padding: '10px 18px', borderRadius: 50, fontSize: '0.88rem', fontWeight: 600 }}>
+                {b.icon} {b.text}
+              </div>
+            ))}
+          </div>
+
         </div>
       </section>
 

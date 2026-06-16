@@ -3,26 +3,18 @@
    Paleta: verde oscuro #0f2217 · acento #4ade9a
    ══════════════════════════════════════════════════ */
 
-/* ── tokens ── */
+/* ── tokens — alias de la paleta global (global.css) ── */
 :root {
   --adm-side-w: 220px;
-  --adm-side-bg: #0f2217;
-  --adm-accent: #4ade9a;
-  --adm-accent2: #1a7a5e;
-  --adm-body-bg: #f0f5f1;
-  --adm-card-bg: #ffffff;
-  --adm-border: #e2ebe4;
-  --adm-text: #0f2217;
-  --adm-muted: #5a7a68;
-  --adm-top-bg: #ffffff;
-}
-[data-theme="dark"] {
-  --adm-body-bg: #0a0f1a;
-  --adm-card-bg: #111827;
-  --adm-border: #1e2d45;
-  --adm-text: #f1f5f9;
-  --adm-muted: #64748b;
-  --adm-top-bg: #111827;
+  --adm-side-bg: var(--brand-dark);
+  --adm-accent: #4ade9a;              /* menta sobre sidebar oscuro */
+  --adm-accent2: var(--brand);
+  --adm-body-bg: var(--bg);
+  --adm-card-bg: var(--surface);
+  --adm-border: var(--border);
+  --adm-text: var(--text-primary);
+  --adm-muted: var(--text-muted);
+  --adm-top-bg: var(--surface);
 }
 
 /* ── layout root ── */

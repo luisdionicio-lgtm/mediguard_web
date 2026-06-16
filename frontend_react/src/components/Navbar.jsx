@@ -5,27 +5,38 @@ import {
   Menu, X, Moon, Sun,
 } from 'lucide-react';
 import { authService } from '../services/authService';
+import { useTheme } from '../hooks/useTheme';
 
 const NAV_LINKS = [
-  { label: 'La App',      href: '/#features' },
-  { label: 'Recursos',    href: '/#recursos' },
-  { label: 'Cursos',      href: '/#cursos' },
-  { label: 'El Proyecto', href: '/#about' },
+  { label: 'Inicio',          href: '/',          section: 'inicio'   },
+  { label: 'Nosotros',        href: '/#about',    section: 'about'    },
+  { label: 'Guías',           href: '/#recursos', section: 'recursos' },
+  { label: '¿Cuándo actuar?', href: '/#features', section: 'features' },
+  { label: 'Misión',          href: '/#mision',   section: 'mision'   },
 ];
 
 function Navbar({ hideNav = false }) {
-  const [scrolled,   setScrolled]   = useState(false);
   const [isAuth,     setIsAuth]     = useState(authService.isAuthenticated());
-  const [theme,      setTheme]      = useState(localStorage.getItem('theme') || 'light');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeHash, setActiveHash] = useState('inicio');
+  const { theme, toggleTheme }      = useTheme();
   const navigate     = useNavigate();
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    window.addEventListener('scroll', onScroll);
+    const onScroll = () => {
+      if (pathname !== '/') return;
+      let current = 'inicio';
+      for (const { section } of NAV_LINKS) {
+        const el = document.getElementById(section);
+        if (el && el.getBoundingClientRect().top <= 80) current = section;
+      }
+      setActiveHash(current);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     const onAuth = () => setIsAuth(authService.isAuthenticated());
@@ -33,126 +44,163 @@ function Navbar({ hideNav = false }) {
     return () => window.removeEventListener('auth-change', onAuth);
   }, []);
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
-
-  const toggleTheme  = () => setTheme(p => p === 'light' ? 'dark' : 'light');
+  const closeMobile  = () => setMobileOpen(false);
   const handleLogout = async () => { await authService.logout(); navigate('/login', { replace: true }); };
 
   return (
     <>
-      <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
+      {/* ── NAVBAR ── */}
+      <nav style={{ height: '64px', paddingLeft: '6rem', paddingRight: '6rem' }} className="sticky top-0 z-50 w-full flex items-center bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
 
-        {/* Brand */}
-        <Link to="/" className="nav-brand">
-          <div className="nav-brand-icon">
-            <Shield size={16} strokeWidth={2.5} />
+        {/* Bloque 1 — Logo (izquierda) */}
+        <Link to="/" className="flex items-center gap-2 flex-shrink-0 no-underline">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--brand)' }}>
+            <Shield size={16} strokeWidth={2.5} color="#fff" />
           </div>
-          <span className="logo-text">
-            Medi<em>Guard</em> AI
+          <span style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '1rem', letterSpacing: '-0.3px' }}>
+            Medi<em style={{ fontStyle: 'normal', color: 'var(--brand)' }}>Guard</em> AI
           </span>
         </Link>
 
-        {/* Links centrados — solo en páginas públicas */}
+        {/* Bloque 2 — Links (centro, flex-1 para ocupar todo el espacio disponible) */}
         {!hideNav && (
-          <div className="nav-links">
+          <div className="flex-1 flex items-center justify-center gap-8">
             {NAV_LINKS.map(l => (
-              <a key={l.href} href={l.href} className="nav-link">
+              <a
+                key={l.href}
+                href={l.href}
+                className={
+                  activeHash === l.section
+                    ? 'px-3 py-2 rounded-md text-sm font-semibold bg-emerald-50 text-emerald-700 transition-colors duration-200'
+                    : 'px-3 py-2 rounded-md text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-700'
+                }
+                style={{ textDecoration: 'none', whiteSpace: 'nowrap' }}
+              >
                 {l.label}
               </a>
             ))}
           </div>
         )}
 
-        {/* Actions */}
-        <div className="nav-actions">
+        {/* Spacer cuando hideNav=true para empujar acciones a la derecha */}
+        {hideNav && <div className="flex-1" />}
+
+        {/* Bloque 3 — Acciones (derecha) */}
+        <div className="flex items-center gap-2 flex-shrink-0">
 
           {/* Theme toggle */}
           <button
             type="button"
             onClick={toggleTheme}
             aria-label="Alternar tema"
-            className="nav-theme-btn"
+            className="p-2 rounded-md text-gray-500 transition-colors duration-200 hover:bg-gray-100 hover:text-gray-700"
           >
             {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
           </button>
 
-          {/* Auth buttons — ocultos en mobile vía CSS */}
-          <div className="nav-auth-desktop">
+          {/* Auth — desktop */}
+          <div className="hidden md:flex items-center gap-2">
             {isAuth ? (
               <>
-                <Link to="/dashboard" className="btn btn-ghost btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-700"
+                  style={{ textDecoration: 'none' }}
+                >
                   <LayoutDashboard size={14} /> Dashboard
                 </Link>
-                <Link to="/profile" className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-700"
+                  style={{ textDecoration: 'none' }}
+                >
                   <User size={14} /> Mi Perfil
                 </Link>
-                <button type="button" onClick={handleLogout} className="btn btn-emergency btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-red-500 transition-colors duration-200 hover:bg-red-50 hover:text-red-700"
+                >
                   <LogOut size={14} /> Salir
                 </button>
               </>
             ) : hideNav ? (
               pathname === '/login' ? (
-                <Link to="/register" className="btn btn-primary btn-sm">Crear cuenta</Link>
+                <Link to="/register" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 700, color: '#fff', background: '#059669', border: '1.5px solid #059669', boxShadow: '0 2px 12px rgba(5,150,105,0.35)' }}>
+                  Crear cuenta
+                </Link>
               ) : (
-                <Link to="/login" className="btn btn-outline btn-sm">Ingresar</Link>
+                <Link to="/login" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, color: '#059669', border: '1.5px solid #6EE7B7', boxShadow: '0 2px 10px rgba(52,211,153,0.18)' }}>
+                  Ingresar
+                </Link>
               )
             ) : (
               <>
-                <Link to="/login" className="btn btn-ghost btn-sm">Ingresar</Link>
-                <Link to="/register" className="btn btn-primary btn-sm">Crear cuenta</Link>
+                <Link to="/login" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, color: '#059669', border: '1.5px solid #6EE7B7', boxShadow: '0 2px 10px rgba(52,211,153,0.18)' }}>
+                  Ingresar
+                </Link>
+                <Link to="/register" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 700, color: '#fff', background: '#059669', border: '1.5px solid #059669', boxShadow: '0 2px 12px rgba(5,150,105,0.35)' }}>
+                  Crear cuenta
+                </Link>
               </>
             )}
           </div>
 
-          {/* Hamburger — visible solo en mobile vía CSS */}
+          {/* Hamburger — solo mobile */}
           {!hideNav && (
             <button
               type="button"
               onClick={() => setMobileOpen(p => !p)}
               aria-label="Menú"
-              className="nav-hamburger"
+              className="md:hidden p-2 rounded-md text-gray-500 transition-colors duration-200 hover:bg-gray-100"
             >
-              {mobileOpen ? <X size={17} /> : <Menu size={17} />}
+              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           )}
         </div>
       </nav>
 
-      {/* Mobile menu */}
-      {!hideNav && (
-        <div className={`nav-mobile-menu${mobileOpen ? ' open' : ''}`}>
+      {/* ── MOBILE MENU ── */}
+      {!hideNav && mobileOpen && (
+        <div className="md:hidden fixed top-16 inset-x-0 z-40 bg-white border-b border-gray-200 shadow-lg px-4 py-3 flex flex-col gap-1">
           {NAV_LINKS.map(l => (
-            <a key={l.href} href={l.href} className="nav-mobile-link">{l.label}</a>
+            <a
+              key={l.href}
+              href={l.href}
+              onClick={closeMobile}
+              style={{ textDecoration: 'none' }}
+              className={
+                activeHash === l.section
+                  ? 'px-3 py-2 rounded-md text-sm font-semibold bg-emerald-50 text-emerald-700'
+                  : 'px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-200'
+              }
+            >
+              {l.label}
+            </a>
           ))}
 
-          <div className="nav-mobile-divider" />
+          <div className="h-px bg-gray-100 my-1" />
 
           {isAuth ? (
             <>
-              <Link to="/dashboard" className="nav-mobile-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Link to="/dashboard" onClick={closeMobile} style={{ textDecoration: 'none' }} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-200">
                 <LayoutDashboard size={14} /> Dashboard
               </Link>
-              <Link to="/profile" className="nav-mobile-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Link to="/profile" onClick={closeMobile} style={{ textDecoration: 'none' }} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-200">
                 <User size={14} /> Mi Perfil
               </Link>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="nav-mobile-link danger"
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', width: '100%', fontFamily: 'inherit', fontSize: '0.9375rem', fontWeight: 500, textAlign: 'left' }}
-              >
+              <button type="button" onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 w-full text-left">
                 <LogOut size={14} /> Cerrar sesión
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="nav-mobile-link">Ingresar</Link>
-              <Link to="/register" className="nav-mobile-link accent">Crear cuenta gratis</Link>
+              <Link to="/login" onClick={closeMobile} style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '8px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, color: '#059669', border: '1.5px solid #6EE7B7', boxShadow: '0 2px 10px rgba(52,211,153,0.18)' }}>
+                Ingresar
+              </Link>
+              <Link to="/register" onClick={closeMobile} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 6, padding: '8px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 700, color: '#fff', background: '#059669', border: '1.5px solid #059669', boxShadow: '0 2px 12px rgba(5,150,105,0.35)' }}>
+                Crear cuenta gratis
+              </Link>
             </>
           )}
         </div>

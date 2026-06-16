@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'emergency',
     'content',
     'categorias',
-    'cursos',
+    'cursos.apps.CursosConfig',
 ]
 
 MIDDLEWARE = [
@@ -147,10 +147,13 @@ REST_FRAMEWORK = {
 }
 
 
+# ─── Google OAuth ────────────────────────────────────────────────────────────
+GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
+
+
 # ─── Simple JWT ──────────────────────────────────────────────────────────────
-# Configuración conservadora y mantenible.
-# ROTATE_REFRESH_TOKENS: cada uso del refresh genera un nuevo refresh token.
-# BLACKLIST_AFTER_ROTATION: el refresh anterior queda inválido (requiere token_blacklist).
+# SIGNING_KEY usa JWT_SECRET para que Spring Boot pueda validar los mismos tokens.
+# Si JWT_SECRET no está definido, cae al SECRET_KEY de Django (solo dev local).
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
@@ -159,4 +162,6 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
+    'SIGNING_KEY': config('JWT_SECRET', default=None) or SECRET_KEY,
+    'TOKEN_OBTAIN_SERIALIZER': 'users.tokens.CustomTokenObtainPairSerializer',
 }

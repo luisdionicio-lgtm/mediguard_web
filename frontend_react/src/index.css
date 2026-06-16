@@ -1,100 +1,52 @@
 @import "tailwindcss";
 
-/* ── shadcn/ui + MediGuard design tokens ─────────────────────────────────── */
-@layer base {
-  :root {
-    /* shadcn/ui semantic tokens (HSL) */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 172 72% 32%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 172 72% 32%;
-    --radius: 0.5rem;
+/* ============================================================
+   Puente Tailwind v4 ←→ Design System MediGuard (global.css)
 
-    /* MediGuard brand tokens */
-    --teal-primary:  #0d9488;
-    --teal-dark:     #0f766e;
-    --teal-light:    #ccfbf1;
-    --teal-surface:  #f0fdfa;
-    --blue-deep:     #0f172a;
-    --blue-mid:      #1e293b;
-    --blue-light:    #334155;
-    --red-emergency: #ef4444;
-    --red-hover:     #dc2626;
-    --red-light:     #fee2e2;
-  }
+   global.css es la ÚNICA fuente de verdad de colores.
+   Aquí solo se mapean esos tokens a utilidades Tailwind y a los
+   slots semánticos de shadcn/ui (bg-primary, text-muted-foreground…),
+   de modo que cualquier utilidad o componente shadcn respete
+   automáticamente la paleta y el modo claro/oscuro ([data-theme]).
+   ============================================================ */
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --primary: 172 72% 40%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 172 72% 40%;
-    --teal-surface: #0f2d2b;
-    --teal-light:   #115e59;
-  }
+/* dark: variant ligado al data-theme del documento (no a prefers-color-scheme) */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+@theme inline {
+  /* Paleta semántica */
+  --color-primary:                var(--brand);
+  --color-primary-foreground:     #ffffff;
+  --color-secondary:              var(--surface-2);
+  --color-secondary-foreground:   var(--text-primary);
+  --color-accent:                 var(--brand-subtle);
+  --color-accent-foreground:      var(--brand-dark);
+  --color-destructive:            var(--error);
+  --color-destructive-foreground: #ffffff;
+  --color-success:                var(--success);
+  --color-warning:                var(--warning);
+  --color-info:                   var(--info);
 
-  body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    font-family: 'Nunito', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    line-height: 1.6;
-  }
+  /* Superficies y texto (slots shadcn/ui) */
+  --color-background:         var(--bg);
+  --color-foreground:         var(--text-primary);
+  --color-card:               var(--surface);
+  --color-card-foreground:    var(--text-primary);
+  --color-popover:            var(--surface);
+  --color-popover-foreground: var(--text-primary);
+  --color-muted:              var(--surface-2);
+  --color-muted-foreground:   var(--text-muted);
+  --color-border:             var(--border);
+  --color-input:              var(--input-border);
+  --color-ring:               var(--brand);
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-weight: 700;
-    line-height: 1.2;
-  }
-}
+  /* Tipografía */
+  --font-sans:    'Nunito', system-ui, sans-serif;
+  --font-heading: 'Inter', system-ui, sans-serif;
 
-/* ── Animaciones ──────────────────────────────────────────────────────────── */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes floating {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-15px); }
-}
-
-@keyframes pulse-badge {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.05); }
-}
-
-@keyframes pulse-sos {
-  0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
-  70%  { box-shadow: 0 0 0 30px rgba(239, 68, 68, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  /* Radios alineados al sistema */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
 }

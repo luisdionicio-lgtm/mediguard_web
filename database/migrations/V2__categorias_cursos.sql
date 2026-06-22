@@ -5,6 +5,9 @@
 -- Fuente de verdad: PostgreSQL. Nunca generar DDL desde Django ni Spring Boot.
 -- =============================================================================
 
+-- Requerida por gen_random_bytes(), usado para generar códigos de certificado.
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 
 -- ─── ENUMs ───────────────────────────────────────────────────────────────────
 DO $$ BEGIN

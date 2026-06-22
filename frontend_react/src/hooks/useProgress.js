@@ -21,7 +21,12 @@ export function useProgress(enrollmentId) {
       });
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['progress', enrollmentId] }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['progress', enrollmentId] }),
+        queryClient.invalidateQueries({ queryKey: ['certificate', enrollmentId] }),
+      ]);
+    },
   });
 
   const progressList = query.data ?? [];

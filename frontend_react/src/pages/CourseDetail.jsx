@@ -13,6 +13,7 @@ import ProgressBar from '../components/courses/ProgressBar';
 import CertificateBanner from '../components/courses/CertificateBanner';
 import { formatDuration } from '../components/courses/CourseCard';
 import { useProgress } from '../hooks/useProgress';
+import { getApiErrorMessage } from '../services/errorService';
 
 const dark = 'var(--bg)', card = 'var(--surface)', border = 'var(--border)', muted = 'var(--text-muted)', text = 'var(--text-primary)';
 
@@ -22,13 +23,19 @@ export default function CourseDetail() {
   const [ratingScore, setRatingScore] = useState(0);
   const [ratingComment, setRatingComment] = useState('');
   const [ratingMsg, setRatingMsg] = useState('');
+  const [enrollmentMsg, setEnrollmentMsg] = useState('');
+  const [enrollmentError, setEnrollmentError] = useState(false);
 
   const { data: course, isLoading: loadingCourse } = useCourse(slug);
   const { data: lessons = [], isLoading: loadingLessons } = useLessons(slug);
   const { enrollment, enroll } = useEnrollment(course?.id);
   const { ratings, submitRating } = useRatings(slug);
   const { progressList, completedIds } = useProgress(enrollment?.id);
-  const { data: certificate } = useCertificate(enrollment?.id);
+  const {
+    data: certificate,
+    isUnavailable: certificateUnavailable,
+    statusMessage: certificateMessage,
+  } = useCertificate(enrollment?.id);
 
   if (loadingCourse) {
     return (
@@ -43,8 +50,17 @@ export default function CourseDetail() {
   const pct = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0;
 
   const handleEnroll = async () => {
-    await enroll.mutateAsync();
-    navigate(`/courses/${slug}/learn`);
+    setEnrollmentMsg('');
+    setEnrollmentError(false);
+    try {
+      const result = await enroll.mutateAsync();
+      setEnrollmentMsg(result.already_enrolled
+        ? 'Ya estabas inscrito en este curso.'
+        : 'Inscripción correcta. Ya puedes comenzar el curso.');
+    } catch (error) {
+      setEnrollmentError(true);
+      setEnrollmentMsg(getApiErrorMessage(error, 'No se pudo completar la inscripción.'));
+    }
   };
 
   const handleRating = async (e) => {
@@ -121,6 +137,11 @@ export default function CourseDetail() {
 
             {/* Certificado */}
             {certificate && <CertificateBanner certificate={certificate} courseName={course.title} />}
+            {enrollment && certificateUnavailable && (
+              <p style={{ color: muted, fontSize: '0.85rem', margin: 0 }}>
+                {certificateMessage}
+              </p>
+            )}
 
             {/* Ratings */}
             <div>
@@ -212,7 +233,11 @@ export default function CourseDetail() {
                   </button>
                 )}
 
-                {enroll.isError && <p style={{ color: 'var(--error)', fontSize: '0.8rem', textAlign: 'center' }}>Error al inscribirse. Intenta de nuevo.</p>}
+                {enrollmentMsg && (
+                  <p style={{ color: enrollmentError ? 'var(--error)' : 'var(--success)', fontSize: '0.8rem', textAlign: 'center' }}>
+                    {enrollmentMsg}
+                  </p>
+                )}
               </div>
             </div>
           </div>

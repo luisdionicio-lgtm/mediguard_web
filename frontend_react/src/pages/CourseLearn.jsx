@@ -11,6 +11,7 @@ import QuizBlock from '../components/courses/QuizBlock';
 import ProgressBar from '../components/courses/ProgressBar';
 import CertificateBanner from '../components/courses/CertificateBanner';
 import { formatDuration } from '../components/courses/CourseCard';
+import { getApiErrorMessage } from '../services/errorService';
 
 const LAST_LESSON_KEY = (slug) => `mediguard_last_lesson_${slug}`;
 
@@ -20,28 +21,35 @@ export default function CourseLearn() {
   const [activeLessonId, setActiveLessonId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [justCompleted, setJustCompleted] = useState(false);
+  const [progressMsg, setProgressMsg] = useState('');
+  const [progressError, setProgressError] = useState(false);
 
   const { data: course } = useCourse(slug);
   const { data: lessons = [] } = useLessons(slug);
-  const { enrollment } = useEnrollment(course?.id);
+  const { enrollment, isLoading: enrollmentLoading } = useEnrollment(course?.id);
   const { progressList, completedIds, complete } = useProgress(enrollment?.id);
-  const { data: certificate } = useCertificate(enrollment?.id);
-
-  // Restore last viewed lesson
-  useEffect(() => {
-    if (lessons.length === 0) return;
-    const saved = localStorage.getItem(LAST_LESSON_KEY(slug));
-    const found = lessons.find((l) => l.id === saved);
-    setActiveLessonId(found?.id ?? lessons[0].id);
-  }, [lessons, slug]);
+  const {
+    data: certificate,
+    isUnavailable: certificateUnavailable,
+    statusMessage: certificateMessage,
+  } = useCertificate(enrollment?.id);
 
   // Redirect if not enrolled
   useEffect(() => {
-    if (course && !enrollment) navigate(`/courses/${slug}`, { replace: true });
-  }, [course, enrollment, slug, navigate]);
+    if (course && !enrollmentLoading && !enrollment) {
+      navigate(`/courses/${slug}`, { replace: true });
+    }
+  }, [course, enrollment, enrollmentLoading, slug, navigate]);
 
-  const activeLesson = lessons.find((l) => l.id === activeLessonId);
-  const activeIndex = lessons.findIndex((l) => l.id === activeLessonId);
+  const savedLessonId = localStorage.getItem(LAST_LESSON_KEY(slug));
+  const fallbackLessonId = lessons.find((lesson) => lesson.id === savedLessonId)?.id
+    ?? lessons[0]?.id
+    ?? null;
+  const resolvedActiveLessonId = lessons.some((lesson) => lesson.id === activeLessonId)
+    ? activeLessonId
+    : fallbackLessonId;
+  const activeLesson = lessons.find((lesson) => lesson.id === resolvedActiveLessonId);
+  const activeIndex = lessons.findIndex((lesson) => lesson.id === resolvedActiveLessonId);
   const prev = activeIndex > 0 ? lessons[activeIndex - 1] : null;
   const next = activeIndex < lessons.length - 1 ? lessons[activeIndex + 1] : null;
 
@@ -53,16 +61,24 @@ export default function CourseLearn() {
 
   const handleComplete = async (score = 100) => {
     if (!activeLesson || !enrollment) return;
-    await complete.mutateAsync({ lessonId: activeLesson.id, score });
-    if (!next) {
-      setJustCompleted(true);
-    } else {
-      selectLesson(next);
+    setProgressMsg('');
+    setProgressError(false);
+    try {
+      await complete.mutateAsync({ lessonId: activeLesson.id, score });
+      setProgressMsg('Progreso guardado correctamente.');
+      if (!next) {
+        setJustCompleted(true);
+      } else {
+        selectLesson(next);
+      }
+    } catch (error) {
+      setProgressError(true);
+      setProgressMsg(getApiErrorMessage(error, 'No se pudo guardar el progreso.'));
     }
   };
 
   const completedCount = progressList.filter((p) => p.completed).length;
-  const isCurrentDone = completedIds.has(activeLessonId);
+  const isCurrentDone = completedIds.has(resolvedActiveLessonId);
 
   const dark = 'var(--bg)', card = 'var(--surface)', border = 'var(--border)', muted = 'var(--text-muted)', txt = 'var(--text-primary)';
 
@@ -94,7 +110,7 @@ export default function CourseLearn() {
         <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
           {lessons.map((lesson, idx) => {
             const done = completedIds.has(lesson.id);
-            const active = lesson.id === activeLessonId;
+            const active = lesson.id === resolvedActiveLessonId;
             return (
               <div key={lesson.id} onClick={() => selectLesson(lesson)}
                 style={{ padding: '10px 16px', cursor: 'pointer', background: active ? 'rgba(34,197,94,0.08)' : 'transparent', borderLeft: `3px solid ${active ? 'var(--success)' : 'transparent'}`, display: 'flex', alignItems: 'flex-start', gap: 10, transition: 'background 0.15s' }}
@@ -162,7 +178,18 @@ export default function CourseLearn() {
               {justCompleted && (
                 <div style={{ marginBottom: 28 }}>
                   <CertificateBanner certificate={certificate} courseName={course?.title} />
+                  {!certificate && certificateUnavailable && (
+                    <p style={{ color: muted, textAlign: 'center', fontSize: '0.86rem' }}>
+                      {certificateMessage}
+                    </p>
+                  )}
                 </div>
+              )}
+
+              {progressMsg && (
+                <p style={{ color: progressError ? 'var(--error)' : 'var(--success)', fontSize: '0.86rem', marginBottom: 16 }}>
+                  {progressMsg}
+                </p>
               )}
 
               {/* Navigation */}

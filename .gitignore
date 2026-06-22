@@ -62,8 +62,22 @@ application.properties
 
 # Spring Boot config sensible
 src/main/resources/application.properties
+application-local.properties
 
 *.pem
 
 # logs
 *.log
+logs/
+
+# ─── Backups y dumps de base de datos — NUNCA subir ─────────────────────────
+*.dump
+*.backup
+*.sql.dump
+backups/
+db_backups/
+mediguard_db.sql
+
+# ─── Artefactos de build genéricos ───────────────────────────────────────────
+dist/
+**/target/

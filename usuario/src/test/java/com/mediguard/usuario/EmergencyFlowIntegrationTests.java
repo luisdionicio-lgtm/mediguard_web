@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.mediguard.usuario.user.repository.EmergencyContactRepository;
+import com.mediguard.usuario.user.repository.NotificationLogRepository;
 import com.mediguard.usuario.user.repository.SosEventRepository;
 import com.mediguard.usuario.user.repository.UserRepository;
 import com.mediguard.usuario.user.repository.UserRoleRepository;
@@ -37,6 +38,9 @@ class EmergencyFlowIntegrationTests {
     private EmergencyContactRepository emergencyContactRepository;
 
     @Autowired
+    private NotificationLogRepository notificationLogRepository;
+
+    @Autowired
     private SosEventRepository sosEventRepository;
 
     @Autowired
@@ -50,6 +54,8 @@ class EmergencyFlowIntegrationTests {
 
     @BeforeEach
     void cleanDatabase() {
+        jdbcTemplate.update("DELETE FROM notification_log");
+        jdbcTemplate.update("DELETE FROM user_device_tokens");
         jdbcTemplate.update("DELETE FROM certificates");
         jdbcTemplate.update("DELETE FROM user_lesson_progress");
         jdbcTemplate.update("DELETE FROM enrollments");
@@ -168,6 +174,13 @@ class EmergencyFlowIntegrationTests {
                 .andExpect(jsonPath("$.notified_contacts").value(0))
                 .andExpect(jsonPath("$.real_notification_enabled").value(false))
                 .andExpect(jsonPath("$.notification_status").value("SIMULATED_ONLY"));
+
+        org.junit.jupiter.api.Assertions.assertEquals(2, notificationLogRepository.count());
+        org.junit.jupiter.api.Assertions.assertTrue(notificationLogRepository.findAll().stream()
+                .allMatch(log -> "NOOP".equals(log.getProvider())
+                        && "NOOP".equals(log.getChannel())
+                        && "SIMULATED".equals(log.getStatus())
+                        && log.getSentAt() == null));
     }
 
     @Test

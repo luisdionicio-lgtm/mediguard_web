@@ -50,6 +50,8 @@ class EducationFlowIntegrationTests {
 
     @BeforeEach
     void cleanTransactionalData() {
+        jdbcTemplate.update("DELETE FROM notification_log");
+        jdbcTemplate.update("DELETE FROM user_device_tokens");
         jdbcTemplate.update("DELETE FROM certificates");
         jdbcTemplate.update("DELETE FROM user_lesson_progress");
         jdbcTemplate.update("DELETE FROM enrollments");

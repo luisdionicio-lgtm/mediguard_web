@@ -39,4 +39,5 @@ urlpatterns = [
     path('api/', include('users.urls')),
     path('api/', include('content.urls')),
     path('api/', include('emergency.urls')),
+    path('api/', include('cursos.urls')),
 ]

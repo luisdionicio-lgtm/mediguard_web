@@ -13,6 +13,7 @@ public record RegisterRequest(
         @NotBlank(message = "El correo es obligatorio.") String email,
         @NotBlank(message = "El teléfono es obligatorio.") String phone,
         @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-        @NotBlank(message = "La contraseña es obligatoria.") String password
+        @NotBlank(message = "La contraseña es obligatoria.") String password,
+        @JsonProperty("user_type") String userType
 ) {
 }

@@ -1,100 +1,211 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import {
+  Shield, LayoutDashboard, User, LogOut,
+  Menu, X, Moon, Sun,
+} from 'lucide-react';
 import { authService } from '../services/authService';
+import { useTheme } from '../hooks/useTheme';
 
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-  const navigate = useNavigate();
+const NAV_LINKS = [
+  { label: 'Inicio',          href: '/',          section: 'inicio'   },
+  { label: 'Nosotros',        href: '/#about',    section: 'about'    },
+  { label: 'Guías',           href: '/#recursos', section: 'recursos' },
+  { label: '¿Cuándo actuar?', href: '/#features', section: 'features' },
+  { label: 'Misión',          href: '/#mision',   section: 'mision'   },
+];
+
+function Navbar({ hideNav = false }) {
+  const [isAuth,     setIsAuth]     = useState(authService.isAuthenticated());
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeHash, setActiveHash] = useState('inicio');
+  const { theme, toggleTheme }      = useTheme();
+  const navigate     = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      if (pathname !== '/') return;
+      let current = 'inicio';
+      for (const { section } of NAV_LINKS) {
+        const el = document.getElementById(section);
+        if (el && el.getBoundingClientRect().top <= 80) current = section;
+      }
+      setActiveHash(current);
     };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [pathname]);
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+  useEffect(() => {
+    const onAuth = () => setIsAuth(authService.isAuthenticated());
+    window.addEventListener('auth-change', onAuth);
+    return () => window.removeEventListener('auth-change', onAuth);
   }, []);
 
-  useEffect(() => {
-    const handleAuthChange = () => {
-      setIsAuthenticated(authService.isAuthenticated());
-    };
-
-    window.addEventListener('auth-change', handleAuthChange);
-    return () => window.removeEventListener('auth-change', handleAuthChange);
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
-  };
-
-  const handleLogout = async () => {
-    await authService.logout();
-    navigate('/login', { replace: true });
-  };
+  const closeMobile  = () => setMobileOpen(false);
+  const handleLogout = async () => { await authService.logout(); navigate('/login', { replace: true }); };
 
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <div className="nav-brand">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#CCFBF1"/>
-          <path d="M15 11H13V9C13 8.44772 12.5523 8 12 8C11.4477 8 11 8.44772 11 9V11H9C8.44772 11 8 11.4477 8 12C8 12.5523 8.44772 13 9 13H11V15C11 15.5523 11.4477 16 12 16C12.5523 16 13 15.5523 13 15V13H15C15.5523 13 16 12.5523 16 12C16 11.4477 15.5523 11 15 11Z" fill="#0D9488"/>
-        </svg>
-        <Link to="/" className="logo-text">MediGuard AI</Link>
-      </div>
+    <>
+      {/* ── NAVBAR ── */}
+      <nav style={{ height: '64px', paddingLeft: '6rem', paddingRight: '6rem' }} className="sticky top-0 z-50 w-full flex items-center bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
 
-      <div className="nav-links">
-        <a href="/#features" className="nav-link">La App</a>
-        <a href="/#benefits" className="nav-link">Beneficios</a>
-        <a href="/#about" className="nav-link">El Proyecto</a>
-      </div>
+        {/* Bloque 1 — Logo (izquierda) */}
+        <Link to="/" className="flex items-center gap-2 flex-shrink-0 no-underline">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--brand)' }}>
+            <Shield size={16} strokeWidth={2.5} color="#fff" />
+          </div>
+          <span style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '1rem', letterSpacing: '-0.3px' }}>
+            Medi<em style={{ fontStyle: 'normal', color: 'var(--brand)' }}>Guard</em> AI
+          </span>
+        </Link>
 
-      <div className="nav-actions">
-        {/* Theme Toggle Button */}
-        <button 
-          onClick={toggleTheme} 
-          className="btn btn-secondary" 
-          style={{ padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)' }}
-          aria-label="Alternar tema"
-          type="button"
-        >
-          {theme === 'light' ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-          )}
-        </button>
-
-        {isAuthenticated ? (
-          <>
-            <Link to="/dashboard" className="btn btn-secondary">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-              Dashboard
-            </Link>
-            <Link to="/profile" className="btn btn-primary">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              Mi Perfil
-            </Link>
-            <button type="button" className="btn btn-emergency" onClick={handleLogout}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-              Cerrar Sesión
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" className="btn btn-secondary">Ingresar</Link>
-            <Link to="/register" className="btn btn-primary">Crear Cuenta</Link>
-          </>
+        {/* Bloque 2 — Links (centro, flex-1 para ocupar todo el espacio disponible) */}
+        {!hideNav && (
+          <div className="flex-1 flex items-center justify-center gap-8">
+            {NAV_LINKS.map(l => (
+              <a
+                key={l.href}
+                href={l.href}
+                className={
+                  activeHash === l.section
+                    ? 'px-3 py-2 rounded-md text-sm font-semibold bg-emerald-50 text-emerald-700 transition-colors duration-200'
+                    : 'px-3 py-2 rounded-md text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-700'
+                }
+                style={{ textDecoration: 'none', whiteSpace: 'nowrap' }}
+              >
+                {l.label}
+              </a>
+            ))}
+          </div>
         )}
-      </div>
-    </nav>
+
+        {/* Spacer cuando hideNav=true para empujar acciones a la derecha */}
+        {hideNav && <div className="flex-1" />}
+
+        {/* Bloque 3 — Acciones (derecha) */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+
+          {/* Theme toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Alternar tema"
+            className="p-2 rounded-md text-gray-500 transition-colors duration-200 hover:bg-gray-100 hover:text-gray-700"
+          >
+            {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+          </button>
+
+          {/* Auth — desktop */}
+          <div className="hidden md:flex items-center gap-2">
+            {isAuth ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-700"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <LayoutDashboard size={14} /> Dashboard
+                </Link>
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-700"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <User size={14} /> Mi Perfil
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-red-500 transition-colors duration-200 hover:bg-red-50 hover:text-red-700"
+                >
+                  <LogOut size={14} /> Salir
+                </button>
+              </>
+            ) : hideNav ? (
+              pathname === '/login' ? (
+                <Link to="/register" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 700, color: '#fff', background: '#059669', border: '1.5px solid #059669', boxShadow: '0 2px 12px rgba(5,150,105,0.35)' }}>
+                  Crear cuenta
+                </Link>
+              ) : (
+                <Link to="/login" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, color: '#059669', border: '1.5px solid #6EE7B7', boxShadow: '0 2px 10px rgba(52,211,153,0.18)' }}>
+                  Ingresar
+                </Link>
+              )
+            ) : (
+              <>
+                <Link to="/login" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, color: '#059669', border: '1.5px solid #6EE7B7', boxShadow: '0 2px 10px rgba(52,211,153,0.18)' }}>
+                  Ingresar
+                </Link>
+                <Link to="/register" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 700, color: '#fff', background: '#059669', border: '1.5px solid #059669', boxShadow: '0 2px 12px rgba(5,150,105,0.35)' }}>
+                  Crear cuenta
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Hamburger — solo mobile */}
+          {!hideNav && (
+            <button
+              type="button"
+              onClick={() => setMobileOpen(p => !p)}
+              aria-label="Menú"
+              className="md:hidden p-2 rounded-md text-gray-500 transition-colors duration-200 hover:bg-gray-100"
+            >
+              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          )}
+        </div>
+      </nav>
+
+      {/* ── MOBILE MENU ── */}
+      {!hideNav && mobileOpen && (
+        <div className="md:hidden fixed top-16 inset-x-0 z-40 bg-white border-b border-gray-200 shadow-lg px-4 py-3 flex flex-col gap-1">
+          {NAV_LINKS.map(l => (
+            <a
+              key={l.href}
+              href={l.href}
+              onClick={closeMobile}
+              style={{ textDecoration: 'none' }}
+              className={
+                activeHash === l.section
+                  ? 'px-3 py-2 rounded-md text-sm font-semibold bg-emerald-50 text-emerald-700'
+                  : 'px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-200'
+              }
+            >
+              {l.label}
+            </a>
+          ))}
+
+          <div className="h-px bg-gray-100 my-1" />
+
+          {isAuth ? (
+            <>
+              <Link to="/dashboard" onClick={closeMobile} style={{ textDecoration: 'none' }} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-200">
+                <LayoutDashboard size={14} /> Dashboard
+              </Link>
+              <Link to="/profile" onClick={closeMobile} style={{ textDecoration: 'none' }} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-200">
+                <User size={14} /> Mi Perfil
+              </Link>
+              <button type="button" onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 w-full text-left">
+                <LogOut size={14} /> Cerrar sesión
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" onClick={closeMobile} style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '8px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, color: '#059669', border: '1.5px solid #6EE7B7', boxShadow: '0 2px 10px rgba(52,211,153,0.18)' }}>
+                Ingresar
+              </Link>
+              <Link to="/register" onClick={closeMobile} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 6, padding: '8px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 700, color: '#fff', background: '#059669', border: '1.5px solid #059669', boxShadow: '0 2px 12px rgba(5,150,105,0.35)' }}>
+                Crear cuenta gratis
+              </Link>
+            </>
+          )}
+        </div>
+      )}
+    </>
   );
 }
 

@@ -38,13 +38,19 @@ class SerializadorRegistro(serializers.ModelSerializer):
         return value or None
 
     def create(self, validated_data):
-        return Usuario.objects.create_user(
+        user = Usuario.objects.create_user(
             email=validated_data['email'],
             password=validated_data['password'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             phone=validated_data.get('phone'),
         )
+        rol_ciudadano, _ = Rol.objects.get_or_create(
+            name=Rol.Nombre.CIUDADANO,
+            defaults={'description': 'Usuario estándar del sistema'},
+        )
+        UserRole.objects.get_or_create(user=user, role=rol_ciudadano, defaults={'assigned_by': None})
+        return user
 
 
 class SerializadorUsuario(serializers.ModelSerializer):

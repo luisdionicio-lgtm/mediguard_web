@@ -1,55 +1,106 @@
 import { Link } from 'react-router-dom';
+import { Shield } from 'lucide-react';
+
+const PLATFORM = [
+  { label: 'Inicio',           href: '/' },
+  { label: 'Funcionalidades',  href: '/#features' },
+  { label: 'Beneficios',       href: '/#benefits' },
+  { label: 'El Proyecto',      href: '/#about' },
+];
+
+const ACCOUNT = [
+  { label: 'Ingresar',     to: '/login' },
+  { label: 'Crear cuenta', to: '/register' },
+  { label: 'Dashboard',    to: '/dashboard' },
+  { label: 'Mi Perfil',    to: '/profile' },
+];
+
+const TEAM = [
+  { initials: 'LD', name: 'Luis Dionicio',  role: 'Frontend Dev', cls: 'av-ld' },
+  { initials: 'RQ', name: 'Rony Quintana',  role: 'Mobile Dev',   cls: 'av-rq' },
+  { initials: 'JO', name: 'Jeronimo Ortiz', role: 'Backend Dev',  cls: 'av-jo' },
+];
 
 function Footer() {
+  const year = new Date().getFullYear();
+
   return (
     <footer className="footer">
-      <div className="footer-grid">
-        <div className="footer-brand">
-          <h2>MediGuard AI</h2>
-          <p>
-            Plataforma de asistencia inmediata que orienta al usuario en emergencias, primeros auxilios y contacto rápido con servicios de salud. Tecnología al servicio de tu bienestar.
+
+      <div className="footer-accent" />
+
+      <div className="footer-body">
+
+        {/* Brand */}
+        <div>
+          <div className="footer-brand-logo">
+            <div className="footer-brand-icon">
+              <Shield size={14} strokeWidth={2.5} />
+            </div>
+            <span className="footer-brand-name">
+              Medi<em>Guard</em> AI
+            </span>
+          </div>
+          <p className="footer-brand-desc">
+            Plataforma médica inteligente que pone la asistencia vital en tu bolsillo.
+            Prevención, primeros auxilios y conexión con servicios de salud.
           </p>
+          <span className="footer-badge">
+            <span className="footer-badge-dot" />
+            Proyecto Integrador — TECSUP 2026
+          </span>
         </div>
 
+        {/* Plataforma */}
         <div>
-          <h3 className="footer-heading">Enlaces Rápidos</h3>
+          <p className="footer-section-title">Plataforma</p>
           <ul className="footer-links">
-            <li><Link to="/">Inicio</Link></li>
-            <li><Link to="/login">Iniciar Sesión</Link></li>
-            <li><Link to="/register">Crear Cuenta</Link></li>
+            {PLATFORM.map(l => (
+              <li key={l.href}>
+                <a href={l.href} className="footer-link">{l.label}</a>
+              </li>
+            ))}
           </ul>
         </div>
 
+        {/* Mi cuenta */}
         <div>
-          <h3 className="footer-heading">Equipo de Desarrollo</h3>
-          <ul className="footer-team">
-            <li>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              Luis Dionicio
-            </li>
-            <li>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              Rony Quintana
-            </li>
-            <li>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              Jeronimo Ortiz
-            </li>
+          <p className="footer-section-title">Mi cuenta</p>
+          <ul className="footer-links">
+            {ACCOUNT.map(l => (
+              <li key={l.to}>
+                <Link to={l.to} className="footer-link">{l.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Equipo Scrum */}
+        <div>
+          <p className="footer-section-title">Equipo Scrum</p>
+          <ul className="footer-team-list">
+            {TEAM.map(m => (
+              <li key={m.name} className="footer-team-item">
+                <div className={`footer-team-avatar ${m.cls}`}>{m.initials}</div>
+                <div>
+                  <p className="footer-team-name">{m.name}</p>
+                  <p className="footer-team-role">{m.role}</p>
+                </div>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
-      
+
+      {/* Bottom bar */}
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} MediGuard AI - Proyecto Integrador Universitario. Todos los derechos reservados.</p>
+        <div className="footer-bottom-inner">
+          <span>© {year} MediGuard AI. Todos los derechos reservados.</span>
+          <div className="footer-bottom-right">
+            <span className="footer-bottom-dot" />
+            <span>React · Spring Boot · IA — Proyecto Académico</span>
+          </div>
+        </div>
       </div>
     </footer>
   );

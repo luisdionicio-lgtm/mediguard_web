@@ -10,6 +10,7 @@ frontend_react/skills
 .skills/
 
 # ─── React ───────────────────────────────────────────────────────────────────
+node_modules/
 frontend_react/node_modules/
 frontend_react/dist/
 
@@ -49,3 +50,20 @@ local_architecture/
 # Ignorar archivos del plugin de compilación de Maven
 /target/maven-status/
 /target/maven-status/maven-compiler-plugin/
+
+# Lanzador local de los servicios (no versionar)
+/local_runner/
+
+# Artefactos generados por Spring Boot
+usuario/target/
+
+# Google / OAuth
+application.properties
+
+# Spring Boot config sensible
+src/main/resources/application.properties
+
+*.pem
+
+# logs
+*.log

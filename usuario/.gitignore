@@ -34,3 +34,8 @@ build/
 
 # Ignorar configuraciones sensibles
 src/main/resources/application.properties
+
+*.pem
+
+# logs
+*.log

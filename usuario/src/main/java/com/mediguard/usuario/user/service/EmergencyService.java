@@ -10,6 +10,8 @@ import com.mediguard.usuario.user.entity.EmergencyEntity;
 import com.mediguard.usuario.user.entity.SosEventEntity;
 import com.mediguard.usuario.user.entity.UserEntity;
 import com.mediguard.usuario.user.exception.ApiFieldException;
+import com.mediguard.usuario.user.notification.NotificationResult;
+import com.mediguard.usuario.user.notification.NotificationService;
 import com.mediguard.usuario.user.repository.EmergencyContactRepository;
 import com.mediguard.usuario.user.repository.EmergencyRepository;
 import com.mediguard.usuario.user.repository.SosEventRepository;
@@ -30,16 +32,19 @@ public class EmergencyService {
     private final EmergencyContactRepository emergencyContactRepository;
     private final SosEventRepository sosEventRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public EmergencyService(
             EmergencyRepository emergencyRepository,
             EmergencyContactRepository emergencyContactRepository,
             SosEventRepository sosEventRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            NotificationService notificationService) {
         this.emergencyRepository = emergencyRepository;
         this.emergencyContactRepository = emergencyContactRepository;
         this.sosEventRepository = sosEventRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional(readOnly = true)
@@ -115,10 +120,12 @@ public class EmergencyService {
 
     @Transactional(readOnly = true)
     public List<SosEventResponse> getSosEvents() {
-        UserEntity user = currentUser();
-        return sosEventRepository.findByUser_IdOrderByActivatedAtDesc(user.getId())
+        currentUser();
+        return sosEventRepository.findAllByOrderByActivatedAtDesc()
                 .stream()
-                .map(this::toSosEventResponse)
+                .map(event -> toSosEventResponse(
+                        event,
+                        notificationService.summarize(event, contactsFor(event.getUser()))))
                 .toList();
     }
 
@@ -128,18 +135,33 @@ public class EmergencyService {
         event.setUser(user);
         applySosEventRequest(event, request, true);
         event.setNotifiedContacts(0);
-        return toSosEventResponse(sosEventRepository.save(event));
+        event = sosEventRepository.save(event);
+
+        NotificationResult notificationResult = notificationService.notifySos(
+                event,
+                contactsFor(user));
+        event.setNotifiedContacts(notificationResult.notifiedContacts());
+        event = sosEventRepository.save(event);
+        return toSosEventResponse(event, notificationResult);
     }
 
     public SosEventResponse updateSosEvent(Long id, SosEventRequest request) {
-        UserEntity user = currentUser();
-        SosEventEntity event = sosEventRepository.findByIdAndUser_Id(id, user.getId())
+        currentUser();
+        SosEventEntity event = sosEventRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Evento SOS no encontrado."));
-        applySosEventRequest(event, request, false);
+        if (request.status() != null) {
+            event.setStatus(normalizeStatus(request.status()));
+        }
+        if (request.notes() != null) {
+            event.setNotes(request.notes().trim());
+        }
         event.resolveIfTerminal();
-        return toSosEventResponse(sosEventRepository.save(event));
+        event = sosEventRepository.save(event);
+        return toSosEventResponse(
+                event,
+                notificationService.summarize(event, contactsFor(event.getUser())));
     }
 
     private void applyContactRequest(EmergencyContactEntity contact, EmergencyContactRequest request) {
@@ -185,7 +207,9 @@ public class EmergencyService {
                 contact.getUpdatedAt());
     }
 
-    private SosEventResponse toSosEventResponse(SosEventEntity event) {
+    private SosEventResponse toSosEventResponse(
+            SosEventEntity event,
+            NotificationResult notificationResult) {
         return new SosEventResponse(
                 event.getId(),
                 event.getStatus(),
@@ -197,7 +221,19 @@ public class EmergencyService {
                 event.getDurationSeconds(),
                 event.getNotifiedContacts(),
                 event.getActivatedAt(),
-                event.getResolvedAt());
+                event.getResolvedAt(),
+                event.getUser().getId(),
+                event.getLatitude() != null && event.getLongitude() != null,
+                notificationResult.contactsFound(),
+                notificationResult.notifiableContacts(),
+                notificationResult.simulatedContacts(),
+                notificationResult.realNotificationEnabled(),
+                notificationResult.status(),
+                notificationResult.message());
+    }
+
+    private List<EmergencyContactEntity> contactsFor(UserEntity user) {
+        return emergencyContactRepository.findByUser_IdOrderByPrimaryContactDescNameAsc(user.getId());
     }
 
     private UserEntity currentUser() {
@@ -214,9 +250,15 @@ public class EmergencyService {
 
     private String normalizeRelationship(String relationship) {
         String normalized = blankToEmpty(relationship).toLowerCase();
+        if (normalized.isBlank()) {
+            return "otro";
+        }
         return switch (normalized) {
             case "familiar", "amigo", "medico", "vecino", "otro" -> normalized;
-            default -> "otro";
+            default -> throw new ApiFieldException(
+                    HttpStatus.BAD_REQUEST,
+                    "Error de validación",
+                    Map.of("relationship", List.of("La relación del contacto no es válida.")));
         };
     }
 

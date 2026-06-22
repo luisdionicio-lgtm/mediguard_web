@@ -12,5 +12,7 @@ public interface SosEventRepository extends JpaRepository<SosEventEntity, Long> 
 
     List<SosEventEntity> findByUser_IdOrderByActivatedAtDesc(UUID userId);
 
+    List<SosEventEntity> findAllByOrderByActivatedAtDesc();
+
     Optional<SosEventEntity> findByIdAndUser_Id(Long id, UUID userId);
 }

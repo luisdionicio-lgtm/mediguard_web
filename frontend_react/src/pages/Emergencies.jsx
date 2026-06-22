@@ -30,6 +30,7 @@ const Emergencies = () => {
   const [error, setError] = useState('');
   const [sosLoading, setSosLoading] = useState(false);
   const [sosMessage, setSosMessage] = useState('');
+  const [sosFeedback, setSosFeedback] = useState(null);
   const [sosError, setSosError] = useState('');
 
   useEffect(() => {
@@ -49,19 +50,20 @@ const Emergencies = () => {
 
   const handleCreateSos = async () => {
     setSosMessage('');
+    setSosFeedback(null);
     setSosError('');
     setSosLoading(true);
 
     try {
       const position = await getCurrentPosition();
-      await emergencyService.createSosEvent({
+      const event = await emergencyService.createSosEvent({
         status: 'activado',
         device: navigator.userAgent.slice(0, 100),
         notes: 'SOS activado desde la web',
-        notified_contacts: 0,
         ...position,
       });
-      setSosMessage('Evento SOS registrado correctamente.');
+      setSosMessage('SOS registrado correctamente.');
+      setSosFeedback(event);
     } catch (err) {
       setSosError(getApiErrorMessage(err, 'No se pudo registrar el evento SOS.'));
     } finally {
@@ -86,6 +88,24 @@ const Emergencies = () => {
             {sosLoading ? 'Registrando SOS…' : 'Activar SOS'}
           </button>
           {sosMessage && <Alert variant="success">{sosMessage}</Alert>}
+          {sosFeedback && (
+            <Alert variant="info">
+              <div>
+                <p>
+                  {sosFeedback.location_available
+                    ? 'Ubicación obtenida y asociada al evento.'
+                    : 'Ubicación no disponible; el SOS fue registrado igualmente.'}
+                </p>
+                <p>
+                  Contactos asociados detectados: {sosFeedback.contacts_found ?? 0}.
+                  {' '}Contactos notificables: {sosFeedback.notifiable_contacts ?? 0}.
+                </p>
+                {!sosFeedback.real_notification_enabled && (
+                  <p>Notificación real pendiente de integración; no se enviaron avisos.</p>
+                )}
+              </div>
+            </Alert>
+          )}
           {sosError && <Alert variant="error">{sosError}</Alert>}
         </div>
       </PageHeader>

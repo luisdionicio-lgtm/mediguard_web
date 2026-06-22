@@ -10,6 +10,9 @@ public record EmergencyContactRequest(
         @NotBlank(message = "El teléfono del contacto es obligatorio.")
         @Pattern(regexp = "^\\+?\\d{7,15}$", message = "El teléfono debe usar formato internacional.")
         String phone,
+        @Pattern(
+                regexp = "^(?i:familiar|amigo|medico|vecino|otro)$",
+                message = "La relación del contacto no es válida.")
         String relationship,
         @JsonProperty("is_primary")
         Boolean primary,

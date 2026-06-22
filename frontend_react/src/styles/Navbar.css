@@ -1,0 +1,30 @@
+.app-navbar {
+  padding-inline: 6rem;
+}
+
+.app-navbar-menu-button,
+.app-navbar-mobile-menu {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .app-navbar {
+    padding-inline: 1rem;
+    justify-content: space-between;
+  }
+
+  .app-navbar-links,
+  .app-navbar-auth-desktop {
+    display: none !important;
+  }
+
+  .app-navbar-menu-button {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .app-navbar-mobile-menu {
+    display: flex !important;
+  }
+}

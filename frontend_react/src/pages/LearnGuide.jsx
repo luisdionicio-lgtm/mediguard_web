@@ -1,6 +1,11 @@
 import { useParams, Link } from 'react-router-dom';
-import { Play, Clock, BookOpen, AlertTriangle, Lightbulb, ChevronRight } from 'lucide-react';
+import {
+  Play, Clock, BookOpen, AlertTriangle, Lightbulb, ChevronRight,
+  ArrowLeft, CheckCircle2, Download, ExternalLink, PhoneCall,
+  HeartPulse, ShieldAlert, ShieldCheck, XCircle,
+} from 'lucide-react';
 import { LEARN_GUIDES, GUIDES_LIST } from '../data/learnGuides';
+import '../styles/LearnGuide.css';
 
 const dark   = 'var(--bg)';
 const card   = 'var(--surface)';
@@ -77,6 +82,119 @@ function VideoPlaceholder({ color, emoji }) {
   );
 }
 
+function GuideListSection({ title, items, variant, icon: Icon }) {
+  return (
+    <section className={`offline-guide-section is-${variant}`}>
+      <h2><Icon size={22} aria-hidden="true" />{title}</h2>
+      <ul>
+        {items.map((item) => <li key={item}>{item}</li>)}
+      </ul>
+    </section>
+  );
+}
+
+function OfflineGuideDetail({ guide }) {
+  return (
+    <main className="offline-guide-page">
+      <header className="offline-guide-hero">
+        <div className="offline-guide-shell">
+          <Link to="/#recursos" className="offline-guide-back">
+            <ArrowLeft size={17} aria-hidden="true" /> Volver a guías
+          </Link>
+          <span className="offline-guide-category">{guide.category}</span>
+          <h1>{guide.title}</h1>
+          <p className="offline-guide-summary">{guide.summary}</p>
+          <div className="offline-guide-meta">
+            <span><Clock size={16} aria-hidden="true" />{guide.estimatedReadTime}</span>
+            <span>Revisado: {guide.lastReviewed}</span>
+          </div>
+        </div>
+      </header>
+
+      <div className="offline-guide-shell offline-guide-content">
+        <div className="offline-guide-warning" role="alert">
+          <ShieldAlert size={24} aria-hidden="true" />
+          <p>{guide.emergencyNotice}</p>
+        </div>
+
+        <div className="offline-guide-actions">
+          <Link to="/emergencies" className="btn btn-emergency">
+            <PhoneCall size={17} aria-hidden="true" /> Ver números de emergencia
+          </Link>
+          {guide.pdfUrl && (
+            <a href={guide.pdfUrl} target="_blank" rel="noreferrer" className="btn btn-outline">
+              <Download size={17} aria-hidden="true" /> Descargar PDF de referencia
+            </a>
+          )}
+        </div>
+
+        <section className="offline-guide-key-idea">
+          <Lightbulb size={24} aria-hidden="true" />
+          <div>
+            <h2>Idea principal</h2>
+            <p>{guide.keyIdea}</p>
+          </div>
+        </section>
+
+        <div className="offline-guide-grid">
+          <GuideListSection
+            title="Antes de ayudar"
+            items={guide.beforeHelping}
+            variant="before"
+            icon={ShieldCheck}
+          />
+          <GuideListSection
+            title="Señales de alarma"
+            items={guide.warningSigns}
+            variant="warning"
+            icon={AlertTriangle}
+          />
+          <GuideListSection
+            title="Qué hacer"
+            items={guide.doSteps}
+            variant="do"
+            icon={CheckCircle2}
+          />
+          <GuideListSection
+            title="Qué NO hacer"
+            items={guide.dontSteps}
+            variant="dont"
+            icon={XCircle}
+          />
+          <GuideListSection
+            title="Cuándo pedir ayuda urgente"
+            items={guide.callEmergencyWhen}
+            variant="urgent"
+            icon={PhoneCall}
+          />
+          <GuideListSection
+            title="Después de ayudar"
+            items={guide.afterCare}
+            variant="after"
+            icon={HeartPulse}
+          />
+        </div>
+
+        <aside className="offline-guide-disclaimer">
+          <strong>Alcance de esta guía:</strong> {guide.disclaimer}
+        </aside>
+
+        <section className="offline-guide-source">
+          <h2>Fuente de referencia</h2>
+          <p>Contenido breve y original elaborado con fines educativos a partir de:</p>
+          <a href={guide.sourceUrl} target="_blank" rel="noreferrer">
+            {guide.sourceName} <ExternalLink size={14} aria-hidden="true" />
+          </a>
+        </section>
+
+        <Link to="/#recursos" className="offline-guide-back is-bottom">
+          <ArrowLeft size={17} aria-hidden="true" /> Volver a guías
+        </Link>
+      </div>
+    </main>
+  );
+}
+
 export default function LearnGuide() {
   const { slug } = useParams();
   const guide = LEARN_GUIDES[slug];
@@ -89,6 +207,10 @@ export default function LearnGuide() {
         <Link to="/" style={{ color: 'var(--success)', textDecoration: 'none', fontWeight: 600 }}>← Volver al inicio</Link>
       </div>
     );
+  }
+
+  if (guide.kind === 'offline-first-aid') {
+    return <OfflineGuideDetail guide={guide} />;
   }
 
   const { color, emoji, tag, badge, title, duration, videoEmbed, intro, steps, extraNote, warnings } = guide;

@@ -1,15 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Download, Check,
-  Phone, MapPin,
+  MapPin,
   Home as IconHome, Activity, AlertCircle, Map, User,
   Bot, Send, ChevronRight,
   Droplets, Pill, Waves, Bone, Baby, Thermometer,
   Users, BookOpen, Shield, Zap, Clock, Heart,
   PhoneCall, AlertTriangle, Siren, TrendingUp,
-  Smartphone, Star,
+  Search,
 } from 'lucide-react';
+import { OFFLINE_GUIDES } from '../data/learnGuides';
 import '../styles/Home.css';
 
 /*
@@ -105,69 +106,6 @@ function PhoneMockup() {
   );
 }
 
-/* ── Stats ──────────────────────────────────────────────────── */
-const STATS_DATA = [
-  { target: 12000, format: n => { if (n < 1000) return `${Math.round(n)}+`; const m = Math.floor(n / 1000); return `${m}.${String(Math.round(n % 1000)).padStart(3, '0')}+`; }, label: 'Usuarios activos',       sub: '↑ en crecimiento',        fill: 88 },
-  { target: 300,   format: n => `<${Math.round(n)}ms`,                                                                                                                            label: 'Latencia de alerta SOS', sub: 'respuesta en tiempo real', fill: 72 },
-  { target: 40,    format: n => `${Math.round(n)}+`,                                                                                                                               label: 'Guías offline',          sub: 'sin conexión a internet',  fill: 95 },
-  { target: 4.9,   format: n => `${n.toFixed(1)} ★`,                                                                                                                              label: 'Valoración promedio',    sub: 'App Store & Google Play',  fill: 98 },
-];
-
-function StatsSection() {
-  const wrapRef = useRef(null);
-  const [active,   setActive]   = useState(false);
-  const [displays, setDisplays] = useState(STATS_DATA.map(s => s.format(0)));
-  const [pops,     setPops]     = useState([false, false, false, false]);
-
-  useEffect(() => {
-    const el = wrapRef.current; if (!el) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setActive(true); io.disconnect(); } }, { threshold: 0.3 });
-    io.observe(el); return () => io.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!active) return;
-    const reduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-    const D = 1600; const timers = []; const rafs = [];
-    const ease = x => 1 - (1 - x) ** 4;
-    STATS_DATA.forEach((stat, i) => {
-      const t = setTimeout(() => {
-        if (reduced) { setDisplays(p => { const n = [...p]; n[i] = stat.format(stat.target); return n; }); return; }
-        const start = performance.now();
-        function tick() {
-          const p = Math.min((performance.now() - start) / D, 1);
-          setDisplays(prev => { const n = [...prev]; n[i] = stat.format(stat.target * ease(p)); return n; });
-          if (p < 1) { rafs.push(requestAnimationFrame(tick)); }
-          else {
-            setDisplays(prev => { const n = [...prev]; n[i] = stat.format(stat.target); return n; });
-            setPops(prev => { const n = [...prev]; n[i] = true; return n; });
-            setTimeout(() => setPops(prev => { const n = [...prev]; n[i] = false; return n; }), 350);
-          }
-        }
-        rafs.push(requestAnimationFrame(tick));
-      }, i * 220); timers.push(t);
-    });
-    return () => { timers.forEach(clearTimeout); rafs.forEach(cancelAnimationFrame); };
-  }, [active]);
-
-  return (
-    <div className="lp-stats-wrap" ref={wrapRef}>
-      <div className="lp-stats" role="region" aria-label="Estadísticas de MediGuard AI">
-        {STATS_DATA.map((s, i) => (
-          <div key={s.label} className={`lp-stat${active ? ' stat-visible' : ''}${pops[i] ? ' stat-pop' : ''}`} style={{ '--bar-delay': `${i * 0.22}s` }}>
-            <span className="lp-stat-num" aria-live="off">{displays[i]}</span>
-            <span className="lp-stat-label">{s.label}</span>
-            <span className="lp-stat-sub">{s.sub}</span>
-            <div className="lp-stat-bar" aria-hidden="true">
-              <div className="lp-stat-bar-fill" style={{ '--fill': `${s.fill}%` }} />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 /* ── Data ───────────────────────────────────────────────────── */
 const RESOURCES = [
   { slug: 'rcp',        emoji: '🫀', imgStyle: { background: 'linear-gradient(160deg,#e0f5ed,#c5edd8)' }, badge: { text: 'Gratis', cls: 'lp-badge-green' }, tag: 'Primeros auxilios',  title: 'RCP: guía paso a paso para adultos y niños',    desc: 'Aprende la técnica correcta de reanimación cardiopulmonar con instrucciones claras.', meta: '📖 5 min' },
@@ -175,14 +113,19 @@ const RESOURCES = [
   { slug: 'quemaduras', emoji: '🔥', imgStyle: { background: 'linear-gradient(160deg,#fef6e4,#fde5a0)' }, badge: { text: 'Gratis', cls: 'lp-badge-green' }, tag: 'Emergencias comunes',title: 'Quemaduras: qué hacer (y qué nunca hacer)',      desc: 'Los errores más frecuentes al tratar una quemadura y el protocolo correcto.',        meta: '📖 3 min' },
 ];
 
-const GUIDES = [
-  { icon: <Droplets size={20} />,    cls: 'gi-red',    title: 'Control de hemorragias',   desc: 'Técnicas de presión directa, torniquetes y heridas de distintos tipos.',               meta: 'PDF · 2.1MB' },
-  { icon: <Pill size={20} />,        cls: 'gi-green',  title: 'Reacciones alérgicas',      desc: 'Identificación de anafilaxia y uso correcto del autoinyector de epinefrina.',         meta: 'PDF · 1.8MB' },
-  { icon: <Waves size={20} />,       cls: 'gi-blue',   title: 'Ahogamiento y obstrucción', desc: 'Maniobra de Heimlich, ahogamiento parcial y total en adultos y niños.',               meta: 'PDF · 1.5MB' },
-  { icon: <Bone size={20} />,        cls: 'gi-amber',  title: 'Fracturas y traumatismos',  desc: 'Inmovilización de emergencia, manejo del dolor y traslado seguro.',                   meta: 'PDF · 1.3MB' },
-  { icon: <Baby size={20} />,        cls: 'gi-purple', title: 'Emergencias pediátricas',   desc: 'Protocolos específicos para lactantes y niños: dosis, técnicas y señales de alarma.', meta: 'PDF · 2.4MB' },
-  { icon: <Thermometer size={20} />, cls: 'gi-teal',   title: 'Golpe de calor',            desc: 'Diferencias entre agotamiento y golpe de calor, enfriamiento de emergencia.',         meta: 'PDF · 1.1MB' },
-];
+const GUIDE_VISUALS = {
+  'control-hemorragias': { icon: <Droplets size={20} />, cls: 'gi-red' },
+  'reacciones-alergicas': { icon: <Pill size={20} />, cls: 'gi-green' },
+  'ahogamiento-obstruccion': { icon: <Waves size={20} />, cls: 'gi-blue' },
+  'fracturas-traumatismos': { icon: <Bone size={20} />, cls: 'gi-amber' },
+  'emergencias-pediatricas': { icon: <Baby size={20} />, cls: 'gi-purple' },
+  'golpe-calor': { icon: <Thermometer size={20} />, cls: 'gi-teal' },
+};
+
+const GUIDES = OFFLINE_GUIDES.map((guide) => ({
+  ...guide,
+  ...GUIDE_VISUALS[guide.slug],
+}));
 
 const WHEN_CARDS = [
   { icon: <Siren size={24} />,         color: '#f87171', label: 'Llama al 911',    urgency: 'URGENTE',     items: ['Dolor en el pecho o brazo izquierdo', 'Dificultad para respirar severa', 'Pérdida de conciencia', 'Convulsiones o parálisis facial'] },
@@ -208,6 +151,14 @@ function EyebrowPill({ text, bg, color }) {
 
 /* ═══════════════════════════════════════════════════════════════ */
 export default function Home() {
+  const [guideQuery, setGuideQuery] = useState('');
+  const normalizedGuideQuery = guideQuery.trim().toLocaleLowerCase('es');
+  const filteredGuides = GUIDES.filter((guide) => (
+    `${guide.title} ${guide.summary} ${guide.category}`
+      .toLocaleLowerCase('es')
+      .includes(normalizedGuideQuery)
+  ));
+
   return (
     <main id="main-content">
 
@@ -386,22 +337,50 @@ export default function Home() {
             <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#134E4A', marginBottom: 8 }}>Disponibles sin internet</h3>
             <p style={{ color: '#4B7C5E', fontSize: '0.95rem' }}>En una emergencia real no siempre hay señal.</p>
           </div>
+          <label className="lp-guide-search">
+            <Search size={18} aria-hidden="true" />
+            <input
+              type="search"
+              aria-label="Buscar guías offline"
+              value={guideQuery}
+              onChange={(event) => setGuideQuery(event.target.value)}
+              placeholder="Buscar por tema o categoría"
+            />
+          </label>
           <ul className="lp-guides-grid" role="list">
-            {GUIDES.map(g => (
+            {filteredGuides.map(g => (
               <li key={g.title} className="lp-guide-card" role="listitem"
                 style={{ background: '#ffffff', border: '1px solid #CCFBF1' }}>
                 <div className={`lp-guide-icon ${g.cls}`} aria-hidden="true">{g.icon}</div>
                 <h3 className="lp-guide-title" style={{ color: '#134E4A' }}>{g.title}</h3>
-                <p className="lp-guide-desc" style={{ color: '#4B7C5E' }}>{g.desc}</p>
+                <p className="lp-guide-desc" style={{ color: '#4B7C5E' }}>{g.summary}</p>
                 <div className="lp-guide-footer">
-                  <span className="lp-guide-meta" style={{ color: '#6B7280' }}>📄 {g.meta}</span>
-                  <a href="#recursos" className="lp-guide-dl" style={{ color: '#0f766e' }}>
-                    Descargar <ChevronRight size={12} />
-                  </a>
+                  <span className="lp-guide-meta" style={{ color: '#6B7280' }}>📖 {g.estimatedReadTime}</span>
+                  <div className="lp-guide-actions">
+                    <Link to={`/aprende/${g.slug}`} className="lp-guide-link" style={{ color: '#0f766e' }}>
+                      Ver guía <ChevronRight size={12} />
+                    </Link>
+                    {g.pdfUrl ? (
+                      <a
+                        href={g.pdfUrl}
+                        className="lp-guide-dl"
+                        style={{ color: '#0f766e' }}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Descargar PDF <Download size={12} />
+                      </a>
+                    ) : (
+                      <span className="lp-guide-dl is-disabled" aria-disabled="true">PDF no disponible</span>
+                    )}
+                  </div>
                 </div>
               </li>
             ))}
           </ul>
+          {filteredGuides.length === 0 && (
+            <p className="lp-guide-empty" role="status">No encontramos guías para “{guideQuery}”.</p>
+          )}
 
         </div>
       </section>

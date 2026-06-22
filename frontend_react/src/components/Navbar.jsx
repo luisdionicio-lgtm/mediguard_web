@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { authService } from '../services/authService';
 import { useTheme } from '../hooks/useTheme';
+import '../styles/Navbar.css';
 
 const NAV_LINKS = [
   { label: 'Inicio',          href: '/',          section: 'inicio'   },
@@ -50,7 +51,7 @@ function Navbar({ hideNav = false }) {
   return (
     <>
       {/* ── NAVBAR ── */}
-      <nav style={{ height: '64px', paddingLeft: '6rem', paddingRight: '6rem' }} className="sticky top-0 z-50 w-full flex items-center bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+      <nav style={{ height: '64px' }} className="app-navbar sticky top-0 z-50 w-full flex items-center bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
 
         {/* Bloque 1 — Logo (izquierda) */}
         <Link to="/" className="flex items-center gap-2 flex-shrink-0 no-underline">
@@ -64,7 +65,7 @@ function Navbar({ hideNav = false }) {
 
         {/* Bloque 2 — Links (centro, flex-1 para ocupar todo el espacio disponible) */}
         {!hideNav && (
-          <div className="flex-1 flex items-center justify-center gap-8">
+          <div className="app-navbar-links flex-1 flex items-center justify-center gap-8">
             {NAV_LINKS.map(l => (
               <a
                 key={l.href}
@@ -99,7 +100,7 @@ function Navbar({ hideNav = false }) {
           </button>
 
           {/* Auth — desktop */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="app-navbar-auth-desktop hidden md:flex items-center gap-2">
             {isAuth ? (
               <>
                 <Link
@@ -152,7 +153,7 @@ function Navbar({ hideNav = false }) {
               type="button"
               onClick={() => setMobileOpen(p => !p)}
               aria-label="Menú"
-              className="md:hidden p-2 rounded-md text-gray-500 transition-colors duration-200 hover:bg-gray-100"
+              className="app-navbar-menu-button md:hidden p-2 rounded-md text-gray-500 transition-colors duration-200 hover:bg-gray-100"
             >
               {mobileOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
@@ -162,7 +163,7 @@ function Navbar({ hideNav = false }) {
 
       {/* ── MOBILE MENU ── */}
       {!hideNav && mobileOpen && (
-        <div className="md:hidden fixed top-16 inset-x-0 z-40 bg-white border-b border-gray-200 shadow-lg px-4 py-3 flex flex-col gap-1">
+        <div className="app-navbar-mobile-menu md:hidden fixed top-16 inset-x-0 z-40 bg-white border-b border-gray-200 shadow-lg px-4 py-3 flex flex-col gap-1">
           {NAV_LINKS.map(l => (
             <a
               key={l.href}

@@ -3,14 +3,17 @@ package com.mediguard.usuario.user.service;
 import com.mediguard.usuario.user.dto.AuthResponse;
 import com.mediguard.usuario.user.dto.LoginRequest;
 import com.mediguard.usuario.user.dto.MessageResponse;
+import com.mediguard.usuario.user.dto.RefreshTokenRequest;
 import com.mediguard.usuario.user.dto.RegisterRequest;
 import com.mediguard.usuario.user.entity.UserEntity;
 import com.mediguard.usuario.user.entity.UserRoleEntity;
+import com.mediguard.usuario.user.entity.UserRoleId;
 import com.mediguard.usuario.user.exception.ApiFieldException;
 import com.mediguard.usuario.user.repository.RoleRepository;
 import com.mediguard.usuario.user.repository.UserRepository;
 import com.mediguard.usuario.user.repository.UserRoleRepository;
 import com.mediguard.usuario.user.security.JwtService;
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +45,7 @@ public class AuthService {
     private final PasswordHashService passwordHashService;
     private final JwtService jwtService;
     private final ProfileMapper profileMapper;
+    private final EntityManager entityManager;
 
     public AuthService(
             UserRepository userRepository,
@@ -49,13 +53,15 @@ public class AuthService {
             UserRoleRepository userRoleRepository,
             PasswordHashService passwordHashService,
             JwtService jwtService,
-            ProfileMapper profileMapper) {
+            ProfileMapper profileMapper,
+            EntityManager entityManager) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;
         this.passwordHashService = passwordHashService;
         this.jwtService = jwtService;
         this.profileMapper = profileMapper;
+        this.entityManager = entityManager;
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -99,9 +105,30 @@ public class AuthService {
         user.setVerified(false);
 
         UserEntity savedUser = userRepository.saveAndFlush(user);
-        UserEntity userWithRoles = userRepository.findByEmailIgnoreCase(email).orElse(savedUser);
+        UserEntity userWithRoles = ensureDefaultRole(savedUser);
         userWithRoles = assignRequestedRole(userWithRoles, request.userType());
         return authResponse(userWithRoles);
+    }
+
+    public AuthResponse refresh(RefreshTokenRequest request) {
+        var claims = jwtService.validateRefreshToken(request.refresh());
+        UserEntity user = userRepository.findByEmailIgnoreCase(claims.email())
+                .filter(candidate -> Boolean.TRUE.equals(candidate.getActive()))
+                .filter(candidate -> candidate.getId().toString().equals(claims.userId()))
+                .orElseThrow(this::invalidRefreshToken);
+        return authResponse(user);
+    }
+
+    private UserEntity ensureDefaultRole(UserEntity user) {
+        var defaultRole = roleRepository.findByName(DEFAULT_ROLE)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "El rol CIUDADANO no está configurado."));
+        var roleId = new UserRoleId(user.getId(), defaultRole.getId());
+        if (!userRoleRepository.existsById(roleId)) {
+            userRoleRepository.saveAndFlush(new UserRoleEntity(user, defaultRole));
+        }
+        return reloadUser(user);
     }
 
     /**
@@ -121,9 +148,15 @@ public class AuthService {
         return roleRepository.findByName(roleName)
                 .map(role -> {
                     userRoleRepository.save(new UserRoleEntity(user, role));
-                    return userRepository.findByEmailIgnoreCase(user.getEmail()).orElse(user);
+                    userRoleRepository.flush();
+                    return reloadUser(user);
                 })
                 .orElse(user);
+    }
+
+    private UserEntity reloadUser(UserEntity user) {
+        entityManager.clear();
+        return userRepository.findByEmailIgnoreCase(user.getEmail()).orElse(user);
     }
 
     public MessageResponse logout() {
@@ -144,5 +177,9 @@ public class AuthService {
 
     private ResponseStatusException invalidCredentials() {
         return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Correo o contraseña inválidos.");
+    }
+
+    private ResponseStatusException invalidRefreshToken() {
+        return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token inválido.");
     }
 }

@@ -4,6 +4,9 @@ const clearLocalSession = () => {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('user');
+  localStorage.removeItem('django_access_token');
+  localStorage.removeItem('django_refresh_token');
+  localStorage.removeItem('auth_provider');
   window.dispatchEvent(new Event('auth-change'));
   window.dispatchEvent(new Event('auth-unauthorized'));
 };

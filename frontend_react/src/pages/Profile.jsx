@@ -27,6 +27,11 @@ const relationshipLabels = {
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
+  const [profileForm, setProfileForm] = useState({ first_name: '', last_name: '', phone: '' });
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isProfileSaving, setIsProfileSaving] = useState(false);
+  const [profileError, setProfileError] = useState('');
+  const [profileSuccess, setProfileSuccess] = useState('');
   const [contacts, setContacts] = useState([]);
   const [error, setError] = useState('');
   const [contactForm, setContactForm] = useState(emptyContactForm);
@@ -44,6 +49,11 @@ const Profile = () => {
           emergencyService.getContacts(),
         ]);
         setProfile(profileData);
+        setProfileForm({
+          first_name: profileData.first_name || '',
+          last_name: profileData.last_name || '',
+          phone: profileData.phone || '',
+        });
         setContacts(contactData);
       } catch (error) {
         console.error("Error fetching profile", error);
@@ -52,6 +62,57 @@ const Profile = () => {
     };
     fetchProfile();
   }, []);
+
+  const resetProfileForm = (profileData = profile) => {
+    setProfileForm({
+      first_name: profileData?.first_name || '',
+      last_name: profileData?.last_name || '',
+      phone: profileData?.phone || '',
+    });
+    setProfileError('');
+  };
+
+  const handleProfileChange = (event) => {
+    const { name, value } = event.target;
+    setProfileForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleProfileSubmit = async (event) => {
+    event.preventDefault();
+    setProfileError('');
+    setProfileSuccess('');
+
+    if (!profileForm.first_name.trim() || !profileForm.last_name.trim()) {
+      setProfileError('El nombre y el apellido son obligatorios.');
+      return;
+    }
+    if (profileForm.phone.trim() && !/^\+?\d{7,15}$/.test(profileForm.phone.trim())) {
+      setProfileError('Ingresa un teléfono válido. Ejemplo: +51999888777');
+      return;
+    }
+
+    setIsProfileSaving(true);
+    try {
+      const updatedProfile = await authService.updateProfile({
+        first_name: profileForm.first_name.trim(),
+        last_name: profileForm.last_name.trim(),
+        phone: profileForm.phone.trim(),
+      });
+      setProfile(updatedProfile);
+      resetProfileForm(updatedProfile);
+      setIsEditingProfile(false);
+      setProfileSuccess('Perfil actualizado correctamente.');
+    } catch (err) {
+      setProfileError(getApiErrorMessage(err, 'No se pudo actualizar el perfil.'));
+    } finally {
+      setIsProfileSaving(false);
+    }
+  };
+
+  const cancelProfileEdit = () => {
+    resetProfileForm();
+    setIsEditingProfile(false);
+  };
 
   const resetContactForm = () => {
     setContactForm(emptyContactForm);
@@ -199,20 +260,67 @@ const Profile = () => {
             <User size={22} />
             <h2>Información Personal</h2>
           </div>
-          <ul className="info-list">
-            <li>
-              <span className="info-label">Nombre Completo</span>
-              <span className="info-value">{nameToDisplay}</span>
-            </li>
-            <li>
-              <span className="info-label">Teléfono</span>
-              <span className="info-value">{profile.phone || 'No registrado'}</span>
-            </li>
-            <li>
-              <span className="info-label">Miembro desde</span>
-              <span className="info-value">Reciente</span>
-            </li>
-          </ul>
+          {profileError && <Alert variant="error">{profileError}</Alert>}
+          {profileSuccess && <Alert variant="success">{profileSuccess}</Alert>}
+
+          {isEditingProfile ? (
+            <form onSubmit={handleProfileSubmit} className="contact-form">
+              <div className="contact-form-grid">
+                <Field
+                  label="Nombre"
+                  name="first_name"
+                  value={profileForm.first_name}
+                  onChange={handleProfileChange}
+                />
+                <Field
+                  label="Apellido"
+                  name="last_name"
+                  value={profileForm.last_name}
+                  onChange={handleProfileChange}
+                />
+                <Field
+                  label="Teléfono"
+                  name="phone"
+                  value={profileForm.phone}
+                  onChange={handleProfileChange}
+                  placeholder="+51999888777"
+                />
+              </div>
+              <div className="contact-form-actions">
+                <button type="submit" className="btn btn-primary" disabled={isProfileSaving}>
+                  {isProfileSaving ? 'Guardando…' : 'Guardar perfil'}
+                </button>
+                <button type="button" className="btn btn-outline" onClick={cancelProfileEdit} disabled={isProfileSaving}>
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <ul className="info-list">
+                <li>
+                  <span className="info-label">Nombre Completo</span>
+                  <span className="info-value">{nameToDisplay}</span>
+                </li>
+                <li>
+                  <span className="info-label">Teléfono</span>
+                  <span className="info-value">{profile.phone || 'No registrado'}</span>
+                </li>
+                <li>
+                  <span className="info-label">Email</span>
+                  <span className="info-value">{profile.email}</span>
+                </li>
+              </ul>
+              <button
+                type="button"
+                className="btn btn-outline btn-full"
+                style={{ marginTop: '1rem' }}
+                onClick={() => { setProfileSuccess(''); setIsEditingProfile(true); }}
+              >
+                Editar información personal
+              </button>
+            </>
+          )}
         </section>
 
         {/* Progreso educativo */}

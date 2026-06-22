@@ -3,6 +3,7 @@ package com.mediguard.usuario.user.controller;
 import com.mediguard.usuario.user.dto.AuthResponse;
 import com.mediguard.usuario.user.dto.LoginRequest;
 import com.mediguard.usuario.user.dto.MessageResponse;
+import com.mediguard.usuario.user.dto.RefreshTokenRequest;
 import com.mediguard.usuario.user.dto.RegisterRequest;
 import com.mediguard.usuario.user.service.AuthService;
 import jakarta.validation.Valid;
@@ -35,5 +36,10 @@ public class AuthController {
     @PostMapping("/logout/")
     public ResponseEntity<MessageResponse> logout() {
         return ResponseEntity.ok(authService.logout());
+    }
+
+    @PostMapping("/token/refresh/")
+    public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(authService.refresh(request));
     }
 }

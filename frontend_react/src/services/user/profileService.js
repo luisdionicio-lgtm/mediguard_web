@@ -5,4 +5,8 @@ export const profileService = {
     const response = await springApi.get('profile/');
     return response.data;
   },
+  updateProfile: async (profile) => {
+    const response = await springApi.patch('profile/', profile);
+    return response.data;
+  },
 };

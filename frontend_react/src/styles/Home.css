@@ -1040,6 +1040,36 @@
   gap: 20px;
 }
 
+.lp-guide-search {
+  max-width: 520px;
+  margin: 0 auto 28px;
+  padding: 0 14px;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0f766e;
+  background: #fff;
+  border: 1px solid #99f6e4;
+  border-radius: 12px;
+}
+
+.lp-guide-search:focus-within {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+.lp-guide-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #134e4a;
+  font: inherit;
+}
+
+.lp-guide-search input::placeholder { color: #6b7280; }
+
 .lp-guide-card {
   border: 0.5px solid var(--bd);
   border-radius: 16px;
@@ -1091,8 +1121,9 @@
 
 .lp-guide-footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
   padding-top: 8px;
   border-top: 0.5px solid var(--bd);
   font-size: 0.7rem;
@@ -1100,6 +1131,16 @@
 
 .lp-guide-meta { color: var(--tm); }
 
+.lp-guide-actions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.lp-guide-link,
 .lp-guide-dl {
   display: flex;
   align-items: center;
@@ -1109,7 +1150,20 @@
   text-decoration: none;
 }
 
+.lp-guide-link:hover,
 .lp-guide-dl:hover { text-decoration: underline; }
+
+.lp-guide-dl.is-disabled {
+  color: var(--tm);
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.lp-guide-empty {
+  margin: 24px auto 0;
+  text-align: center;
+  color: #4b7c5e;
+}
 
 /* ── 8. CTA FINAL ───────────────────────────────────────────── */
 .lp-cta {

@@ -55,6 +55,14 @@ public class JwtService {
         return claims;
     }
 
+    public JwtClaims validateRefreshToken(String token) {
+        JwtClaims claims = validateToken(token);
+        if (!"refresh".equals(claims.tokenType())) {
+            throw unauthorized("Tipo de token inválido.");
+        }
+        return claims;
+    }
+
     private String createToken(UserEntity user, List<String> roles, String tokenType, long lifetimeSeconds) {
         Instant now = Instant.now();
         String header = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";

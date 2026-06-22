@@ -3,6 +3,9 @@ package com.mediguard.usuario;
 import com.mediguard.usuario.user.repository.EmergencyContactRepository;
 import com.mediguard.usuario.user.repository.SosEventRepository;
 import com.mediguard.usuario.user.repository.UserRepository;
+import com.mediguard.usuario.user.repository.UserRoleRepository;
+import com.mediguard.usuario.user.security.JwtService;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +19,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -43,10 +49,17 @@ class UserFlowIntegrationTests {
   @Autowired
   private UserRepository userRepository;
 
+  @Autowired
+  private UserRoleRepository userRoleRepository;
+
+  @Autowired
+  private JwtService jwtService;
+
   @BeforeEach
   void cleanDatabase() {
     sosEventRepository.deleteAll();
     emergencyContactRepository.deleteAll();
+    userRoleRepository.deleteAll();
     userRepository.deleteAll();
   }
 
@@ -85,7 +98,8 @@ class UserFlowIntegrationTests {
         .andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:5173"))
         .andExpect(jsonPath("$.accessToken").isString())
-        .andExpect(jsonPath("$.user.email").value("browser-register@example.com"));
+        .andExpect(jsonPath("$.user.email").value("browser-register@example.com"))
+        .andExpect(jsonPath("$.user.roles[0]").value("CIUDADANO"));
   }
 
   @Test
@@ -139,6 +153,142 @@ class UserFlowIntegrationTests {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.email").value("profile@example.com"))
         .andExpect(jsonPath("$.first_name").value("Test"));
+  }
+
+  @Test
+  void refreshRotatesSpringTokensAndRefreshTokenCannotAccessProfile() throws Exception {
+    register("refresh@example.com", "+51900111010");
+    MvcResult loginResult = mockMvc.perform(post("/api/login/")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+            {
+              "email": "refresh@example.com",
+              "password": "super-secret"
+            }
+            """))
+        .andExpect(status().isOk())
+        .andReturn();
+    String refreshToken = jsonValue(loginResult, "refreshToken");
+
+    mockMvc.perform(get("/api/profile/")
+        .header(HttpHeaders.AUTHORIZATION, bearer(refreshToken)))
+        .andExpect(status().isUnauthorized());
+
+    mockMvc.perform(post("/api/token/refresh/")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+            { "refresh": "%s" }
+            """.formatted(refreshToken)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.accessToken").isString())
+        .andExpect(jsonPath("$.refreshToken").isString())
+        .andExpect(jsonPath("$.user.email").value("refresh@example.com"));
+  }
+
+  @Test
+  void adminOnlyTokenCanReadProfile() throws Exception {
+    register("admin-profile@example.com", "+51900111011");
+    var user = userRepository.findByEmailIgnoreCase("admin-profile@example.com").orElseThrow();
+    String adminToken = jwtService.createAccessToken(user, List.of("ADMIN"));
+
+    mockMvc.perform(get("/api/profile/")
+        .header(HttpHeaders.AUTHORIZATION, bearer(adminToken)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.email").value("admin-profile@example.com"));
+  }
+
+  @Test
+  void authenticatedUserCanPartiallyUpdateProfile() throws Exception {
+    String token = registerAndLogin("patch-profile@example.com", "+51900111012");
+
+    mockMvc.perform(patch("/api/profile/")
+        .header(HttpHeaders.AUTHORIZATION, bearer(token))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+            {
+              "first_name": "Nombre Editado",
+              "last_name": "Apellido Editado",
+              "phone": "+51900111999"
+            }
+            """))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.first_name").value("Nombre Editado"))
+        .andExpect(jsonPath("$.last_name").value("Apellido Editado"))
+        .andExpect(jsonPath("$.phone").value("+51900111999"))
+        .andExpect(jsonPath("$.password").doesNotExist())
+        .andExpect(jsonPath("$.password_hash").doesNotExist());
+  }
+
+  @Test
+  void profileUpdateIgnoresInternalFieldsOutsideTheDtoAllowList() throws Exception {
+    String token = registerAndLogin("allow-list-profile@example.com", "+51900111016");
+    var original = userRepository.findByEmailIgnoreCase("allow-list-profile@example.com").orElseThrow();
+
+    mockMvc.perform(patch("/api/profile/")
+        .header(HttpHeaders.AUTHORIZATION, bearer(token))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+            {
+              "first_name": "Nombre Seguro",
+              "id": "99999999-9999-9999-9999-999999999999",
+              "is_active": false,
+              "created_at": "2000-01-01T00:00:00Z",
+              "updated_at": "2000-01-01T00:00:00Z"
+            }
+            """))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(original.getId().toString()))
+        .andExpect(jsonPath("$.first_name").value("Nombre Seguro"));
+
+    var updated = userRepository.findByEmailIgnoreCase("allow-list-profile@example.com").orElseThrow();
+    assertEquals(original.getId(), updated.getId());
+    assertEquals(original.getCreatedAt(), updated.getCreatedAt());
+    assertTrue(updated.getActive());
+  }
+
+  @Test
+  void profileUpdateRejectsDuplicatePhone() throws Exception {
+    registerAndLogin("phone-owner@example.com", "+51900111013");
+    String token = registerAndLogin("phone-conflict@example.com", "+51900111014");
+
+    mockMvc.perform(patch("/api/profile/")
+        .header(HttpHeaders.AUTHORIZATION, bearer(token))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+            { "phone": "+51900111013" }
+            """))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("Error de validación"))
+        .andExpect(jsonPath("$.errors.phone[0]").value("El teléfono ya está registrado."));
+  }
+
+  @Test
+  void profileUpdateRejectsRolesAndDoesNotChangeThem() throws Exception {
+    String token = registerAndLogin("protected-profile@example.com", "+51900111015");
+
+    mockMvc.perform(patch("/api/profile/")
+        .header(HttpHeaders.AUTHORIZATION, bearer(token))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+            { "roles": ["ADMIN"] }
+            """))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errors.roles[0]").value("Los roles no se pueden modificar desde el perfil."));
+
+    mockMvc.perform(get("/api/profile/")
+        .header(HttpHeaders.AUTHORIZATION, bearer(token)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.roles[0]").value("CIUDADANO"));
+  }
+
+  @Test
+  void profileUpdateRequiresAuthentication() throws Exception {
+    mockMvc.perform(patch("/api/profile/")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+            { "first_name": "Intruso" }
+            """))
+        .andExpect(status().isUnauthorized());
   }
 
   @Test
@@ -258,9 +408,7 @@ class UserFlowIntegrationTests {
 
     mockMvc.perform(get("/api/sos-events/")
         .header(HttpHeaders.AUTHORIZATION, bearer(token)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].device").value("integration-test"));
+        .andExpect(status().isForbidden());
   }
 
   @Test

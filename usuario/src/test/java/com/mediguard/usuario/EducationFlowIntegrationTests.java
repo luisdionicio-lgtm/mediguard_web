@@ -280,7 +280,7 @@ class EducationFlowIntegrationTests {
                         """.formatted(email)))
                 .andExpect(status().isOk())
                 .andReturn();
-        return jsonValue(login, "accessToken");
+        return jsonValue(login, "access_token");
     }
 
     private UUID userId(String email) {

@@ -85,8 +85,8 @@ class UserFlowIntegrationTests {
             }
             """))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.accessToken").isString())
-        .andExpect(jsonPath("$.refreshToken").isString())
+        .andExpect(jsonPath("$.access_token").isString())
+        .andExpect(jsonPath("$.refresh_token").isString())
         .andExpect(jsonPath("$.user.email").value("ana@example.com"));
   }
 
@@ -106,7 +106,7 @@ class UserFlowIntegrationTests {
             """))
         .andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:5173"))
-        .andExpect(jsonPath("$.accessToken").isString())
+        .andExpect(jsonPath("$.access_token").isString())
         .andExpect(jsonPath("$.user.email").value("browser-register@example.com"))
         .andExpect(jsonPath("$.user.roles[0]").value("CIUDADANO"));
   }
@@ -177,7 +177,7 @@ class UserFlowIntegrationTests {
             """))
         .andExpect(status().isOk())
         .andReturn();
-    String refreshToken = jsonValue(loginResult, "refreshToken");
+    String refreshToken = jsonValue(loginResult, "refresh_token");
 
     mockMvc.perform(get("/api/profile/")
         .header(HttpHeaders.AUTHORIZATION, bearer(refreshToken)))
@@ -189,8 +189,8 @@ class UserFlowIntegrationTests {
             { "refresh": "%s" }
             """.formatted(refreshToken)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.accessToken").isString())
-        .andExpect(jsonPath("$.refreshToken").isString())
+        .andExpect(jsonPath("$.access_token").isString())
+        .andExpect(jsonPath("$.refresh_token").isString())
         .andExpect(jsonPath("$.user.email").value("refresh@example.com"));
   }
 
@@ -462,7 +462,7 @@ class UserFlowIntegrationTests {
             """.formatted(email)))
         .andExpect(status().isOk())
         .andReturn();
-    return jsonValue(result, "accessToken");
+    return jsonValue(result, "access_token");
   }
 
   private String jsonValue(MvcResult result, String field) throws Exception {

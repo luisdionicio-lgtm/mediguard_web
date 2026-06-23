@@ -318,8 +318,8 @@ class EmergencyFlowIntegrationTests {
                 .andReturn();
 
         return new AuthTokens(
-                jsonValue(login, "accessToken"),
-                jsonValue(login, "refreshToken"),
+                jsonValue(login, "access_token"),
+                jsonValue(login, "refresh_token"),
                 jsonValue(login, "id"));
     }
 

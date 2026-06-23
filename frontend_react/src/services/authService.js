@@ -21,8 +21,8 @@ const clearAuthData = () => {
 };
 
 const persistAuthData = (data, provider) => {
-  const accessToken = data.access || data.accessToken || data.tokens?.access;
-  const refreshToken = data.refresh || data.refreshToken || data.tokens?.refresh;
+  const accessToken = data.access || data.accessToken || data.access_token || data.tokens?.access;
+  const refreshToken = data.refresh || data.refreshToken || data.refresh_token || data.tokens?.refresh;
 
   if (accessToken) {
     localStorage.setItem('access_token', accessToken);

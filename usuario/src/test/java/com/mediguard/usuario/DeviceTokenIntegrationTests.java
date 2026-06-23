@@ -194,8 +194,8 @@ class DeviceTokenIntegrationTests {
                 .andExpect(status().isOk())
                 .andReturn();
         return new AuthTokens(
-                jsonValue(login, "accessToken"),
-                jsonValue(login, "refreshToken"));
+                jsonValue(login, "access_token"),
+                jsonValue(login, "refresh_token"));
     }
 
     private String jsonValue(MvcResult result, String field) throws Exception {

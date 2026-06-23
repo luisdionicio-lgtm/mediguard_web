@@ -1,76 +1,65 @@
-# ─── Django ──────────────────────────────────────────────────────────────────
+# ─── IDE / Editores ─────────────────────────────────────────────────────────
+.vscode/
+.idea/
+.run/
+
+# ─── AI local / Agents ─────────────────────────────────────────────────────
+.agents/
+.claude/
+.skills/
+/skills/
+frontend_react/skills/
+
+# ─── Django ────────────────────────────────────────────────────────────────
 backend_django/venv/
 backend_django/.venv/
 backend_django/db.sqlite3
-backend_django/*.pyc
-frontend_react/skills
+backend_django/**/*.pyc
+backend_django/**/__pycache__/
 
-# ─── AI Skills / Agents ─────────────────
-/skills/
-.skills/
-
-# ─── React ───────────────────────────────────────────────────────────────────
-node_modules/
-frontend_react/node_modules/
-frontend_react/dist/
-
-# ─── General ─────────────────────────────────────────────────────────────────
-.vscode/
+# ─── Python general ────────────────────────────────────────────────────────
 **/__pycache__/
 **/*.pyc
 **/*.pyo
-*.env
-.env
-.env.*
-!frontend_react/.env.example
-.DS_Store
-docs/axios-fetch-audit.local.md
 
-# ─── Archivos sensibles — NUNCA subir ────────────────────────────────────────
-*.sqlite3
-*.db
+# ─── React ─────────────────────────────────────────────────────────────────
+node_modules/
+frontend_react/node_modules/
+frontend_react/dist/
+frontend_react/build/
 
-#── Otros ───────────────────────────────────────────────────────────────────
-.claude/
-
-# Ignorar la carpeta de documentación 
-docs/
-/docs/
-
-# ─── Documentacion local de arquitectura / skills ───────────────────────────
-local_architecture/
-/local_architecture/
-
-# Ignorar recursos locales _______________________________
-/application.properties
-/application-example.properties
-
-# Ignorar todo el contenido generado por Maven
-/target/
-# Ignorar archivos del plugin de compilación de Maven
-/target/maven-status/
-/target/maven-status/maven-compiler-plugin/
-
-# Lanzador local de los servicios (no versionar)
-/local_runner/
-
-# Artefactos generados por Spring Boot
+# ─── Spring Boot / Maven ───────────────────────────────────────────────────
+target/
+**/target/
 usuario/target/
 
-# Google / OAuth
-application.properties
+# Config sensible Spring Boot
+usuario/src/main/resources/application.properties
+usuario/src/main/resources/application-local.properties
+usuario/src/main/resources/application-dev.properties
+usuario/src/main/resources/application-prod.properties
 
-# Spring Boot config sensible
-src/main/resources/application.properties
-application-local.properties
+# Permitir ejemplos seguros
+!usuario/src/main/resources/application-example.properties
+!usuario/src/main/resources/application-template.properties
 
-*.pem
+# ─── Variables de entorno ──────────────────────────────────────────────────
+.env
+.env.*
+*.env
+!frontend_react/.env.example
+!backend_django/.env.example
+!usuario/.env.example
 
-# logs
-*.log
-logs/
+# ─── Documentación/local architecture no versionable ───────────────────────
+docs/
+local_architecture/
+local_runner/
+tmp/
 
-# ─── Backups y dumps de base de datos — NUNCA subir ─────────────────────────
+# ─── Bases de datos locales ────────────────────────────────────────────────
+*.sqlite3
+*.db
 *.dump
 *.backup
 *.sql.dump
@@ -78,6 +67,20 @@ backups/
 db_backups/
 mediguard_db.sql
 
-# ─── Artefactos de build genéricos ───────────────────────────────────────────
-dist/
-**/target/
+# ─── Logs ──────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── Credenciales / llaves ─────────────────────────────────────────────────
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+
+# ─── Sistema operativo ─────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Gitignore local personal ──────────────────────────────────────────────
+.gitignore.local

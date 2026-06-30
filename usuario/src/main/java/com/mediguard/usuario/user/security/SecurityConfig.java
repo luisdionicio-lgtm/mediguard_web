@@ -68,6 +68,10 @@ public class SecurityConfig {
                                 publicMatcher(HttpMethod.POST, "/api/token/refresh/"),
                                 publicMatcher(HttpMethod.POST, "/api/token/refresh/**"),
                                 publicMatcher(HttpMethod.POST, "/api/usuarios/**"),
+                                publicMatcher(HttpMethod.POST, "/api/forgot-password/"),
+                                publicMatcher(HttpMethod.POST, "/api/forgot-password/**"),
+                                publicMatcher(HttpMethod.POST, "/api/reset-password/"),
+                                publicMatcher(HttpMethod.POST, "/api/reset-password/**"),
                                 publicMatcher(HttpMethod.GET, "/api/guides/**"),
                                 publicMatcher(HttpMethod.GET, "/api/hospitals/**"),
                                 publicMatcher(HttpMethod.GET, "/api/news/**"),
@@ -94,6 +98,10 @@ public class SecurityConfig {
                 || publicMatcher(HttpMethod.POST, "/api/token/refresh/").matches(request)
                 || publicMatcher(HttpMethod.POST, "/api/token/refresh/**").matches(request)
                 || publicMatcher(HttpMethod.POST, "/api/usuarios/**").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/forgot-password/").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/forgot-password/**").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/reset-password/").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/reset-password/**").matches(request)
                 || publicMatcher(HttpMethod.GET, "/api/guides/**").matches(request)
                 || publicMatcher(HttpMethod.GET, "/api/hospitals/**").matches(request)
                 || publicMatcher(HttpMethod.GET, "/api/news/**").matches(request)

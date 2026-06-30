@@ -1,6 +1,8 @@
 package com.mediguard.usuario.user.service;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mediguard.usuario.user.dto.AuthResponse;
+import com.mediguard.usuario.user.dto.GoogleAuthRequest;
 import com.mediguard.usuario.user.dto.LoginRequest;
 import com.mediguard.usuario.user.dto.MessageResponse;
 import com.mediguard.usuario.user.dto.RefreshTokenRequest;
@@ -22,9 +24,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -42,6 +47,7 @@ public class AuthService {
             "MEDICO", "COORDINADOR",
             "CUIDADOR", "SOCORRISTA");
     private static final String DEFAULT_ROLE = "CIUDADANO";
+    private static final String GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
 
     private static final long EMAIL_VERIFICATION_HOURS = 24;
 
@@ -54,6 +60,7 @@ public class AuthService {
     private final ProfileMapper profileMapper;
     private final EntityManager entityManager;
     private final EmailService emailService;
+    private final RestClient restClient;
 
     public AuthService(
             UserRepository userRepository,
@@ -74,6 +81,7 @@ public class AuthService {
         this.profileMapper = profileMapper;
         this.entityManager = entityManager;
         this.emailService = emailService;
+        this.restClient = RestClient.create();
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -132,6 +140,77 @@ public class AuthService {
                 .filter(candidate -> candidate.getId().toString().equals(claims.userId()))
                 .orElseThrow(this::invalidRefreshToken);
         return authResponse(user);
+    }
+
+    /**
+     * Reemplaza al antiguo flujo de Google en Django (VistaGoogleAuth): el frontend ya
+     * obtuvo un access_token de Google (flujo implícito), aquí solo lo validamos contra
+     * el userinfo endpoint y mapeamos el usuario al esquema compartido.
+     */
+    public AuthResponse googleLogin(GoogleAuthRequest request) {
+        GoogleUserInfo googleUser = fetchGoogleUserInfo(request.accessToken());
+        String email = normalizeEmail(googleUser.email());
+
+        UserEntity user = userRepository.findByEmailIgnoreCase(email).orElse(null);
+        if (user == null) {
+            UserEntity newUser = new UserEntity();
+            newUser.setFirstName(blankToEmpty(googleUser.givenName()));
+            newUser.setLastName(blankToEmpty(googleUser.familyName()));
+            newUser.setEmail(email);
+            // No hay equivalente a set_unusable_password(): generamos un hash aleatorio
+            // que nadie puede conocer ni adivinar, así la cuenta solo se accede por Google.
+            newUser.setPasswordHash(passwordHashService.hash(UUID.randomUUID().toString()));
+            newUser.setAvatarUrl(googleUser.picture());
+            newUser.setActive(true);
+            newUser.setVerified(true);
+
+            UserEntity savedUser = userRepository.saveAndFlush(newUser);
+            user = ensureDefaultRole(savedUser);
+        } else {
+            if (!Boolean.TRUE.equals(user.getActive())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cuenta desactivada. Contacta al administrador.");
+            }
+            if (googleUser.picture() != null && !googleUser.picture().isBlank()
+                    && (user.getAvatarUrl() == null || user.getAvatarUrl().isBlank())) {
+                user.setAvatarUrl(googleUser.picture());
+                user = userRepository.save(user);
+            }
+        }
+
+        return authResponse(user);
+    }
+
+    private GoogleUserInfo fetchGoogleUserInfo(String accessToken) {
+        GoogleUserInfo userInfo;
+        try {
+            userInfo = restClient.get()
+                    .uri(GOOGLE_USERINFO_URL)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .retrieve()
+                    .body(GoogleUserInfo.class);
+        } catch (RestClientException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token de Google inválido o expirado.");
+        }
+
+        if (userInfo == null || userInfo.email() == null || userInfo.email().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El token de Google no contiene email.");
+        }
+        return userInfo;
+    }
+
+    private String blankToEmpty(String value) {
+        return value == null ? "" : value;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private record GoogleUserInfo(String email, String given_name, String family_name, String picture) {
+        String givenName() {
+            return given_name;
+        }
+
+        String familyName() {
+            return family_name;
+        }
     }
 
     private UserEntity ensureDefaultRole(UserEntity user) {

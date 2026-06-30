@@ -1,9 +1,12 @@
 import axios from 'axios';
 import springApi from '../api/springApi';
+import { createAxiosClient } from '../api/httpClient';
 import { profileService } from './user/profileService';
 
 const DJANGO_BASE = import.meta.env.VITE_DJANGO_API_URL || 'http://127.0.0.1:8000/api/';
-const djangoPublic = axios.create({ baseURL: DJANGO_BASE });
+// Sin tokenKeys ni onUnauthorized: mismo comportamiento que axios.create({ baseURL }) anterior,
+// usado solo para llamadas explícitamente públicas/manuales (Google login, refresh y logout Django).
+const djangoPublic = createAxiosClient(DJANGO_BASE);
 const AUTH_PROVIDER_KEY = 'auth_provider';
 
 const notifyAuthChange = () => {
@@ -144,14 +147,14 @@ export const authService = {
   },
 
   googleLogin: async (accessToken) => {
-    const response = await djangoPublic.post('auth/google/', { access_token: accessToken });
+    const response = await springApi.post('auth/google/', { access_token: accessToken });
     const data = response.data;
     // Normaliza al mismo formato que login() usa en persistAuthData
     persistAuthData({
       access: data.access_token,
       refresh: data.refresh_token,
       user: data.user,
-    }, 'django');
+    }, 'spring');
     return data;
   },
 
@@ -168,6 +171,16 @@ export const authService = {
     if (newRefresh) localStorage.setItem('refresh_token', newRefresh);
     if (response.data.user) localStorage.setItem('user', JSON.stringify(response.data.user));
     if (newAccess) notifyAuthChange();
+    return response.data;
+  },
+
+  forgotPassword: async (email) => {
+    const response = await springApi.post('forgot-password/', { email });
+    return response.data;
+  },
+
+  resetPassword: async (token, newPassword) => {
+    const response = await springApi.post('reset-password/', { token, new_password: newPassword });
     return response.data;
   },
 

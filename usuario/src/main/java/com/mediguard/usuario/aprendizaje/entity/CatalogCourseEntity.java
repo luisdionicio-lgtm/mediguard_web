@@ -20,6 +20,9 @@ public class CatalogCourseEntity {
     @Column(name = "is_published", nullable = false)
     private boolean published;
 
+    @Column(nullable = false)
+    private String title;
+
     protected CatalogCourseEntity() {
     }
 
@@ -29,5 +32,9 @@ public class CatalogCourseEntity {
 
     public boolean isPublished() {
         return published;
+    }
+
+    public String getTitle() {
+        return title;
     }
 }

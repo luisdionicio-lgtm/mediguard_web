@@ -36,8 +36,8 @@ public class VerificationTokenEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    // Generado en Java (no en el DEFAULT de PostgreSQL) para que el valor
-    // exista de inmediato tras el save() y funcione igual en H2 (tests).
+    // El DDL de Postgres define un DEFAULT encode(gen_random_bytes(32), 'hex'),
+    // pero se envía explícitamente desde Java para que funcione igual en H2 (test).
     @Column(unique = true, updatable = false, nullable = false)
     private String token;
 
@@ -57,19 +57,25 @@ public class VerificationTokenEntity {
     protected VerificationTokenEntity() {
     }
 
-    public VerificationTokenEntity(UserEntity user, TokenType tokenType, Instant expiresAt) {
+    public VerificationTokenEntity(UserEntity user, String token, TokenType tokenType, Instant expiresAt) {
         this.user = user;
+        this.token = token;
         this.tokenType = tokenType;
         this.expiresAt = expiresAt;
     }
 
     @PrePersist
+<<<<<<< HEAD
     void prePersist() {
         if (token == null) {
             byte[] bytes = new byte[32];
             RANDOM.nextBytes(bytes);
             token = HexFormat.of().formatHex(bytes);
         }
+=======
+    void onCreate() {
+        // Mismo motivo que el token: el DEFAULT now() de Postgres no existe en H2.
+>>>>>>> origin/cambios-actualizados
         if (createdAt == null) {
             createdAt = Instant.now();
         }

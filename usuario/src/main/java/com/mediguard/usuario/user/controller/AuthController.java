@@ -1,6 +1,7 @@
 package com.mediguard.usuario.user.controller;
 
 import com.mediguard.usuario.user.dto.AuthResponse;
+import com.mediguard.usuario.user.dto.GoogleAuthRequest;
 import com.mediguard.usuario.user.dto.LoginRequest;
 import com.mediguard.usuario.user.dto.MessageResponse;
 import com.mediguard.usuario.user.dto.RefreshTokenRequest;
@@ -48,5 +49,10 @@ public class AuthController {
     @GetMapping("/verify-email/")
     public ResponseEntity<MessageResponse> verifyEmail(@RequestParam String token) {
         return ResponseEntity.ok(authService.verifyEmail(token));
+    }
+
+    @PostMapping("/auth/google/")
+    public ResponseEntity<AuthResponse> googleLogin(@Valid @RequestBody GoogleAuthRequest request) {
+        return ResponseEntity.ok(authService.googleLogin(request));
     }
 }

@@ -92,7 +92,7 @@ else:
             'ENGINE': DB_ENGINE,
             'NAME': config('DB_NAME', default='mediguard'),
             'USER': config('DB_USER', default='postgres'),
-            'PASSWORD': config('DB_PASSWORD', default='AdminPostgres_2026'),
+            'PASSWORD': config('DB_PASSWORD'),
             'HOST': config('DB_HOST', default='localhost'),
             'PORT': config('DB_PORT', default='5432'),
         }
@@ -139,25 +139,12 @@ CORS_ALLOWED_ORIGINS = config(
 # Las views públicas sobrescriben esto con permission_classes = [AllowAny].
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'users.authentication.SpringCompatibleJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
-
-
-# ─── Google OAuth ────────────────────────────────────────────────────────────
-GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
-
-
-# ─── Endpoints legacy ────────────────────────────────────────────────────────
-# El registro/login normal del frontend usa Spring Boot (puerto 8081).
-# VistaRegistro queda apagada por defecto: nadie la consume en producción,
-# pero el código y los tests siguen vivos para validar la lógica con POST.
-# Activar solo en local con ENABLE_LEGACY_DJANGO_REGISTER=True si se necesita
-# probar manualmente contra Django.
-ENABLE_LEGACY_DJANGO_REGISTER = config('ENABLE_LEGACY_DJANGO_REGISTER', default=False, cast=bool)
 
 
 # ─── Simple JWT ──────────────────────────────────────────────────────────────

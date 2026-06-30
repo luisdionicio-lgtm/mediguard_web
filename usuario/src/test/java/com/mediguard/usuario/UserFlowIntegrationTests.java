@@ -70,6 +70,7 @@ class UserFlowIntegrationTests {
 
   @BeforeEach
   void cleanDatabase() {
+    jdbcTemplate.update("DELETE FROM verification_tokens");
     jdbcTemplate.update("DELETE FROM notification_log");
     jdbcTemplate.update("DELETE FROM user_device_tokens");
     jdbcTemplate.update("DELETE FROM certificates");

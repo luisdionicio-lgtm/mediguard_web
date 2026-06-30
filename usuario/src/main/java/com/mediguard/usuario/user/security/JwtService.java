@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.crypto.Mac;
@@ -66,9 +67,15 @@ public class JwtService {
     private String createToken(UserEntity user, List<String> roles, String tokenType, long lifetimeSeconds) {
         Instant now = Instant.now();
         String header = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
+        // "jti" (JWT ID) es exigido por Django SimpleJWT en todo token, sin excepcion
+        // (rest_framework_simplejwt.tokens.Token.verify()). Spring Boot no lo necesita
+        // para si mismo, pero lo agrega para que el mismo token sirva tambien contra
+        // los endpoints de Django (catalogo educativo). Ver users/authentication.py
+        // del lado Django para el resto de la compatibilidad (claim "uid").
         String payload = "{"
                 + "\"sub\":\"" + escapeJson(user.getEmail()) + "\","
                 + "\"uid\":\"" + user.getId() + "\","
+                + "\"jti\":\"" + UUID.randomUUID() + "\","
                 + "\"roles\":" + rolesJson(roles) + ","
                 + "\"token_type\":\"" + tokenType + "\","
                 + "\"iat\":" + now.getEpochSecond() + ","

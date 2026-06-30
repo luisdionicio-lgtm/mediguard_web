@@ -92,7 +92,7 @@ else:
             'ENGINE': DB_ENGINE,
             'NAME': config('DB_NAME', default='mediguard'),
             'USER': config('DB_USER', default='postgres'),
-            'PASSWORD': config('DB_PASSWORD', default='AdminPostgres_2026'),
+            'PASSWORD': config('DB_PASSWORD'),
             'HOST': config('DB_HOST', default='localhost'),
             'PORT': config('DB_PORT', default='5432'),
         }
@@ -139,7 +139,7 @@ CORS_ALLOWED_ORIGINS = config(
 # Las views públicas sobrescriben esto con permission_classes = [AllowAny].
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'users.authentication.SpringCompatibleJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',

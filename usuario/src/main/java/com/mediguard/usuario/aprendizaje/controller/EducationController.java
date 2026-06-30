@@ -8,11 +8,15 @@ import com.mediguard.usuario.aprendizaje.dto.EnrollmentResponse;
 import com.mediguard.usuario.aprendizaje.dto.ProgressResponse;
 import com.mediguard.usuario.aprendizaje.entity.EnrollmentEntity;
 import com.mediguard.usuario.aprendizaje.entity.UserLessonProgressEntity;
+import com.mediguard.usuario.aprendizaje.service.CertificatePdfService;
 import com.mediguard.usuario.aprendizaje.service.ProgressService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +33,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class EducationController {
 
     private final ProgressService progressService;
+    private final CertificatePdfService certificatePdfService;
 
-    public EducationController(ProgressService progressService) {
+    public EducationController(ProgressService progressService, CertificatePdfService certificatePdfService) {
         this.progressService = progressService;
+        this.certificatePdfService = certificatePdfService;
     }
 
     @GetMapping("/enrollments/{userId}/")
@@ -86,6 +92,20 @@ public class EducationController {
                         result.enrollment().getId(),
                         certificate.getCode(),
                         certificate.getIssuedAt()));
+    }
+
+    @GetMapping("/certificates/{enrollmentId}/download/")
+    public ResponseEntity<byte[]> downloadCertificate(@PathVariable UUID enrollmentId) {
+        var download = progressService.getCurrentUserCertificateForDownload(enrollmentId);
+        byte[] pdf = certificatePdfService.generate(
+                download.user(), download.courseTitle(), download.certificate());
+
+        String filename = "certificado-" + download.certificate().getCode().substring(0, 8) + ".pdf";
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment().filename(filename).build().toString())
+                .body(pdf);
     }
 
     private static EnrollmentResponse toEnrollmentResponse(

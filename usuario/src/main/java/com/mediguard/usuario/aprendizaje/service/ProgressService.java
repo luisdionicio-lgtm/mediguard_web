@@ -113,6 +113,19 @@ public class ProgressService {
         return new CertificateResult(enrollment, certificate);
     }
 
+    @Transactional(readOnly = true)
+    public CertificateDownload getCurrentUserCertificateForDownload(UUID enrollmentId) {
+        EnrollmentEntity enrollment = ownedEnrollment(enrollmentId);
+        CertificateEntity certificate = certificateRepository.findByEnrollmentId(enrollment.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "El certificado aún no está disponible para esta inscripción."));
+        String courseTitle = catalogCourseRepository.findById(enrollment.getCourseId())
+                .map(course -> course.getTitle())
+                .orElse("Curso de MediGuard AI");
+        return new CertificateDownload(enrollment.getUser(), courseTitle, certificate);
+    }
+
     private EnrollmentEntity ownedEnrollment(UUID enrollmentId) {
         UserEntity user = currentUser();
         EnrollmentEntity enrollment = enrollmentRepository.findById(enrollmentId)
@@ -143,5 +156,8 @@ public class ProgressService {
     }
 
     public record CertificateResult(EnrollmentEntity enrollment, CertificateEntity certificate) {
+    }
+
+    public record CertificateDownload(UserEntity user, String courseTitle, CertificateEntity certificate) {
     }
 }

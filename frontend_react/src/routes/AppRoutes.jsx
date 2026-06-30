@@ -5,6 +5,8 @@ import Footer from '../components/Footer';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
+import ForgotPassword from '../pages/ForgotPassword';
+import ResetPassword from '../pages/ResetPassword';
 import Dashboard from '../pages/Dashboard';
 import AdminDashboard from '../pages/AdminDashboard';
 import Guides from '../pages/Guides';
@@ -20,7 +22,7 @@ import PrivateRoute from '../components/PrivateRoute';
 import AdminRoute from '../components/AdminRoute';
 import { authService } from '../services/authService';
 
-const AUTH_ROUTES    = ['/login', '/register'];
+const AUTH_ROUTES    = ['/login', '/register', '/forgot-password', '/reset-password'];
 const NO_SHELL_ROUTES = ['/admin/dashboard'];
 const isLearnRoute   = (path) => /^\/courses\/[^/]+\/learn/.test(path);
 
@@ -68,6 +70,8 @@ function Layout() {
           <Route path="/"            element={<Home />} />
           <Route path="/login"       element={<Login />} />
           <Route path="/register"    element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password"  element={<ResetPassword />} />
           <Route path="/logout"      element={<LogoutRoute />} />
           <Route path="/dashboard"   element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/guides"      element={<PrivateRoute><Guides /></PrivateRoute>} />

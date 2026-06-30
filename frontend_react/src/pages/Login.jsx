@@ -348,7 +348,7 @@ export default function Login() {
                 <span className={`auth-field-error${pwErr ? ' show' : ''}`}>{pwErr}</span>
               </div>
 
-              <span className="auth-forgot">¿Olvidaste tu contraseña?</span>
+              <Link to="/forgot-password" className="auth-forgot">¿Olvidaste tu contraseña?</Link>
 
               <button
                 ref={btnRef}

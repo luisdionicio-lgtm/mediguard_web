@@ -67,6 +67,8 @@ public class SecurityConfig {
                                 publicMatcher(HttpMethod.POST, "/api/register/**"),
                                 publicMatcher(HttpMethod.POST, "/api/token/refresh/"),
                                 publicMatcher(HttpMethod.POST, "/api/token/refresh/**"),
+                                publicMatcher(HttpMethod.POST, "/api/auth/google/"),
+                                publicMatcher(HttpMethod.POST, "/api/auth/google/**"),
                                 publicMatcher(HttpMethod.POST, "/api/usuarios/**"),
                                 publicMatcher(HttpMethod.POST, "/api/forgot-password/"),
                                 publicMatcher(HttpMethod.POST, "/api/forgot-password/**"),
@@ -97,6 +99,8 @@ public class SecurityConfig {
                 || publicMatcher(HttpMethod.POST, "/api/register/**").matches(request)
                 || publicMatcher(HttpMethod.POST, "/api/token/refresh/").matches(request)
                 || publicMatcher(HttpMethod.POST, "/api/token/refresh/**").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/auth/google/").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/auth/google/**").matches(request)
                 || publicMatcher(HttpMethod.POST, "/api/usuarios/**").matches(request)
                 || publicMatcher(HttpMethod.POST, "/api/forgot-password/").matches(request)
                 || publicMatcher(HttpMethod.POST, "/api/forgot-password/**").matches(request)

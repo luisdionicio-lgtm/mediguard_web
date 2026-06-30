@@ -147,10 +147,6 @@ REST_FRAMEWORK = {
 }
 
 
-# ─── Google OAuth ────────────────────────────────────────────────────────────
-GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
-
-
 # ─── Simple JWT ──────────────────────────────────────────────────────────────
 # SIGNING_KEY usa JWT_SECRET para que Spring Boot pueda validar los mismos tokens.
 # Si JWT_SECRET no está definido, cae al SECRET_KEY de Django (solo dev local).

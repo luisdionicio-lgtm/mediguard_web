@@ -140,14 +140,14 @@ export const authService = {
   },
 
   googleLogin: async (accessToken) => {
-    const response = await djangoPublic.post('auth/google/', { access_token: accessToken });
+    const response = await springApi.post('auth/google/', { access_token: accessToken });
     const data = response.data;
     // Normaliza al mismo formato que login() usa en persistAuthData
     persistAuthData({
       access: data.access_token,
       refresh: data.refresh_token,
       user: data.user,
-    }, 'django');
+    }, 'spring');
     return data;
   },
 

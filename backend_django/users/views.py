@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import requests as http_requests
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -187,92 +186,6 @@ class VistaCerrarSesion(APIView):
                 {'error': 'Invalid or expired token.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-# Google OAuth view
-# POST /api/auth/google/ { access_token: "<google-access-token>" }
-class VistaGoogleAuth(APIView):
-    permission_classes = [AllowAny]
-
-    GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo'
-
-    def post(self, request):
-        access_token = request.data.get('access_token', '').strip()
-        if not access_token:
-            return Response({'error': 'El campo "access_token" es obligatorio.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        google_resp = http_requests.get(
-            self.GOOGLE_USERINFO_URL,
-            headers={'Authorization': f'Bearer {access_token}'},
-            timeout=10,
-        )
-        if not google_resp.ok:
-            return Response(
-                {'error': 'Token de Google inválido o expirado.'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        id_info = google_resp.json()
-        email = id_info.get('email', '').lower()
-        first_name = id_info.get('given_name', '')
-        last_name = id_info.get('family_name', '')
-        avatar_url = id_info.get('picture', '')
-
-        if not email:
-            return Response({'error': 'El token de Google no contiene email.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        usuario, created = Usuario.objects.get_or_create(
-            email=email,
-            defaults={
-                'first_name': first_name,
-                'last_name': last_name,
-                'avatar_url': avatar_url,
-                'is_active': True,
-                'is_verified': True,
-            },
-        )
-
-        if created:
-            usuario.set_unusable_password()
-            usuario.save(update_fields=['password'])
-            rol_ciudadano, _ = Rol.objects.get_or_create(
-                name=Rol.Nombre.CIUDADANO,
-                defaults={'description': 'Usuario estándar del sistema'},
-            )
-            UserRole.objects.get_or_create(user=usuario, role=rol_ciudadano, defaults={'assigned_by': None})
-            AuditLog.objects.create(
-                user=usuario,
-                action='USER_REGISTERED_GOOGLE',
-                entity_type='users',
-                entity_id=usuario.id,
-                metadata={'email': email, 'provider': 'google'},
-            )
-        else:
-            if not usuario.is_active:
-                return Response({'error': 'Cuenta desactivada. Contacta al administrador.'}, status=status.HTTP_403_FORBIDDEN)
-            updated_fields = []
-            if avatar_url and not usuario.avatar_url:
-                usuario.avatar_url = avatar_url
-                updated_fields.append('avatar_url')
-            if updated_fields:
-                usuario.save(update_fields=updated_fields)
-
-        refresh = build_token_for_user(usuario)
-        access = refresh.access_token
-
-        return Response({
-            'access_token': str(access),
-            'refresh_token': str(refresh),
-            'user': {
-                'id': str(usuario.id),
-                'email': usuario.email,
-                'first_name': usuario.first_name,
-                'last_name': usuario.last_name,
-                'avatar_url': usuario.avatar_url,
-                'roles': list(usuario.roles.values_list('name', flat=True)),
-                'is_verified': usuario.is_verified,
-            },
-        }, status=status.HTTP_200_OK)
-
 
 # Auth me view
 # GET /api/auth/me/

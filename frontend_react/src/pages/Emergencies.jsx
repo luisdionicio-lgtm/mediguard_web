@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PhoneCall, Siren } from 'lucide-react';
 import { emergencyService } from '../services/emergencyService';
 import { getApiErrorMessage } from '../services/errorService';
@@ -32,12 +33,17 @@ const Emergencies = () => {
   const [sosMessage, setSosMessage] = useState('');
   const [sosFeedback, setSosFeedback] = useState(null);
   const [sosError, setSosError] = useState('');
+  const [hasPersonalContacts, setHasPersonalContacts] = useState(true);
 
   useEffect(() => {
     const loadEmergencies = async () => {
       try {
-        const data = await emergencyService.getAll();
+        const [data, contacts] = await Promise.all([
+          emergencyService.getAll(),
+          emergencyService.getContacts().catch(() => []),
+        ]);
         setEmergencies(data);
+        setHasPersonalContacts(contacts.length > 0);
       } catch {
         setError('No se pudieron cargar los contactos de emergencia.');
       } finally {
@@ -78,6 +84,12 @@ const Emergencies = () => {
         subtitle="Líneas de ayuda crítica y servicios vitales disponibles las 24 horas."
       >
         <div style={{ marginTop: '1.5rem', display: 'grid', justifyItems: 'center', gap: '0.75rem' }}>
+          {!isLoading && !hasPersonalContacts && (
+            <Alert variant="warning">
+              No tienes contactos de emergencia registrados, así que nadie será notificado si activas SOS.
+              {' '}<Link to="/profile">Agrégalos en tu perfil</Link> antes de continuar.
+            </Alert>
+          )}
           <button
             type="button"
             className="btn btn-emergency btn-lg"

@@ -10,8 +10,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.HexFormat;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +25,8 @@ public class VerificationTokenEntity {
         EMAIL_VERIFICATION, PASSWORD_RESET, PHONE_VERIFICATION
     }
 
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
@@ -31,8 +36,9 @@ public class VerificationTokenEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    // Generado por PostgreSQL DEFAULT encode(gen_random_bytes(32), 'hex')
-    @Column(insertable = false, updatable = false, unique = true, nullable = false)
+    // Generado en Java (no en el DEFAULT de PostgreSQL) para que el valor
+    // exista de inmediato tras el save() y funcione igual en H2 (tests).
+    @Column(unique = true, updatable = false, nullable = false)
     private String token;
 
     @Enumerated(EnumType.STRING)
@@ -55,6 +61,18 @@ public class VerificationTokenEntity {
         this.user = user;
         this.tokenType = tokenType;
         this.expiresAt = expiresAt;
+    }
+
+    @PrePersist
+    void prePersist() {
+        if (token == null) {
+            byte[] bytes = new byte[32];
+            RANDOM.nextBytes(bytes);
+            token = HexFormat.of().formatHex(bytes);
+        }
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
     }
 
     public UUID getId() { return id; }

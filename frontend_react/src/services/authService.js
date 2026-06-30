@@ -83,7 +83,9 @@ export const authService = {
       user_type: userData.user_type
     };
     const response = await springApi.post('register/', payload);
-    // Note: Do not auto-persist token/user on registration as requested
+    // Spring ya devuelve accessToken/refreshToken/user válidos: se persisten
+    // para loguear automáticamente al usuario recién registrado.
+    persistAuthData(response.data);
     return response.data;
   },
 
@@ -134,6 +136,11 @@ export const authService = {
     } catch {
       return [];
     }
+  },
+
+  verifyEmail: async (token) => {
+    const response = await springApi.get('verify-email/', { params: { token } });
+    return response.data;
   },
 
   googleLogin: async (accessToken) => {

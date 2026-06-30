@@ -1,10 +1,15 @@
 package com.mediguard.usuario;
 
+import com.mediguard.usuario.user.entity.UserEntity;
+import com.mediguard.usuario.user.entity.VerificationTokenEntity;
 import com.mediguard.usuario.user.repository.EmergencyContactRepository;
 import com.mediguard.usuario.user.repository.SosEventRepository;
 import com.mediguard.usuario.user.repository.UserRepository;
 import com.mediguard.usuario.user.repository.UserRoleRepository;
+import com.mediguard.usuario.user.repository.VerificationTokenRepository;
 import com.mediguard.usuario.user.security.JwtService;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +22,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
@@ -59,6 +65,9 @@ class UserFlowIntegrationTests {
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
+  @Autowired
+  private VerificationTokenRepository verificationTokenRepository;
+
   @BeforeEach
   void cleanDatabase() {
     jdbcTemplate.update("DELETE FROM notification_log");
@@ -69,6 +78,7 @@ class UserFlowIntegrationTests {
     sosEventRepository.deleteAll();
     emergencyContactRepository.deleteAll();
     userRoleRepository.deleteAll();
+    verificationTokenRepository.deleteAll();
     userRepository.deleteAll();
   }
 
@@ -130,6 +140,81 @@ class UserFlowIntegrationTests {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.message").value("Error de validación"))
         .andExpect(jsonPath("$.errors.email[0]").value("El correo ya está registrado."));
+  }
+
+  @Test
+  void registerCreatesUnusedEmailVerificationTokenAndLeavesUserUnverified() throws Exception {
+    register("unverified@example.com", "+51900111010");
+
+    UserEntity user = userRepository.findByEmailIgnoreCase("unverified@example.com").orElseThrow();
+    assertThat(user.getVerified()).isFalse();
+
+    VerificationTokenEntity token = verificationTokenRepository
+        .findTopByUserIdAndTokenTypeAndUsedFalseOrderByCreatedAtDesc(
+            user.getId(), VerificationTokenEntity.TokenType.EMAIL_VERIFICATION)
+        .orElseThrow();
+    assertThat(token.getToken()).isNotBlank();
+    assertThat(token.isUsed()).isFalse();
+  }
+
+  @Test
+  void verifyEmailWithValidTokenMarksUserVerifiedAndTokenUsed() throws Exception {
+    register("verify-ok@example.com", "+51900111011");
+    UserEntity user = userRepository.findByEmailIgnoreCase("verify-ok@example.com").orElseThrow();
+    VerificationTokenEntity token = verificationTokenRepository
+        .findTopByUserIdAndTokenTypeAndUsedFalseOrderByCreatedAtDesc(
+            user.getId(), VerificationTokenEntity.TokenType.EMAIL_VERIFICATION)
+        .orElseThrow();
+
+    mockMvc.perform(get("/api/verify-email/").param("token", token.getToken()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message").value("Correo verificado correctamente."));
+
+    UserEntity verifiedUser = userRepository.findByEmailIgnoreCase("verify-ok@example.com").orElseThrow();
+    assertThat(verifiedUser.getVerified()).isTrue();
+
+    VerificationTokenEntity usedToken = verificationTokenRepository.findById(token.getId()).orElseThrow();
+    assertThat(usedToken.isUsed()).isTrue();
+  }
+
+  @Test
+  void verifyEmailRejectsInvalidToken() throws Exception {
+    mockMvc.perform(get("/api/verify-email/").param("token", "no-existe"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("El enlace de verificación no es válido o ya fue usado."));
+  }
+
+  @Test
+  void verifyEmailRejectsAlreadyUsedToken() throws Exception {
+    register("verify-reuse@example.com", "+51900111012");
+    UserEntity user = userRepository.findByEmailIgnoreCase("verify-reuse@example.com").orElseThrow();
+    VerificationTokenEntity token = verificationTokenRepository
+        .findTopByUserIdAndTokenTypeAndUsedFalseOrderByCreatedAtDesc(
+            user.getId(), VerificationTokenEntity.TokenType.EMAIL_VERIFICATION)
+        .orElseThrow();
+
+    mockMvc.perform(get("/api/verify-email/").param("token", token.getToken()))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(get("/api/verify-email/").param("token", token.getToken()))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("El enlace de verificación no es válido o ya fue usado."));
+  }
+
+  @Test
+  void verifyEmailRejectsExpiredToken() throws Exception {
+    register("verify-expired@example.com", "+51900111013");
+    UserEntity user = userRepository.findByEmailIgnoreCase("verify-expired@example.com").orElseThrow();
+
+    VerificationTokenEntity expired = new VerificationTokenEntity(
+        user, VerificationTokenEntity.TokenType.EMAIL_VERIFICATION, Instant.now().minus(1, ChronoUnit.HOURS));
+    expired = verificationTokenRepository.saveAndFlush(expired);
+    String expiredToken = expired.getToken();
+    assertThat(expiredToken).isNotBlank();
+
+    mockMvc.perform(get("/api/verify-email/").param("token", expiredToken))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value("El enlace de verificación venció."));
   }
 
   @Test

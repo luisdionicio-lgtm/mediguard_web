@@ -151,6 +151,15 @@ REST_FRAMEWORK = {
 GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
 
 
+# ─── Endpoints legacy ────────────────────────────────────────────────────────
+# El registro/login normal del frontend usa Spring Boot (puerto 8081).
+# VistaRegistro queda apagada por defecto: nadie la consume en producción,
+# pero el código y los tests siguen vivos para validar la lógica con POST.
+# Activar solo en local con ENABLE_LEGACY_DJANGO_REGISTER=True si se necesita
+# probar manualmente contra Django.
+ENABLE_LEGACY_DJANGO_REGISTER = config('ENABLE_LEGACY_DJANGO_REGISTER', default=False, cast=bool)
+
+
 # ─── Simple JWT ──────────────────────────────────────────────────────────────
 # SIGNING_KEY usa JWT_SECRET para que Spring Boot pueda validar los mismos tokens.
 # Si JWT_SECRET no está definido, cae al SECRET_KEY de Django (solo dev local).

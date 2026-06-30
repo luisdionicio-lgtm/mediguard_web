@@ -108,9 +108,36 @@ function PhoneMockup() {
 
 /* ── Data ───────────────────────────────────────────────────── */
 const RESOURCES = [
-  { slug: 'rcp',        emoji: '🫀', imgStyle: { background: 'linear-gradient(160deg,#e0f5ed,#c5edd8)' }, badge: { text: 'Gratis', cls: 'lp-badge-green' }, tag: 'Primeros auxilios',  title: 'RCP: guía paso a paso para adultos y niños',    desc: 'Aprende la técnica correcta de reanimación cardiopulmonar con instrucciones claras.', meta: '📖 5 min' },
-  { slug: 'ansiedad',   emoji: '🧠', imgStyle: { background: 'linear-gradient(160deg,#e3f0fc,#c0daf7)' }, badge: { text: 'Nuevo',  cls: 'lp-badge-pink'  }, tag: 'Salud mental',       title: 'Cómo manejar una crisis de ansiedad en público', desc: 'Tips prácticos y técnicas de regulación que puedes aplicar en segundos.',            meta: '📖 4 min' },
-  { slug: 'quemaduras', emoji: '🔥', imgStyle: { background: 'linear-gradient(160deg,#fef6e4,#fde5a0)' }, badge: { text: 'Gratis', cls: 'lp-badge-green' }, tag: 'Emergencias comunes',title: 'Quemaduras: qué hacer (y qué nunca hacer)',      desc: 'Los errores más frecuentes al tratar una quemadura y el protocolo correcto.',        meta: '📖 3 min' },
+  {
+    slug: 'rcp',        emoji: '🫀',
+    imgStyle: { background: 'linear-gradient(160deg,#e0f5ed,#c5edd8)' },
+    badge: { text: 'Gratis', cls: 'lp-badge-green' },
+    tag: 'Primeros auxilios',
+    title: 'RCP: guía paso a paso para adultos y niños',
+    desc: 'Aprende la técnica correcta de reanimación cardiopulmonar con instrucciones claras.',
+    meta: '📖 5 min',
+    video: { youtubeId: 'VT0Pbm8BWAA', title: 'RCP en adultos — técnica correcta', source: 'Cruz Roja Española', duration: '4:32' },
+  },
+  {
+    slug: 'ansiedad',   emoji: '🧠',
+    imgStyle: { background: 'linear-gradient(160deg,#e3f0fc,#c0daf7)' },
+    badge: { text: 'Nuevo',  cls: 'lp-badge-pink' },
+    tag: 'Salud mental',
+    title: 'Cómo manejar una crisis de ansiedad en público',
+    desc: 'Tips prácticos y técnicas de regulación que puedes aplicar en segundos.',
+    meta: '📖 4 min',
+    video: { youtubeId: 'ZFMLrRBCpzA', title: 'Cómo controlar una crisis de ansiedad', source: 'Hospital Clínic Barcelona', duration: '5:04' },
+  },
+  {
+    slug: 'quemaduras', emoji: '🔥',
+    imgStyle: { background: 'linear-gradient(160deg,#fef6e4,#fde5a0)' },
+    badge: { text: 'Gratis', cls: 'lp-badge-green' },
+    tag: 'Emergencias comunes',
+    title: 'Quemaduras: qué hacer (y qué nunca hacer)',
+    desc: 'Los errores más frecuentes al tratar una quemadura y el protocolo correcto.',
+    meta: '📖 3 min',
+    video: { youtubeId: '3MKJ7Hc4GQg', title: 'Primeros auxilios en quemaduras', source: 'MINSA Perú', duration: '3:55' },
+  },
 ];
 
 const GUIDE_VISUALS = {
@@ -149,6 +176,46 @@ function EyebrowPill({ text, bg, color }) {
   );
 }
 
+/* ── Modal de video ─────────────────────────────────────────── */
+function VideoModal({ video, onClose }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handler);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', handler); document.body.style.overflow = ''; };
+  }, [onClose]);
+
+  return (
+    <div className="vm-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label={video.title}>
+      <div className="vm-container" onClick={e => e.stopPropagation()}>
+        <div className="vm-header">
+          <div>
+            <h3 className="vm-title">{video.title}</h3>
+            <p className="vm-source">
+              <i className="ti ti-building-hospital" />
+              {video.source}{video.duration ? ` · ${video.duration}` : ''}
+            </p>
+          </div>
+          <button className="vm-close" onClick={onClose} aria-label="Cerrar">
+            <i className="ti ti-x" />
+          </button>
+        </div>
+        <div className="vm-iframe-wrap">
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+            title={video.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+        <p className="vm-disclaimer">
+          <i className="ti ti-shield-check" /> Contenido verificado · Canal oficial: <strong>{video.channel}</strong>
+        </p>
+      </div>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════ */
 export default function Home() {
   const [guideQuery, setGuideQuery] = useState('');
@@ -158,9 +225,11 @@ export default function Home() {
       .toLocaleLowerCase('es')
       .includes(normalizedGuideQuery)
   ));
+  const [activeVideo, setActiveVideo] = useState(null);
 
   return (
     <main id="main-content">
+      {activeVideo && <VideoModal video={activeVideo} onClose={() => setActiveVideo(null)} />}
 
       {/* ══════════════════════════════════════════════════════
           1. HERO  —  MediAlert  #0D2B1A
@@ -302,7 +371,7 @@ export default function Home() {
             </a>
           </div>
 
-          {/* Cards de artículos */}
+          {/* Cards de artículos con botón de video integrado */}
           <ul className="lp-res-cards" role="list" style={{ marginBottom: 64 }}>
             {RESOURCES.map(r => (
               <li key={r.title} className="lp-res-card" role="listitem"
@@ -320,9 +389,20 @@ export default function Home() {
                 </div>
                 <div className="lp-res-card-footer" style={{ borderTop: '1px solid #CCFBF1' }}>
                   <span style={{ color: '#6B7280' }}>{r.meta}</span>
-                  <Link to={`/aprende/${r.slug}`} className="lp-res-read-link" style={{ color: '#0f766e' }}>
-                    Leer <ChevronRight size={12} />
-                  </Link>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    {r.video && (
+                      <button
+                        className="lp-res-video-btn"
+                        onClick={() => setActiveVideo(r.video)}
+                      >
+                        <i className="ti ti-player-play-filled" />
+                        Ver video
+                      </button>
+                    )}
+                    <Link to={`/aprende/${r.slug}`} className="lp-res-read-link" style={{ color: '#0f766e' }}>
+                      Leer <ChevronRight size={12} />
+                    </Link>
+                  </div>
                 </div>
               </li>
             ))}

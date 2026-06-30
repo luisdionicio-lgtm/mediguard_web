@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { getApiErrorMessage } from '../services/errorService';
 import AuthBackground from '../components/AuthBackground';
+import PhoneInput from '../components/PhoneInput';
 
 function useCounter(target, duration = 1600) {
   const [val, setVal] = useState(0);
@@ -380,7 +381,7 @@ export default function Register() {
         user_type: form.userType,
       });
       setBtnState('success');
-      setTimeout(() => navigate('/login', { state: { successMessage: 'Registro exitoso, ahora inicia sesión.' } }), 1100);
+      setTimeout(() => navigate('/dashboard'), 1100);
     } catch (err) {
       setBtnState('idle');
       setShaking(true); setTimeout(() => setShaking(false), 380);
@@ -577,18 +578,11 @@ export default function Register() {
                 {/* Teléfono */}
                 <div className="auth-field">
                   <label className="auth-label">Teléfono</label>
-                  <div className="auth-input-wrap">
-                    <i className="ti ti-phone auth-input-icon" />
-                    <input
-                      className={`auth-input${fieldErr && fieldErr.includes('teléfono') ? ' is-error' : ''}`}
-                      type="tel"
-                      name="phone"
-                      placeholder="987 654 321"
-                      autoComplete="tel"
-                      value={form.phone}
-                      onChange={onChange}
-                    />
-                  </div>
+                  <PhoneInput
+                    value={form.phone}
+                    hasError={!!(fieldErr && fieldErr.includes('teléfono'))}
+                    onChange={val => { setForm(f => ({ ...f, phone: val })); setFieldErr(''); }}
+                  />
                   <span className="auth-form-hint">Lo usaremos para alertar a tus contactos en una emergencia.</span>
                   {fieldErr && fieldErr.includes('teléfono') && (
                     <span className="auth-field-error show">{fieldErr}</span>

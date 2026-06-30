@@ -12,6 +12,7 @@ import Hospitals from '../pages/Hospitals';
 import News from '../pages/News';
 import Profile from '../pages/Profile';
 import Emergencies from '../pages/Emergencies';
+import VerifyEmail from '../pages/VerifyEmail';
 import Courses from '../pages/Courses';
 import CourseDetail from '../pages/CourseDetail';
 import CourseLearn from '../pages/CourseLearn';
@@ -69,6 +70,7 @@ function Layout() {
           <Route path="/login"       element={<Login />} />
           <Route path="/register"    element={<Register />} />
           <Route path="/logout"      element={<LogoutRoute />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/dashboard"   element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/guides"      element={<PrivateRoute><Guides /></PrivateRoute>} />
           <Route path="/hospitals"   element={<PrivateRoute><Hospitals /></PrivateRoute>} />

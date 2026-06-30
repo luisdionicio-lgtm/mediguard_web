@@ -46,6 +46,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -107,6 +111,19 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- H2 (solo tests) reinterpreta TIMESTAMP WITH TIME ZONE con la
+					     zona horaria por defecto de la JVM al releer una fila, lo que
+					     desplaza columnas Instant (ej. expires_at) si la maquina no
+					     corre en UTC. Forzamos UTC para que las comparaciones de
+					     fechas en tests sean correctas y deterministas en cualquier
+					     maquina/CI, igual que en produccion (Postgres no tiene este problema). -->
+					<argLine>-Duser.timezone=UTC</argLine>
 				</configuration>
 			</plugin>
 			<plugin>

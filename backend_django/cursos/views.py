@@ -23,9 +23,15 @@ class CoursePagination(PageNumberPagination):
 
 
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
     pagination_class = CoursePagination
     lookup_field = 'slug'
+
+    def get_permissions(self):
+        # Catálogo y detalle de cursos son públicos.
+        # Solo escribir una reseña (POST ratings) requiere estar autenticado.
+        if self.action == 'ratings' and self.request.method == 'POST':
+            return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -96,4 +102,4 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]

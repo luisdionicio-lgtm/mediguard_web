@@ -951,6 +951,115 @@ select.input { cursor: pointer; }
 }
 
 /* ============================================================
+   PHONE INPUT — Selector de país + número
+   ============================================================ */
+.phone-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #D1FAE5;
+  border-radius: 10px;
+  background: #fff;
+  overflow: visible;
+  transition: border-color 0.2s;
+}
+.phone-input-wrap:focus-within { border-color: #059669; box-shadow: 0 0 0 3px rgba(5,150,105,0.10); }
+
+.phone-country-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+  height: 44px;
+  background: #F0FDF4;
+  border: none;
+  border-right: 1.5px solid #D1FAE5;
+  border-radius: 9px 0 0 9px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.phone-country-btn:hover { background: #DCFCE7; }
+
+.phone-flag   { font-size: 1.15rem; line-height: 1; }
+.phone-dial   { font-size: 0.8rem; font-weight: 700; color: #059669; min-width: 30px; }
+.phone-chevron { font-size: 11px; color: #6B7280; }
+
+.phone-number-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0 12px;
+  height: 44px;
+  font-size: 0.9rem;
+  background: transparent;
+  color: var(--text-primary);
+  border-radius: 0 9px 9px 0;
+}
+.phone-number-input.is-error { color: var(--error); }
+
+/* Dropdown */
+.phone-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 280px;
+  background: #fff;
+  border: 1px solid #E5EFF0;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  z-index: 100;
+  overflow: hidden;
+  animation: fadeInUp 0.15s ease both;
+}
+
+.phone-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #F0F0F0;
+}
+.phone-search-icon { color: #9CA3AF; font-size: 14px; }
+.phone-search {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.85rem;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.phone-list {
+  list-style: none;
+  margin: 0; padding: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.phone-list::-webkit-scrollbar { width: 4px; }
+.phone-list::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 4px; }
+
+.phone-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+.phone-list-item:hover  { background: #F0FDF4; }
+.phone-list-item.active { background: #DCFCE7; }
+
+.phone-list-name { flex: 1; font-size: 0.82rem; color: var(--text-primary); font-weight: 500; }
+.phone-list-dial { font-size: 0.78rem; color: #059669; font-weight: 700; }
+.phone-no-results { padding: 12px; text-align: center; font-size: 0.8rem; color: #9CA3AF; }
+
+/* ============================================================
    AUTH PAGES (Login & Register)
    ============================================================ */
 

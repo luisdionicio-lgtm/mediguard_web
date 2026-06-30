@@ -8,13 +8,17 @@ import com.mediguard.usuario.user.dto.RegisterRequest;
 import com.mediguard.usuario.user.entity.UserEntity;
 import com.mediguard.usuario.user.entity.UserRoleEntity;
 import com.mediguard.usuario.user.entity.UserRoleId;
+import com.mediguard.usuario.user.entity.VerificationTokenEntity;
+import com.mediguard.usuario.user.entity.VerificationTokenEntity.TokenType;
 import com.mediguard.usuario.user.exception.ApiFieldException;
 import com.mediguard.usuario.user.repository.RoleRepository;
 import com.mediguard.usuario.user.repository.UserRepository;
 import com.mediguard.usuario.user.repository.UserRoleRepository;
+import com.mediguard.usuario.user.repository.VerificationTokenRepository;
 import com.mediguard.usuario.user.security.JwtService;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -39,29 +43,37 @@ public class AuthService {
             "CUIDADOR", "SOCORRISTA");
     private static final String DEFAULT_ROLE = "CIUDADANO";
 
+    private static final long EMAIL_VERIFICATION_HOURS = 24;
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
     private final PasswordHashService passwordHashService;
     private final JwtService jwtService;
     private final ProfileMapper profileMapper;
     private final EntityManager entityManager;
+    private final EmailService emailService;
 
     public AuthService(
             UserRepository userRepository,
             RoleRepository roleRepository,
             UserRoleRepository userRoleRepository,
+            VerificationTokenRepository verificationTokenRepository,
             PasswordHashService passwordHashService,
             JwtService jwtService,
             ProfileMapper profileMapper,
-            EntityManager entityManager) {
+            EntityManager entityManager,
+            EmailService emailService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;
+        this.verificationTokenRepository = verificationTokenRepository;
         this.passwordHashService = passwordHashService;
         this.jwtService = jwtService;
         this.profileMapper = profileMapper;
         this.entityManager = entityManager;
+        this.emailService = emailService;
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -107,6 +119,9 @@ public class AuthService {
         UserEntity savedUser = userRepository.saveAndFlush(user);
         UserEntity userWithRoles = ensureDefaultRole(savedUser);
         userWithRoles = assignRequestedRole(userWithRoles, request.userType());
+
+        sendVerificationEmail(userWithRoles);
+
         return authResponse(userWithRoles);
     }
 
@@ -129,6 +144,39 @@ public class AuthService {
             userRoleRepository.saveAndFlush(new UserRoleEntity(user, defaultRole));
         }
         return reloadUser(user);
+    }
+
+    private void sendVerificationEmail(UserEntity user) {
+        VerificationTokenEntity verificationToken = new VerificationTokenEntity(
+                user, TokenType.EMAIL_VERIFICATION, Instant.now().plus(EMAIL_VERIFICATION_HOURS, ChronoUnit.HOURS));
+        verificationToken = verificationTokenRepository.save(verificationToken);
+        emailService.sendVerificationEmail(user, verificationToken.getToken());
+    }
+
+    /**
+     * GET /api/verify-email/?token=...
+     * Marca el correo del usuario como verificado si el token es válido,
+     * no expiró y no fue usado antes.
+     */
+    public MessageResponse verifyEmail(String token) {
+        VerificationTokenEntity verificationToken = verificationTokenRepository
+                .findByTokenAndUsedFalse(token)
+                .filter(t -> t.getTokenType() == TokenType.EMAIL_VERIFICATION)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "El enlace de verificación no es válido o ya fue usado."));
+
+        if (verificationToken.getExpiresAt().isBefore(Instant.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El enlace de verificación venció.");
+        }
+
+        verificationToken.markUsed();
+        verificationTokenRepository.save(verificationToken);
+
+        UserEntity user = verificationToken.getUser();
+        user.setVerified(true);
+        userRepository.save(user);
+
+        return new MessageResponse("Correo verificado correctamente.");
     }
 
     /**

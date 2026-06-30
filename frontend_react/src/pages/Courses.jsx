@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Search, SlidersHorizontal, X, Lock } from 'lucide-react';
 import { useCourses } from '../hooks/useCourses';
 import CourseCard, { CourseCardSkeleton } from '../components/courses/CourseCard';
 import CourseFilters from '../components/courses/CourseFilters';
+import { authService } from '../services/authService';
+
+const FREE_PREVIEW_LIMIT = 3;
 
 const S = {
   page: { minHeight: '100vh', background: 'var(--bg)', color: 'var(--text-primary)' },
@@ -34,9 +38,12 @@ export default function Courses() {
   const search = useDebounce(rawSearch);
   const loaderRef = useRef(null);
 
+  const isAuthenticated = !!authService.getCurrentUser();
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } = useCourses({ ...filters, search });
 
-  const courses = data?.pages.flatMap((p) => p.results ?? p) ?? [];
+  const allCourses = data?.pages.flatMap((p) => p.results ?? p) ?? [];
+  const courses = isAuthenticated ? allCourses : allCourses.slice(0, FREE_PREVIEW_LIMIT);
+  const lockedCount = isAuthenticated ? 0 : Math.max(0, allCourses.length - FREE_PREVIEW_LIMIT);
   const total = data?.pages[0]?.count ?? 0;
 
   // Infinite scroll via IntersectionObserver
@@ -108,8 +115,28 @@ export default function Courses() {
             {isFetchingNextPage && Array.from({ length: 3 }, (_, i) => <CourseCardSkeleton key={`sk${i}`} />)}
           </div>
 
-          {/* Infinite scroll trigger */}
-          <div ref={loaderRef} style={{ height: 1, marginTop: 20 }} />
+          {/* Banner de acceso bloqueado */}
+          {!isAuthenticated && lockedCount > 0 && (
+            <div style={{ margin: '32px auto', maxWidth: 520, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '28px 24px', textAlign: 'center' }}>
+              <Lock size={32} style={{ color: 'var(--brand)', marginBottom: 12 }} />
+              <h3 style={{ margin: '0 0 8px', fontSize: '1.1rem', color: 'var(--text-primary)' }}>
+                {lockedCount} curso{lockedCount > 1 ? 's' : ''} más disponible{lockedCount > 1 ? 's' : ''}
+              </h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 20 }}>
+                Inicia sesión para acceder al catálogo completo de primeros auxilios.
+              </p>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link to="/login" className="btn btn-primary btn-sm">Iniciar sesión</Link>
+                <Link to="/register" className="btn btn-outline btn-sm">Crear cuenta gratis</Link>
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: 'none' }}>
+          </div>
+
+          {/* Infinite scroll trigger (solo para usuarios autenticados) */}
+          {isAuthenticated && <div ref={loaderRef} style={{ height: 1, marginTop: 20 }} />}
         </div>
       </div>
 

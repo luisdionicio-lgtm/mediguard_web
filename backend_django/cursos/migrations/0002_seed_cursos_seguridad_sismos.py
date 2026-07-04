@@ -358,10 +358,12 @@ def seed_cursos(apps, schema_editor):
     Category = apps.get_model('categorias','Category')
     Usuario  = apps.get_model('users',     'Usuario')
 
-    # Necesitamos un autor para los cursos. Si no hay ningún admin, se omite.
+    # Necesitamos un autor para los cursos. El modelo Usuario no tiene columnas
+    # is_superuser/is_staff (son propiedades que consultan el rol ADMIN), así que
+    # buscamos un admin por su rol. Si no hay ningún usuario, se omite el seed.
     author = (
-        Usuario.objects.filter(is_superuser=True).first()
-        or Usuario.objects.filter(is_staff=True).first()
+        Usuario.objects.filter(roles__name='ADMIN').first()
+        or Usuario.objects.first()
     )
     if author is None:
         print(

@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
@@ -31,8 +32,10 @@ public class VerificationTokenEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    // Generado por PostgreSQL DEFAULT encode(gen_random_bytes(32), 'hex')
-    @Column(insertable = false, updatable = false, unique = true, nullable = false)
+    // El DDL de Postgres define un DEFAULT encode(gen_random_bytes(32), 'hex'),
+    // pero se envía explícitamente desde Java para que funcione igual en H2 (test),
+    // que no tiene ese default. Un valor explícito siempre sobreescribe el DEFAULT.
+    @Column(unique = true, nullable = false)
     private String token;
 
     @Enumerated(EnumType.STRING)
@@ -51,10 +54,19 @@ public class VerificationTokenEntity {
     protected VerificationTokenEntity() {
     }
 
-    public VerificationTokenEntity(UserEntity user, TokenType tokenType, Instant expiresAt) {
+    public VerificationTokenEntity(UserEntity user, String token, TokenType tokenType, Instant expiresAt) {
         this.user = user;
+        this.token = token;
         this.tokenType = tokenType;
         this.expiresAt = expiresAt;
+    }
+
+    @PrePersist
+    void onCreate() {
+        // Mismo motivo que el token: el DEFAULT now() de Postgres no existe en H2.
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
     }
 
     public UUID getId() { return id; }

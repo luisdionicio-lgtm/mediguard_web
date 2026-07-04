@@ -31,5 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
 # Ignorar configuraciones sensibles
 src/main/resources/application.properties
+
+*.pem
+
+# logs
+*.log

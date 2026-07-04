@@ -4,6 +4,7 @@ import com.mediguard.usuario.aprendizaje.entity.EnrollmentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 public interface EnrollmentRepository extends JpaRepository<EnrollmentEntity, UUID> {
@@ -12,4 +13,6 @@ public interface EnrollmentRepository extends JpaRepository<EnrollmentEntity, UU
     Optional<EnrollmentEntity> findByUser_IdAndCourseId(UUID userId, UUID courseId);
 
     boolean existsByUser_IdAndCourseId(UUID userId, UUID courseId);
+
+    List<EnrollmentEntity> findAllByUser_IdOrderByEnrolledAtDesc(UUID userId);
 }

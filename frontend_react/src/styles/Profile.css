@@ -1,63 +1,75 @@
+/* ============================================================
+   MediGuard AI — Perfil. 100% tokens de global.css.
+   ============================================================ */
+
 .profile-container {
-  padding: 120px 5% 60px;
+  padding: 48px 5% 64px;
   max-width: 1200px;
   margin: 0 auto;
-  min-height: 80vh;
+  width: 100%;
+  min-height: 70vh;
 }
 
+/* ── Header ── */
 .profile-header {
   display: flex;
   align-items: center;
   gap: 2rem;
-  background: var(--white);
-  padding: 3rem;
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
+  background: var(--surface);
+  padding: 2.5rem 3rem;
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 2rem;
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--border);
 }
 
 .profile-avatar {
-  width: 120px;
-  height: 120px;
-  background: linear-gradient(135deg, var(--teal-primary), var(--blue-deep));
+  width: 110px;
+  height: 110px;
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--white);
-  font-size: 3rem;
-  box-shadow: var(--shadow-lg);
-  border: 6px solid var(--teal-light);
+  color: #fff;
+  font-size: 2.5rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  box-shadow: var(--shadow-md);
+  border: 4px solid var(--brand-light);
+  flex-shrink: 0;
 }
 
-.profile-title {
-  flex-grow: 1;
-}
+.profile-title { flex-grow: 1; }
 
 .profile-title h1 {
-  font-size: 2.5rem;
-  color: var(--blue-deep);
-  margin-bottom: 0.5rem;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  color: var(--text-primary);
+  margin-bottom: 0.375rem;
+  letter-spacing: -0.5px;
 }
 
 .profile-title p {
-  color: var(--blue-light);
-  font-size: 1.125rem;
+  color: var(--text-muted);
+  font-size: 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
 .profile-badge {
-  background: var(--teal-light);
-  color: var(--teal-dark);
+  background: var(--brand-subtle);
+  color: var(--brand);
+  border: 1px solid var(--brand-border);
   padding: 0.5rem 1rem;
-  border-radius: var(--radius-full);
+  border-radius: var(--r-full);
   font-weight: 700;
   font-size: 0.875rem;
+  font-family: var(--font-heading);
+  white-space: nowrap;
 }
 
+/* ── Grid de secciones ── */
 .profile-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -65,91 +77,125 @@
 }
 
 .profile-section {
-  background: var(--white);
-  padding: 2.5rem;
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--gray-200);
+  background: var(--surface);
+  padding: 2rem 2.5rem;
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-xs);
+  border: 1px solid var(--border);
 }
+
+.profile-section.full { grid-column: 1 / -1; }
 
 .profile-section-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  border-bottom: 2px solid var(--gray-100);
+  gap: 0.875rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 1rem;
 }
 
-.profile-section-header svg {
-  color: var(--teal-primary);
-}
+.profile-section-header svg { color: var(--brand); flex-shrink: 0; }
+.profile-section-header.danger svg { color: var(--red-emergency); }
 
 .profile-section-header h2 {
-  font-size: 1.5rem;
-  color: var(--blue-deep);
+  font-size: 1.25rem;
+  color: var(--text-primary);
 }
 
-.info-list {
-  list-style: none;
-}
+/* ── Lista de información ── */
+.info-list { list-style: none; padding: 0; margin: 0; }
 
 .info-list li {
   display: flex;
   justify-content: space-between;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--gray-100);
+  gap: 1rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--border);
 }
 
-.info-list li:last-child {
-  border-bottom: none;
-}
+.info-list li:last-child { border-bottom: none; }
 
-.info-label {
-  color: var(--blue-light);
-  font-weight: 600;
-}
+.info-label { color: var(--text-muted); font-weight: 600; font-size: 0.9375rem; }
+.info-value { color: var(--text-primary); font-weight: 700; font-size: 0.9375rem; text-align: right; }
 
-.info-value {
-  color: var(--blue-deep);
-  font-weight: 700;
-}
-
-.health-status-cards {
+/* ── Tarjetas de contacto ── */
+.contact-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.contact-card {
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  display: grid;
+  gap: 1rem;
+  background: var(--bg);
+  transition: var(--transition);
+}
+.contact-card:hover { border-color: var(--brand-border); box-shadow: var(--shadow-sm); }
+
+.contact-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 1rem;
 }
 
-.status-card {
-  background: var(--gray-50);
-  padding: 1.5rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--gray-200);
-  text-align: center;
-}
+.contact-name { font-weight: 700; color: var(--text-primary); margin: 0 0 0.25rem; }
+.contact-rel  { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+.contact-note { font-size: 0.85rem; color: var(--text-muted); margin: 0.5rem 0 0; }
 
-.status-card-value {
-  font-size: 2rem;
-  color: var(--teal-primary);
-  font-weight: 800;
-  margin: 0.5rem 0;
-}
-
-.status-card-label {
-  color: var(--blue-light);
+.contact-phone {
+  color: var(--brand);
+  font-weight: 700;
+  background: var(--brand-subtle);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--r-full);
   font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 600;
+  white-space: nowrap;
 }
 
+.contact-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+/* ── Formulario de contacto ── */
+.contact-form {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 1.25rem;
+}
+
+.contact-form h3 { color: var(--text-primary); margin: 0; font-size: 1.0625rem; }
+
+.contact-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.contact-form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+.contact-form-check input { accent-color: var(--brand); width: 16px; height: 16px; cursor: pointer; }
+
+.contact-form-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+/* ── Responsive ── */
 @media (max-width: 768px) {
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-  }
-  .profile-grid {
-    grid-template-columns: 1fr;
-  }
+  .profile-container { padding: 32px 5% 48px; }
+  .profile-header { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+  .profile-title p { justify-content: center; }
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-section { padding: 1.5rem; }
 }

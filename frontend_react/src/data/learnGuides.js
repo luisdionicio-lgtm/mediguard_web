@@ -1,0 +1,469 @@
+export const LEARN_GUIDES = {
+  rcp: {
+    slug: 'rcp',
+    emoji: '🫀',
+    color: '#22c55e',
+    gradientFrom: '#e0f5ed',
+    gradientTo: '#c5edd8',
+    badge: 'Gratis',
+    tag: 'Primeros auxilios',
+    title: 'RCP: guía paso a paso para adultos y niños',
+    duration: '5 min de lectura',
+    videoEmbed: null,
+    intro:
+      'La Reanimación Cardiopulmonar puede triplicar las posibilidades de sobrevivir a un paro cardíaco. Actuar en los primeros 4 minutos es crítico.',
+    steps: [
+      {
+        title: 'Verifica la seguridad del entorno',
+        desc: 'Antes de acercarte, asegúrate de que ni tú ni la víctima estén en peligro (tráfico, cables, agua, etc.).',
+      },
+      {
+        title: 'Comprueba si la persona responde',
+        desc: 'Agita suavemente los hombros y pregunta en voz alta: "¿Estás bien?" Si no hay respuesta ni respiración normal, actúa de inmediato.',
+      },
+      {
+        title: 'Llama al 105 o 911',
+        desc: 'Pide a alguien que llame ahora. Si estás solo, activa el altavoz y llama mientras inicias la RCP.',
+      },
+      {
+        title: 'Posición correcta',
+        desc: 'Coloca a la persona boca arriba sobre una superficie firme. Arrodíllate a su lado a la altura del pecho.',
+      },
+      {
+        title: '30 compresiones torácicas',
+        desc: 'Entrelaza las manos en el centro del pecho (sobre el esternón). Con brazos estirados comprime 5–6 cm de profundidad a ritmo de 100–120 por minuto (canta mentalmente "Stayin\' Alive").',
+      },
+      {
+        title: '2 respiraciones de rescate',
+        desc: 'Inclina la cabeza hacia atrás, levanta el mentón, cierra la nariz con dos dedos y da 2 soplos de 1 segundo. El pecho debe elevarse visiblemente.',
+      },
+      {
+        title: 'Repite el ciclo 30:2',
+        desc: 'Alterna 30 compresiones y 2 respiraciones hasta que llegue la ambulancia, la persona reaccione o aparezca un DEA disponible.',
+      },
+    ],
+    extraNote: {
+      title: 'En niños (1–8 años) y bebés',
+      items: [
+        'Bebés: usa solo 2 dedos (índice y medio) sobre el esternón.',
+        'Niños pequeños: usa una sola mano.',
+        'Comprime 1/3 del diámetro del pecho.',
+        'Comienza con 5 respiraciones antes de las compresiones.',
+        'Las respiraciones deben ser suaves, no forzadas.',
+      ],
+    },
+    warnings: [
+      { type: 'danger', text: 'No detengas la RCP hasta que llegue ayuda o la persona muestre señales claras de vida.' },
+      { type: 'tip',    text: 'Si hay un DEA disponible, úsalo cuanto antes. Los pasos de audio te guían.' },
+      { type: 'tip',    text: 'Una RCP imperfecta es mucho mejor que ninguna. No temas hacerla.' },
+    ],
+  },
+
+  ansiedad: {
+    slug: 'ansiedad',
+    emoji: '🧠',
+    color: '#60a5fa',
+    gradientFrom: '#e3f0fc',
+    gradientTo: '#c0daf7',
+    badge: 'Nuevo',
+    tag: 'Salud mental',
+    title: 'Cómo manejar una crisis de ansiedad en público',
+    duration: '4 min de lectura',
+    videoEmbed: null,
+    intro:
+      'Una crisis de ansiedad puede sentirse abrumadora, pero siempre tiene fin. Con estas técnicas puedes reducir la intensidad en cuestión de minutos.',
+    steps: [
+      {
+        title: 'Reconoce lo que está pasando',
+        desc: 'Recuerda: es una crisis de ansiedad, no un infarto. Tu cuerpo activó la alarma de peligro por error. Estás a salvo.',
+      },
+      {
+        title: 'Técnica 5-4-3-2-1',
+        desc: 'Nombra en voz baja: 5 cosas que ves · 4 que puedes tocar · 3 que oyes · 2 que hueles · 1 que saboreas. Ancla tu mente al presente.',
+      },
+      {
+        title: 'Respiración 4-7-8',
+        desc: 'Inhala por la nariz contando 4 → retén el aire contando 7 → exhala lentamente por la boca contando 8. Repite 3 veces. Activa el sistema nervioso parasimpático.',
+      },
+      {
+        title: 'Relaja tu cuerpo',
+        desc: 'Siéntate o apóyate en una pared. Desaprieta la mandíbula, los hombros y los puños. Presiona los pies suavemente contra el suelo.',
+      },
+      {
+        title: 'Cuestiona el pensamiento',
+        desc: 'Pregúntate: "¿Estoy en peligro real ahora mismo?" y "¿Qué evidencia concreta tengo de que algo malo va a ocurrir?". Responder activa el pensamiento lógico.',
+      },
+      {
+        title: 'Pide apoyo si lo necesitas',
+        desc: 'No hay vergüenza en decirle a alguien: "Estoy teniendo una crisis de ansiedad, necesito un momento". Las personas suelen ayudar.',
+      },
+    ],
+    extraNote: {
+      title: 'Si estás ayudando a alguien',
+      items: [
+        'Habla en voz tranquila y baja.',
+        'No digas "cálmate" — pregunta "¿qué necesitas ahora?".',
+        'Ofrece acompañarla a un lugar tranquilo.',
+        'No la dejes sola hasta que haya pasado la crisis.',
+        'Evita decir "no es para tanto" o minimizar lo que siente.',
+      ],
+    },
+    warnings: [
+      { type: 'tip',    text: 'La mayoría de las crisis duran entre 5 y 20 minutos. No duran para siempre, aunque se sientan así.' },
+      { type: 'danger', text: 'Si las crisis son frecuentes o afectan tu vida diaria, consulta a un profesional de salud mental.' },
+      { type: 'tip',    text: 'Cafeína en exceso, alcohol y falta de sueño son los principales desencadenantes.' },
+    ],
+  },
+
+  quemaduras: {
+    slug: 'quemaduras',
+    emoji: '🔥',
+    color: '#f59e0b',
+    gradientFrom: '#fef6e4',
+    gradientTo: '#fde5a0',
+    badge: 'Gratis',
+    tag: 'Emergencias comunes',
+    title: 'Quemaduras: qué hacer (y qué nunca hacer)',
+    duration: '3 min de lectura',
+    videoEmbed: null,
+    intro:
+      'Las quemaduras son una de las emergencias más frecuentes en el hogar. Actuar correctamente en los primeros minutos reduce el daño tisular significativamente.',
+    steps: [
+      {
+        title: 'Aleja a la persona del peligro',
+        desc: 'Retira a la víctima del calor, fuego o sustancia química. Si la ropa arde, hazla rodar por el suelo o cúbrela con una manta (sin sintéticos).',
+      },
+      {
+        title: 'Enfría con agua fría corriente',
+        desc: 'Coloca la zona quemada bajo agua fría (no helada, no con hielo) durante 10 a 20 minutos. Esto reduce el daño y el dolor inmediatamente.',
+      },
+      {
+        title: 'Retira accesorios cercanos',
+        desc: 'Quita relojes, pulseras, anillos o ropa cerca de la quemadura antes de que la zona infle. No arranques nada que esté pegado a la piel.',
+      },
+      {
+        title: 'Cubre la zona quemada',
+        desc: 'Usa una gasa estéril, venda no adherente o un paño limpio. Cubre sin apretar. No uses algodón directamente sobre la herida.',
+      },
+      {
+        title: 'Evalúa el grado de la quemadura',
+        desc: '1er grado: enrojecimiento sin ampollas (sunburn). 2do grado: ampollas, dolor intenso. 3er grado: piel blanca, marrón o negra, sin dolor (nervios dañados) → emergencia.',
+      },
+      {
+        title: 'Busca atención médica',
+        desc: 'Ve a urgencias si: hay ampollas grandes, la quemadura es en cara/manos/pies/genitales/articulaciones, la víctima es niño o anciano, o el área supera el tamaño de la palma de la mano.',
+      },
+    ],
+    extraNote: {
+      title: 'Quemaduras químicas',
+      items: [
+        'Enjuaga con abundante agua por al menos 20 minutos.',
+        'Retira la ropa contaminada usando guantes si tienes.',
+        'No intentes neutralizar el químico con otro producto.',
+        'Llama al 105 o 911 inmediatamente.',
+        'Lleva el envase del producto al hospital si es posible.',
+      ],
+    },
+    warnings: [
+      { type: 'danger', text: 'NUNCA uses mantequilla, pasta dental, aceite, yogur ni hielo sobre una quemadura.' },
+      { type: 'danger', text: 'No revientes las ampollas — son barrera protectora contra infecciones.' },
+      { type: 'tip',    text: 'El gel de aloe vera puro puede aliviar quemaduras de 1er grado una vez enfriadas.' },
+    ],
+  },
+
+  'control-hemorragias': {
+    kind: 'offline-first-aid',
+    slug: 'control-hemorragias',
+    title: 'Control de hemorragias',
+    summary: 'Medidas iniciales para reducir una pérdida importante de sangre mientras llega ayuda profesional.',
+    category: 'Primeros auxilios',
+    estimatedReadTime: '3 min de lectura',
+    pdfSize: null,
+    pdfUrl: 'https://www.inmp.gob.pe/uploads/Manual_Primeros_Auxilios.pdf',
+    sourceName: 'Instituto Nacional Materno Perinatal — Manual de Primeros Auxilios',
+    sourceUrl: 'https://www.inmp.gob.pe/uploads/Manual_Primeros_Auxilios.pdf',
+    lastReviewed: '2026-06-21',
+    emergencyNotice: 'Información educativa. En una emergencia real, llama a los servicios de emergencia.',
+    keyIdea: 'La prioridad es aplicar presión directa y continua sobre la herida y pedir ayuda temprano. No retires el primer apósito para comprobar el sangrado.',
+    beforeHelping: [
+      'Verifica que no haya peligros como tránsito, electricidad, vidrio u objetos cortantes.',
+      'Pide a otra persona que llame a emergencias y usa guantes o una barrera limpia si están disponibles.',
+    ],
+    warningSigns: [
+      'Sangrado continuo o que empapa rápidamente apósitos o telas.',
+      'Palidez, sudor frío, debilidad, confusión o somnolencia.',
+      'Herida profunda, objeto incrustado o sangrado en cuello, pecho o abdomen.',
+    ],
+    doSteps: [
+      'Comprueba que el lugar sea seguro y solicita ayuda de emergencia.',
+      'Usa guantes si están disponibles y aplica presión firme con una gasa o tela limpia.',
+      'Mantén la presión continua. Si la tela se empapa, coloca otra encima sin retirar la primera.',
+      'Mantén a la persona quieta y abrigada mientras esperas ayuda.',
+    ],
+    dontSteps: [
+      'No retires objetos incrustados ni presiones directamente sobre ellos.',
+      'No levantes repetidamente el apósito para comprobar la herida.',
+      'No apliques sustancias caseras ni manipules el interior de la herida.',
+      'No des alimentos o bebidas si podría necesitar atención urgente.',
+    ],
+    callEmergencyWhen: [
+      'El sangrado es abundante, no disminuye con presión continua o vuelve a comenzar.',
+      'Hay signos de desmayo, confusión, dificultad para respirar o shock.',
+      'La lesión afecta cabeza, cuello, pecho, abdomen o contiene un objeto incrustado.',
+    ],
+    afterCare: [
+      'Mantén la presión y vigila respiración, respuesta y cambios en el estado de la persona hasta que llegue ayuda.',
+      'Informa al personal de salud cómo ocurrió la lesión, cuándo comenzó el sangrado y qué medidas aplicaste.',
+    ],
+    disclaimer: 'Esta guía no enseña torniquetes ni otras técnicas avanzadas. Úsalas únicamente con capacitación y siguiendo indicaciones de emergencias.',
+  },
+
+  'reacciones-alergicas': {
+    kind: 'offline-first-aid',
+    slug: 'reacciones-alergicas',
+    title: 'Reacciones alérgicas',
+    summary: 'Cómo reconocer una reacción grave y acompañar a la persona hasta recibir atención médica.',
+    category: 'Alergias',
+    estimatedReadTime: '3 min de lectura',
+    pdfSize: null,
+    pdfUrl: 'https://www.unirioja.es/servicios/sprl/pdf/manual_primeros_auxilios.pdf',
+    sourceName: 'Universidad de La Rioja — Manual de primeros auxilios',
+    sourceUrl: 'https://www.unirioja.es/servicios/sprl/pdf/manual_primeros_auxilios.pdf',
+    lastReviewed: '2026-06-21',
+    emergencyNotice: 'Información educativa. En una emergencia real, llama a los servicios de emergencia.',
+    keyIdea: 'Hinchazón de boca o garganta, dificultad respiratoria, desmayo o deterioro rápido pueden indicar anafilaxia: usa el plan prescrito y pide ayuda sin esperar.',
+    beforeHelping: [
+      'Comprueba que el entorno sea seguro y evita un nuevo contacto con el posible desencadenante si puede hacerse sin riesgo.',
+      'Pregunta si tiene un plan de emergencia o un autoinyector recetado y dónde lo guarda.',
+    ],
+    warningSigns: [
+      'Hinchazón de labios, lengua o garganta.',
+      'Dificultad para respirar, voz ronca o sensación de cierre de garganta.',
+      'Ronchas generalizadas acompañadas de mareo, vómitos o debilidad.',
+      'Desmayo o deterioro rápido después de contacto con un posible alérgeno.',
+    ],
+    doSteps: [
+      'Llama a emergencias ante cualquier signo de anafilaxia.',
+      'Ayuda a usar el autoinyector recetado siguiendo las instrucciones del dispositivo.',
+      'Mantén a la persona en una posición cómoda y evita que camine o se ponga de pie de forma repentina.',
+      'Vigila su respiración y sigue las indicaciones del operador de emergencias.',
+    ],
+    dontSteps: [
+      'No esperes a que todos los síntomas aparezcan antes de pedir ayuda.',
+      'No ofrezcas comida, bebida o medicamentos no recetados para esa persona.',
+      'No dejes sola a la persona aunque parezca mejorar.',
+      'No reemplaces la atención de emergencia únicamente con un antihistamínico.',
+    ],
+    callEmergencyWhen: [
+      'Existe dificultad respiratoria, hinchazón de boca o garganta, desmayo o confusión.',
+      'Los síntomas afectan más de un sistema, por ejemplo piel y respiración.',
+      'Se utilizó un autoinyector de epinefrina, incluso si hay mejoría.',
+    ],
+    afterCare: [
+      'Permanece con la persona, vigila su respiración y registra la hora en que comenzaron los síntomas y se usó el autoinyector.',
+      'Aunque mejore, debe recibir evaluación profesional porque los síntomas pueden reaparecer.',
+    ],
+    disclaimer: 'No administres medicación ajena ni improvises dosis. Esta guía acompaña el plan indicado por profesionales, pero no lo reemplaza.',
+  },
+
+  'ahogamiento-obstruccion': {
+    kind: 'offline-first-aid',
+    slug: 'ahogamiento-obstruccion',
+    title: 'Ahogamiento y obstrucción',
+    summary: 'Respuesta básica ante atragantamiento o dificultad respiratoria después de una inmersión.',
+    category: 'Vía aérea',
+    estimatedReadTime: '4 min de lectura',
+    pdfSize: null,
+    pdfUrl: 'https://www.unirioja.es/servicios/sprl/pdf/manual_primeros_auxilios.pdf',
+    sourceName: 'Universidad de La Rioja — Manual de primeros auxilios',
+    sourceUrl: 'https://www.unirioja.es/servicios/sprl/pdf/manual_primeros_auxilios.pdf',
+    lastReviewed: '2026-06-21',
+    emergencyNotice: 'Información educativa. En una emergencia real, llama a los servicios de emergencia.',
+    keyIdea: 'Una tos fuerte permite mover aire; anímala. Si no puede hablar, respirar o toser eficazmente, es una obstrucción grave y requiere ayuda inmediata.',
+    beforeHelping: [
+      'Confirma que sea seguro acercarte; en el agua, ayuda desde tierra o con un objeto flotante siempre que sea posible.',
+      'Identifica si la persona puede hablar o toser y considera su edad antes de realizar cualquier maniobra.',
+    ],
+    warningSigns: [
+      'No puede hablar, toser con fuerza o respirar.',
+      'Labios azulados, pérdida de conciencia o respiración anormal.',
+      'Tos persistente, dolor de pecho o dificultad respiratoria tras salir del agua.',
+    ],
+    doSteps: [
+      'Si la tos es fuerte, anima a seguir tosiendo y observa de cerca.',
+      'Si no puede respirar o la tos deja de ser efectiva, llama a emergencias e inicia maniobras apropiadas para su edad solo si sabes realizarlas.',
+      'En el agua, intenta ayudar desde un lugar seguro y evita convertirte en otra víctima.',
+      'Si pierde la conciencia, sigue las instrucciones del operador e inicia RCP si estás capacitado.',
+    ],
+    dontSteps: [
+      'No introduzcas los dedos a ciegas en la boca.',
+      'No golpees la espalda si la persona tose y respira eficazmente.',
+      'No cuelgues a la persona boca abajo ni intentes extraer agua de los pulmones.',
+      'No entres al agua si el rescate pone en riesgo tu seguridad.',
+    ],
+    callEmergencyWhen: [
+      'La persona no puede hablar, respirar o toser eficazmente.',
+      'Pierde la conciencia o presenta coloración azulada.',
+      'Después de una inmersión persisten tos, somnolencia, dolor o dificultad respiratoria.',
+    ],
+    afterCare: [
+      'Tras una obstrucción grave, busca evaluación médica aunque el objeto haya salido y la persona parezca recuperada.',
+      'Después de una inmersión, mantén a la persona abrigada y acompañada; vigila tos, respiración y somnolencia.',
+    ],
+    disclaimer: 'Las maniobras cambian según la edad y el estado de conciencia. Realízalas solo si las conoces o siguiendo al operador de emergencias.',
+  },
+
+  'fracturas-traumatismos': {
+    kind: 'offline-first-aid',
+    slug: 'fracturas-traumatismos',
+    title: 'Fracturas y traumatismos',
+    summary: 'Cómo proteger una lesión y evitar movimientos que puedan agravarla antes de la evaluación médica.',
+    category: 'Traumatismos',
+    estimatedReadTime: '3 min de lectura',
+    pdfSize: null,
+    pdfUrl: 'https://www.inmp.gob.pe/uploads/Manual_Primeros_Auxilios.pdf',
+    sourceName: 'Instituto Nacional Materno Perinatal — Manual de Primeros Auxilios',
+    sourceUrl: 'https://www.inmp.gob.pe/uploads/Manual_Primeros_Auxilios.pdf',
+    lastReviewed: '2026-06-21',
+    emergencyNotice: 'Información educativa. En una emergencia real, llama a los servicios de emergencia.',
+    keyIdea: 'Protege la lesión en la posición encontrada. Evitar movimientos y recolocaciones reduce el riesgo de agravar daños en huesos, vasos o nervios.',
+    beforeHelping: [
+      'Verifica que el lugar sea seguro y atiende primero problemas vitales como dificultad respiratoria o sangrado abundante.',
+      'Pregunta dónde duele y qué ocurrió, sin pedir que mueva la zona para demostrar la lesión.',
+    ],
+    warningSigns: [
+      'Dolor intenso, deformidad, hinchazón rápida o incapacidad para mover o apoyar.',
+      'Entumecimiento, piel fría o cambio de color por debajo de la lesión.',
+      'Herida abierta, hueso visible o sangrado importante.',
+      'Dolor de cuello o espalda después de una caída o golpe fuerte.',
+    ],
+    doSteps: [
+      'Mantén la zona lesionada quieta y en la posición encontrada.',
+      'Retira anillos o accesorios cercanos antes de que aumente la hinchazón, si se puede hacer sin dolor.',
+      'Aplica frío envuelto en una tela por periodos cortos, sin contacto directo con la piel.',
+      'Controla el sangrado alrededor de una herida con material limpio, sin presionar un hueso expuesto.',
+    ],
+    dontSteps: [
+      'No intentes enderezar la extremidad ni recolocar una articulación.',
+      'No empujes un hueso visible hacia el interior.',
+      'No muevas a alguien con posible lesión de cuello o espalda salvo peligro inmediato.',
+      'No permitas que apoye peso sobre la zona lesionada.',
+    ],
+    callEmergencyWhen: [
+      'Hay deformidad marcada, hueso visible, sangrado abundante o dolor intenso.',
+      'La extremidad está fría, pálida, azulada o sin sensibilidad.',
+      'Se sospecha lesión de cabeza, cuello, espalda, pelvis o varias lesiones.',
+    ],
+    afterCare: [
+      'Revisa periódicamente color, temperatura y sensibilidad por debajo de la lesión sin moverla.',
+      'Mantén a la persona cómoda y acompañada, y explica al personal de salud cualquier cambio observado.',
+    ],
+    disclaimer: 'No intentes diagnosticar el tipo de fractura ni fabricar una inmovilización compleja si no tienes capacitación.',
+  },
+
+  'emergencias-pediatricas': {
+    kind: 'offline-first-aid',
+    slug: 'emergencias-pediatricas',
+    title: 'Emergencias pediátricas',
+    summary: 'Señales generales que requieren actuar rápido en bebés y niños sin administrar tratamientos improvisados.',
+    category: 'Pediatría',
+    estimatedReadTime: '4 min de lectura',
+    pdfSize: null,
+    pdfUrl: 'https://www.inmp.gob.pe/uploads/Manual_Primeros_Auxilios.pdf',
+    sourceName: 'Instituto Nacional Materno Perinatal — Manual de Primeros Auxilios',
+    sourceUrl: 'https://www.inmp.gob.pe/uploads/Manual_Primeros_Auxilios.pdf',
+    lastReviewed: '2026-06-21',
+    emergencyNotice: 'Información educativa. En una emergencia real, llama a los servicios de emergencia.',
+    keyIdea: 'En bebés y niños, los cambios en respiración, color, respuesta o comportamiento son señales clave. Actúa pronto y evita medicar por cuenta propia.',
+    beforeHelping: [
+      'Asegura el entorno y busca rápidamente a un adulto responsable sin dejar solo al niño.',
+      'Observa respiración, color y respuesta; reúne edad, peso aproximado, alergias y posibles sustancias involucradas.',
+    ],
+    warningSigns: [
+      'Dificultad para respirar, pausas respiratorias o labios azulados.',
+      'Somnolencia extrema, respuesta inusual o imposibilidad de despertar.',
+      'Convulsión, rigidez, lesión importante o empeoramiento rápido.',
+      'Signos de deshidratación como muy poca orina, boca seca o ausencia de lágrimas.',
+    ],
+    doSteps: [
+      'Asegura el entorno, observa respiración y nivel de respuesta, y pide ayuda pronto.',
+      'Durante una convulsión, protege la cabeza, aparta objetos y registra cuánto dura.',
+      'Si está inconsciente pero respira, colócalo de lado cuando no sospeches lesión de columna.',
+      'Ten a mano edad, peso aproximado, alergias, medicamentos y lo ocurrido para informar al personal de salud.',
+    ],
+    dontSteps: [
+      'No administres medicamentos de adultos ni calcules dosis sin indicación profesional.',
+      'No introduzcas objetos en la boca durante una convulsión.',
+      'No provoques el vómito ante una posible intoxicación.',
+      'No sacudas al bebé o niño ni lo dejes sin supervisión.',
+    ],
+    callEmergencyWhen: [
+      'No respira normalmente, pierde la conciencia, se torna azulado o no responde.',
+      'La convulsión es prolongada, se repite o es la primera conocida.',
+      'Existe lesión grave, posible intoxicación o deterioro rápido.',
+    ],
+    afterCare: [
+      'Continúa observando respiración, respuesta, temperatura y aparición de nuevos síntomas mientras llega ayuda.',
+      'Anota duración de convulsiones, medicamentos habituales y cualquier sustancia o alimento relacionado con el episodio.',
+    ],
+    disclaimer: 'Las dosis y técnicas pediátricas dependen de edad y peso. Sigue indicaciones profesionales y no adaptes tratamientos de adultos.',
+  },
+
+  'golpe-calor': {
+    kind: 'offline-first-aid',
+    slug: 'golpe-calor',
+    title: 'Golpe de calor',
+    summary: 'Reconocimiento y enfriamiento inicial ante una emergencia causada por calor intenso.',
+    category: 'Temperatura',
+    estimatedReadTime: '3 min de lectura',
+    pdfSize: null,
+    pdfUrl: 'https://www.unirioja.es/servicios/sprl/pdf/manual_primeros_auxilios.pdf',
+    sourceName: 'Universidad de La Rioja — Manual de primeros auxilios',
+    sourceUrl: 'https://www.unirioja.es/servicios/sprl/pdf/manual_primeros_auxilios.pdf',
+    lastReviewed: '2026-06-21',
+    emergencyNotice: 'Información educativa. En una emergencia real, llama a los servicios de emergencia.',
+    keyIdea: 'Confusión, desmayo o convulsiones durante exposición al calor indican una emergencia: llama y comienza a enfriar de inmediato.',
+    beforeHelping: [
+      'Evita exponerte al mismo calor y traslada a la persona a sombra o a un ambiente ventilado.',
+      'Comprueba si responde y puede tragar con seguridad antes de ofrecer cualquier líquido.',
+    ],
+    warningSigns: [
+      'Confusión, conducta extraña, desmayo o convulsiones en un ambiente caluroso.',
+      'Piel muy caliente, debilidad extrema o respiración rápida.',
+      'Dolor de cabeza intenso, náuseas y empeoramiento rápido.',
+    ],
+    doSteps: [
+      'Llama a emergencias y mueve a la persona a un lugar fresco y ventilado.',
+      'Retira el exceso de ropa y comienza a enfriar con agua fresca, paños húmedos y ventilación.',
+      'Coloca compresas frías envueltas en tela en cuello, axilas e ingles mientras llega ayuda.',
+      'Vigila respiración y respuesta; sigue las instrucciones del operador.',
+    ],
+    dontSteps: [
+      'No des líquidos si está confundida, vomita, convulsiona o no puede tragar bien.',
+      'No uses medicamentos para la fiebre como tratamiento del golpe de calor.',
+      'No la dejes sola ni esperes a que mejore antes de pedir ayuda.',
+      'No uses hielo directamente sobre la piel.',
+    ],
+    callEmergencyWhen: [
+      'Hay confusión, desmayo, convulsiones o alteración de la conciencia.',
+      'La persona está muy caliente y empeora rápidamente.',
+      'Los síntomas aparecen tras esfuerzo intenso o exposición prolongada al calor.',
+    ],
+    afterCare: [
+      'Continúa el enfriamiento y vigila respiración y respuesta hasta que llegue ayuda profesional.',
+      'Después de un cuadro leve, evita volver al calor o al ejercicio y busca evaluación si persisten debilidad, náuseas o dolor de cabeza.',
+    ],
+    disclaimer: 'No confundas el golpe de calor con una fiebre común. Los medicamentos para la fiebre no sustituyen el enfriamiento ni la atención urgente.',
+  },
+};
+
+export const GUIDES_LIST = Object.values(LEARN_GUIDES);
+
+export const OFFLINE_GUIDES = [
+  LEARN_GUIDES['control-hemorragias'],
+  LEARN_GUIDES['reacciones-alergicas'],
+  LEARN_GUIDES['ahogamiento-obstruccion'],
+  LEARN_GUIDES['fracturas-traumatismos'],
+  LEARN_GUIDES['emergencias-pediatricas'],
+  LEARN_GUIDES['golpe-calor'],
+];

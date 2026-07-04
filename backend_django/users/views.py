@@ -5,13 +5,14 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import AuditLog, Usuario
+from .models import AuditLog, Rol, UserRole, Usuario
 from .serializers import (
     SerializadorActualizacionUsuario,
     SerializadorAsignacionRoles,
     SerializadorRegistro,
     SerializadorUsuario,
 )
+from .tokens import build_token_for_user
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -185,6 +186,15 @@ class VistaCerrarSesion(APIView):
                 {'error': 'Invalid or expired token.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+# Auth me view
+# GET /api/auth/me/
+class VistaMe(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(SerializadorUsuario(request.user).data)
+
 
 # Users list view
 # GET /api/users/ -> list users, ADMIN only

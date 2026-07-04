@@ -8,6 +8,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -65,7 +67,13 @@ public class SecurityConfig {
                                 publicMatcher(HttpMethod.POST, "/api/register/**"),
                                 publicMatcher(HttpMethod.POST, "/api/token/refresh/"),
                                 publicMatcher(HttpMethod.POST, "/api/token/refresh/**"),
+                                publicMatcher(HttpMethod.POST, "/api/auth/google/"),
+                                publicMatcher(HttpMethod.POST, "/api/auth/google/**"),
                                 publicMatcher(HttpMethod.POST, "/api/usuarios/**"),
+                                publicMatcher(HttpMethod.POST, "/api/forgot-password/"),
+                                publicMatcher(HttpMethod.POST, "/api/forgot-password/**"),
+                                publicMatcher(HttpMethod.POST, "/api/reset-password/"),
+                                publicMatcher(HttpMethod.POST, "/api/reset-password/**"),
                                 publicMatcher(HttpMethod.GET, "/api/guides/**"),
                                 publicMatcher(HttpMethod.GET, "/api/hospitals/**"),
                                 publicMatcher(HttpMethod.GET, "/api/news/**"),
@@ -91,7 +99,13 @@ public class SecurityConfig {
                 || publicMatcher(HttpMethod.POST, "/api/register/**").matches(request)
                 || publicMatcher(HttpMethod.POST, "/api/token/refresh/").matches(request)
                 || publicMatcher(HttpMethod.POST, "/api/token/refresh/**").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/auth/google/").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/auth/google/**").matches(request)
                 || publicMatcher(HttpMethod.POST, "/api/usuarios/**").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/forgot-password/").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/forgot-password/**").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/reset-password/").matches(request)
+                || publicMatcher(HttpMethod.POST, "/api/reset-password/**").matches(request)
                 || publicMatcher(HttpMethod.GET, "/api/guides/**").matches(request)
                 || publicMatcher(HttpMethod.GET, "/api/hospitals/**").matches(request)
                 || publicMatcher(HttpMethod.GET, "/api/news/**").matches(request)

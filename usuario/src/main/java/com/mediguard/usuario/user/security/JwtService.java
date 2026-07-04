@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.crypto.Mac;
@@ -47,7 +48,17 @@ public class JwtService {
 
     public JwtClaims validateAccessToken(String token) {
         JwtClaims claims = validateToken(token);
-        if (!"access".equals(claims.tokenType())) {
+        String tokenType = claims.tokenType();
+        // Django SimpleJWT usa "access"; Spring Boot nativo usa "access" también
+        if (tokenType != null && !"access".equals(tokenType)) {
+            throw unauthorized("Tipo de token inválido.");
+        }
+        return claims;
+    }
+
+    public JwtClaims validateRefreshToken(String token) {
+        JwtClaims claims = validateToken(token);
+        if (!"refresh".equals(claims.tokenType())) {
             throw unauthorized("Tipo de token inválido.");
         }
         return claims;
@@ -56,9 +67,15 @@ public class JwtService {
     private String createToken(UserEntity user, List<String> roles, String tokenType, long lifetimeSeconds) {
         Instant now = Instant.now();
         String header = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
+        // "jti" (JWT ID) es exigido por Django SimpleJWT en todo token, sin excepcion
+        // (rest_framework_simplejwt.tokens.Token.verify()). Spring Boot no lo necesita
+        // para si mismo, pero lo agrega para que el mismo token sirva tambien contra
+        // los endpoints de Django (catalogo educativo). Ver users/authentication.py
+        // del lado Django para el resto de la compatibilidad (claim "uid").
         String payload = "{"
                 + "\"sub\":\"" + escapeJson(user.getEmail()) + "\","
                 + "\"uid\":\"" + user.getId() + "\","
+                + "\"jti\":\"" + UUID.randomUUID() + "\","
                 + "\"roles\":" + rolesJson(roles) + ","
                 + "\"token_type\":\"" + tokenType + "\","
                 + "\"iat\":" + now.getEpochSecond() + ","
@@ -88,9 +105,9 @@ public class JwtService {
 
         return new JwtClaims(
                 readString(payload, "sub"),
-                readString(payload, "uid"),
-                readString(payload, "token_type"),
-                readStringList(payload, "roles"));
+                readUserIdClaim(payload),
+                readTokenTypeClaim(payload),
+                readStringListOptional(payload, "roles"));
     }
 
     private String encode(String value) {
@@ -156,6 +173,36 @@ public class JwtService {
         return Pattern.compile("\"([^\"]*)\"").matcher(matcher.group(1)).results()
                 .map(match -> match.group(1))
                 .toList();
+    }
+
+    private List<String> readStringListOptional(String payload, String key) {
+        try {
+            return readStringList(payload, key);
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
+    // Accepts "uid" (Spring Boot native) or "user_id" (Django SimpleJWT compat)
+    private String readUserIdClaim(String payload) {
+        Matcher uidMatcher = Pattern.compile("\"uid\"\\s*:\\s*\"([^\"]*)\"").matcher(payload);
+        if (uidMatcher.find()) {
+            return uidMatcher.group(1);
+        }
+        Matcher userIdMatcher = Pattern.compile("\"user_id\"\\s*:\\s*\"([^\"]*)\"").matcher(payload);
+        if (userIdMatcher.find()) {
+            return userIdMatcher.group(1);
+        }
+        throw unauthorized("Falta información requerida en el token (uid/user_id).");
+    }
+
+    // Accepts "token_type" values from both Spring Boot ("access") and Django ("access")
+    private String readTokenTypeClaim(String payload) {
+        Matcher matcher = Pattern.compile("\"token_type\"\\s*:\\s*\"([^\"]*)\"").matcher(payload);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return "access";
     }
 
     private long readLong(String payload, String key) {

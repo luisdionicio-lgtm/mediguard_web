@@ -51,7 +51,7 @@ function Navbar({ hideNav = false }) {
   return (
     <>
       {/* ── NAVBAR ── */}
-      <nav style={{ height: '64px' }} className="app-navbar sticky top-0 z-50 w-full flex items-center bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+      <nav style={{ height: '64px', background: 'var(--navbar-bg)', borderColor: 'var(--navbar-border)' }} className="app-navbar sticky top-0 z-50 w-full flex items-center backdrop-blur-sm border-b shadow-sm">
 
         {/* Bloque 1 — Logo (izquierda) */}
         <Link to="/" className="flex items-center gap-2 flex-shrink-0 no-underline">
@@ -163,7 +163,7 @@ function Navbar({ hideNav = false }) {
 
       {/* ── MOBILE MENU ── */}
       {!hideNav && mobileOpen && (
-        <div className="app-navbar-mobile-menu md:hidden fixed top-16 inset-x-0 z-40 bg-white border-b border-gray-200 shadow-lg px-4 py-3 flex flex-col gap-1">
+        <div style={{ background: 'var(--surface)', borderColor: 'var(--border)' }} className="app-navbar-mobile-menu md:hidden fixed top-16 inset-x-0 z-40 border-b shadow-lg px-4 py-3 flex flex-col gap-1">
           {NAV_LINKS.map(l => (
             <a
               key={l.href}

@@ -236,15 +236,15 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           2. NOSOTROS  —  blanco #ffffff
          ══════════════════════════════════════════════════════ */}
-      <section id="about" style={{ background: '#ffffff' }} aria-labelledby="about-heading">
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 40px' }}>
+      <section id="about" className="lp-sec-about" aria-labelledby="about-heading">
+        <div className="lp-container">
 
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <EyebrowPill text="Quiénes somos" bg="#eff6ff" color="#2563eb" />
-            <h2 id="about-heading" style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, color: '#0d4f3c', marginBottom: 16, lineHeight: 1.2 }}>
+            <h2 id="about-heading" style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, color: 'var(--lp-heading)', marginBottom: 16, lineHeight: 1.2 }}>
               Construido por estudiantes,<br />inspirado por la realidad
             </h2>
-            <p style={{ color: '#64748b', fontSize: '1.05rem', maxWidth: 600, margin: '0 auto', lineHeight: 1.75 }}>
+            <p style={{ color: 'var(--lp-text)', fontSize: '1.05rem', maxWidth: 600, margin: '0 auto', lineHeight: 1.75 }}>
               MediGuard AI nació en las aulas de Tecsup con una pregunta simple:
               ¿qué pasa cuando alguien colapsa y nadie sabe qué hacer?
             </p>
@@ -256,27 +256,27 @@ export default function Home() {
               { icon: <BookOpen size={22} />,   bg: '#dbeafe', ic: '#2563eb', title: 'La solución', text: 'Una app con protocolos médicos validados, alertas SOS y guías offline en el bolsillo de cualquier persona.' },
               { icon: <TrendingUp size={22} />, bg: '#dcfce7', ic: '#16a34a', title: 'El impacto',  text: 'Más de 12,000 usuarios activos, 40+ guías sin internet y una comunidad que crece cada semana.' },
             ].map(card => (
-              <div key={card.title} style={{ borderRadius: 16, padding: '28px 24px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+              <div key={card.title} className="lp-about-card">
                 <div style={{ width: 44, height: 44, borderRadius: 12, background: card.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.ic, marginBottom: 16 }}>
                   {card.icon}
                 </div>
-                <h3 style={{ color: '#0d4f3c', fontWeight: 700, fontSize: '1rem', marginBottom: 8 }}>{card.title}</h3>
-                <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: 1.7 }}>{card.text}</p>
+                <h3 style={{ color: 'var(--lp-heading)', fontWeight: 700, fontSize: '1rem', marginBottom: 8 }}>{card.title}</h3>
+                <p style={{ color: 'var(--lp-text)', fontSize: '0.92rem', lineHeight: 1.7 }}>{card.text}</p>
               </div>
             ))}
           </div>
 
           <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <h3 style={{ color: '#0d4f3c', fontWeight: 800, fontSize: '1.25rem', marginBottom: 6 }}>Las personas detrás del proyecto</h3>
-            <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Un equipo multidisciplinario unido por una misión común</p>
+            <h3 style={{ color: 'var(--lp-heading)', fontWeight: 800, fontSize: '1.25rem', marginBottom: 6 }}>Las personas detrás del proyecto</h3>
+            <p style={{ color: 'var(--lp-text-subtle)', fontSize: '0.9rem' }}>Un equipo multidisciplinario unido por una misión común</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(250px,1fr))', gap: 18 }}>
             {TEAM.map(t => (
-              <div key={t.name} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px 20px', textAlign: 'center', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' }}>
+              <div key={t.name} className="lp-team-card">
                 <div style={{ fontSize: '2.4rem', marginBottom: 12 }}>{t.emoji}</div>
-                <p style={{ color: '#0d4f3c', fontWeight: 700, fontSize: '0.97rem', marginBottom: 4 }}>{t.name}</p>
-                <p style={{ color: '#0f766e', fontSize: '0.78rem', fontWeight: 600, marginBottom: 10 }}>{t.role}</p>
-                <p style={{ color: '#64748b', fontSize: '0.87rem', lineHeight: 1.65 }}>{t.desc}</p>
+                <p style={{ color: 'var(--lp-heading)', fontWeight: 700, fontSize: '0.97rem', marginBottom: 4 }}>{t.name}</p>
+                <p style={{ color: 'var(--lp-accent-teal)', fontSize: '0.78rem', fontWeight: 600, marginBottom: 10 }}>{t.role}</p>
+                <p style={{ color: 'var(--lp-text)', fontSize: '0.87rem', lineHeight: 1.65 }}>{t.desc}</p>
               </div>
             ))}
           </div>
@@ -287,17 +287,17 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           3. GUÍAS  —  teal vibrante #0f766e
          ══════════════════════════════════════════════════════ */}
-      <section id="recursos" style={{ background: '#F0FDFA' }} aria-labelledby="res-heading">
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 40px' }}>
+      <section id="recursos" className="lp-sec-recursos" aria-labelledby="res-heading">
+        <div className="lp-container">
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, marginBottom: 52 }}>
             <div>
               <EyebrowPill text="Recursos gratuitos" bg="#CCFBF1" color="#0f766e" />
-              <h2 id="res-heading" style={{ fontSize: 'clamp(1.6rem,3.5vw,2.2rem)', fontWeight: 800, color: '#134E4A', lineHeight: 1.2 }}>
+              <h2 id="res-heading" style={{ fontSize: 'clamp(1.6rem,3.5vw,2.2rem)', fontWeight: 800, color: 'var(--lp-heading-teal)', lineHeight: 1.2 }}>
                 Aprende antes de necesitarlo
               </h2>
             </div>
-            <a href="#recursos" style={{ color: '#0f766e', fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
+            <a href="#recursos" style={{ color: 'var(--lp-accent-teal)', fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
               Ver todos <ChevronRight size={14} />
             </a>
           </div>
@@ -305,8 +305,7 @@ export default function Home() {
           {/* Cards de artículos */}
           <ul className="lp-res-cards" role="list" style={{ marginBottom: 64 }}>
             {RESOURCES.map(r => (
-              <li key={r.title} className="lp-res-card" role="listitem"
-                style={{ background: '#ffffff', border: '1px solid #CCFBF1' }}>
+              <li key={r.title} className="lp-res-card" role="listitem">
                 <Link to={`/aprende/${r.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
                   <div className="lp-res-card-img" style={r.imgStyle} aria-hidden="true">
                     <span role="img">{r.emoji}</span>
@@ -314,13 +313,13 @@ export default function Home() {
                   </div>
                 </Link>
                 <div className="lp-res-card-body">
-                  <span className="lp-res-card-tag" style={{ color: '#0f766e' }}>{r.tag}</span>
-                  <h3 className="lp-res-card-title" style={{ color: '#134E4A' }}>{r.title}</h3>
-                  <p className="lp-res-card-desc" style={{ color: '#4B7C5E' }}>{r.desc}</p>
+                  <span className="lp-res-card-tag">{r.tag}</span>
+                  <h3 className="lp-res-card-title">{r.title}</h3>
+                  <p className="lp-res-card-desc">{r.desc}</p>
                 </div>
-                <div className="lp-res-card-footer" style={{ borderTop: '1px solid #CCFBF1' }}>
-                  <span style={{ color: '#6B7280' }}>{r.meta}</span>
-                  <Link to={`/aprende/${r.slug}`} className="lp-res-read-link" style={{ color: '#0f766e' }}>
+                <div className="lp-res-card-footer">
+                  <span>{r.meta}</span>
+                  <Link to={`/aprende/${r.slug}`} className="lp-res-read-link">
                     Leer <ChevronRight size={12} />
                   </Link>
                 </div>
@@ -329,13 +328,13 @@ export default function Home() {
           </ul>
 
           {/* Divisor */}
-          <div style={{ height: 1, background: '#CCFBF1', marginBottom: 64 }} />
+          <div className="lp-divider" />
 
           {/* Guías descargables */}
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <EyebrowPill text="Guías offline" bg="#CCFBF1" color="#0f766e" />
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#134E4A', marginBottom: 8 }}>Disponibles sin internet</h3>
-            <p style={{ color: '#4B7C5E', fontSize: '0.95rem' }}>En una emergencia real no siempre hay señal.</p>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--lp-heading-teal)', marginBottom: 8 }}>Disponibles sin internet</h3>
+            <p style={{ color: 'var(--lp-text-teal)', fontSize: '0.95rem' }}>En una emergencia real no siempre hay señal.</p>
           </div>
           <label className="lp-guide-search">
             <Search size={18} aria-hidden="true" />
@@ -349,22 +348,20 @@ export default function Home() {
           </label>
           <ul className="lp-guides-grid" role="list">
             {filteredGuides.map(g => (
-              <li key={g.title} className="lp-guide-card" role="listitem"
-                style={{ background: '#ffffff', border: '1px solid #CCFBF1' }}>
+              <li key={g.title} className="lp-guide-card" role="listitem">
                 <div className={`lp-guide-icon ${g.cls}`} aria-hidden="true">{g.icon}</div>
-                <h3 className="lp-guide-title" style={{ color: '#134E4A' }}>{g.title}</h3>
-                <p className="lp-guide-desc" style={{ color: '#4B7C5E' }}>{g.summary}</p>
+                <h3 className="lp-guide-title">{g.title}</h3>
+                <p className="lp-guide-desc">{g.summary}</p>
                 <div className="lp-guide-footer">
-                  <span className="lp-guide-meta" style={{ color: '#6B7280' }}>📖 {g.estimatedReadTime}</span>
+                  <span className="lp-guide-meta">📖 {g.estimatedReadTime}</span>
                   <div className="lp-guide-actions">
-                    <Link to={`/aprende/${g.slug}`} className="lp-guide-link" style={{ color: '#0f766e' }}>
+                    <Link to={`/aprende/${g.slug}`} className="lp-guide-link">
                       Ver guía <ChevronRight size={12} />
                     </Link>
                     {g.pdfUrl ? (
                       <a
                         href={g.pdfUrl}
                         className="lp-guide-dl"
-                        style={{ color: '#0f766e' }}
                         target="_blank"
                         rel="noreferrer"
                       >
@@ -389,15 +386,15 @@ export default function Home() {
           4. IA CHAT  —  azul cielo claro #eff6ff
              Ventana flotante sobre fondo aéreo
          ══════════════════════════════════════════════════════ */}
-      <section id="chat" style={{ background: '#eff6ff' }} aria-labelledby="chat-heading">
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 40px' }}>
+      <section id="chat" className="lp-sec-chat" aria-labelledby="chat-heading">
+        <div className="lp-container">
 
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <EyebrowPill text="Inteligencia artificial" bg="#dbeafe" color="#1d4ed8" />
-            <h2 id="chat-heading" style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 800, color: '#0c4a6e', marginBottom: 14, lineHeight: 1.2 }}>
+            <h2 id="chat-heading" style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 800, color: 'var(--lp-heading-blue)', marginBottom: 14, lineHeight: 1.2 }}>
               Tu asistente médico,<br />disponible 24/7
             </h2>
-            <p style={{ color: '#475569', fontSize: '1rem', maxWidth: 520, margin: '0 auto', lineHeight: 1.75 }}>
+            <p style={{ color: 'var(--lp-text-slate)', fontSize: '1rem', maxWidth: 520, margin: '0 auto', lineHeight: 1.75 }}>
               Describe tus síntomas y recibe orientación inmediata.
               No reemplaza al médico — te ayuda a decidir qué tan urgente es la situación.
             </p>
@@ -405,26 +402,19 @@ export default function Home() {
 
           {/* Ventana flotante centrada */}
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{
-              width: '100%', maxWidth: 560,
-              background: '#ffffff',
-              borderRadius: 20,
-              boxShadow: '0 24px 64px rgba(12,74,110,0.18), 0 4px 16px rgba(12,74,110,0.08)',
-              overflow: 'hidden',
-              border: '1px solid #e0f2fe',
-            }}>
+            <div className="lp-chat-window">
               {/* Barra de ventana — estilo macOS */}
-              <div style={{ background: '#f1f5f9', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #e2e8f0' }}>
+              <div className="lp-chat-bar">
                 <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#f87171', display: 'inline-block' }} />
                 <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#fbbf24', display: 'inline-block' }} />
                 <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#34d399', display: 'inline-block' }} />
                 <div style={{ flex: 1, textAlign: 'center' }}>
-                  <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>MediGuard IA — Asistente médico</span>
+                  <span className="lp-chat-bar-title">MediGuard IA — Asistente médico</span>
                 </div>
               </div>
 
               {/* Header del chat */}
-              <div className="lp-chat-head" style={{ borderBottom: '1px solid #f1f5f9' }}>
+              <div className="lp-chat-head">
                 <div className="lp-chat-avatar" aria-hidden="true"><Bot size={18} /></div>
                 <div>
                   <p className="lp-chat-name">MediGuard IA</p>
@@ -436,7 +426,7 @@ export default function Home() {
               </div>
 
               {/* Mensajes */}
-              <div className="lp-chat-body" style={{ background: '#fafafa' }} aria-label="Conversación de ejemplo">
+              <div className="lp-chat-body" aria-label="Conversación de ejemplo">
                 <div className="lp-chat-bubble lp-bubble-user" role="article">
                   "Me duele mucho el pecho y tengo el brazo izquierdo adormecido desde hace 10 minutos"
                 </div>
@@ -469,12 +459,12 @@ export default function Home() {
               { icon: <BookOpen size={20} />, bg: '#dcfce7', color: '#15803d', title: 'Sin conexión',          desc: 'Funciona offline cuando más lo necesitas.' },
               { icon: <Heart size={20} />,    bg: '#fce7f3', color: '#be185d', title: 'Centrado en ti',        desc: 'Personaliza tu perfil de salud y contactos SOS.' },
             ].map(f => (
-              <div key={f.title} style={{ background: '#fff', borderRadius: 14, padding: '20px 18px', border: '1px solid #e0f2fe', boxShadow: '0 2px 8px rgba(12,74,110,0.06)' }}>
+              <div key={f.title} className="lp-feature-card">
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: f.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: f.color, marginBottom: 12 }}>
                   {f.icon}
                 </div>
-                <p style={{ color: '#0c4a6e', fontWeight: 700, fontSize: '0.9rem', marginBottom: 6 }}>{f.title}</p>
-                <p style={{ color: '#64748b', fontSize: '0.84rem', lineHeight: 1.6 }}>{f.desc}</p>
+                <p style={{ color: 'var(--lp-heading-blue)', fontWeight: 700, fontSize: '0.9rem', marginBottom: 6 }}>{f.title}</p>
+                <p style={{ color: 'var(--lp-text)', fontSize: '0.84rem', lineHeight: 1.6 }}>{f.desc}</p>
               </div>
             ))}
           </div>
@@ -528,14 +518,14 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           6. DESCARGA  —  mint suave #f0fdf4
          ══════════════════════════════════════════════════════ */}
-      <section id="download" style={{ background: '#f0fdf4' }} aria-labelledby="download-heading">
-        <div style={{ maxWidth: 900, margin: '0 auto', padding: '88px 40px', textAlign: 'center' }}>
+      <section id="download" className="lp-sec-download" aria-labelledby="download-heading">
+        <div className="lp-container lp-container--sm">
 
           <EyebrowPill text="Descarga gratuita" bg="#dcfce7" color="#15803d" />
-          <h2 id="download-heading" style={{ fontSize: 'clamp(2rem,5vw,3rem)', fontWeight: 800, color: '#0d4f3c', marginBottom: 16, lineHeight: 1.15 }}>
+          <h2 id="download-heading" style={{ fontSize: 'clamp(2rem,5vw,3rem)', fontWeight: 800, color: 'var(--lp-heading)', marginBottom: 16, lineHeight: 1.15 }}>
             Prepárate hoy.<br />Las emergencias no avisan.
           </h2>
-          <p style={{ color: '#475569', fontSize: '1.05rem', maxWidth: 560, margin: '0 auto 40px', lineHeight: 1.75 }}>
+          <p style={{ color: 'var(--lp-text-slate)', fontSize: '1.05rem', maxWidth: 560, margin: '0 auto 40px', lineHeight: 1.75 }}>
             Descarga gratis. Sin registro para usar el SOS. Sin suscripción obligatoria.
           </p>
 
@@ -545,12 +535,12 @@ export default function Home() {
               { store: 'App Store',    rating: '4.9', reviews: '2.3k reseñas', icon: <AppleIcon /> },
               { store: 'Google Play',  rating: '4.8', reviews: '1.8k reseñas', icon: <AndroidIcon /> },
             ].map(s => (
-              <div key={s.store} style={{ display: 'flex', alignItems: 'center', gap: 12, background: '#fff', border: '1px solid #bbf7d0', borderRadius: 14, padding: '14px 22px', boxShadow: '0 2px 10px rgba(13,79,60,0.08)' }}>
-                <div style={{ color: '#0d4f3c' }}>{s.icon}</div>
+              <div key={s.store} className="lp-rating-card">
+                <div style={{ color: 'var(--lp-heading)' }}>{s.icon}</div>
                 <div style={{ textAlign: 'left' }}>
-                  <p style={{ color: '#0d4f3c', fontWeight: 800, fontSize: '0.95rem' }}>{s.store}</p>
-                  <p style={{ color: '#f59e0b', fontSize: '0.82rem', fontWeight: 600 }}>
-                    {'★'.repeat(5)} <span style={{ color: '#64748b' }}>{s.rating} · {s.reviews}</span>
+                  <p style={{ color: 'var(--lp-heading)', fontWeight: 800, fontSize: '0.95rem' }}>{s.store}</p>
+                  <p className="lp-store-rating">
+                    {'★'.repeat(5)} <span style={{ color: 'var(--lp-text)' }}>{s.rating} · {s.reviews}</span>
                   </p>
                 </div>
               </div>
@@ -590,22 +580,22 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           7. MISIÓN  —  blanco cálido #fafafa
          ══════════════════════════════════════════════════════ */}
-      <section id="mision" style={{ background: '#fafafa' }} aria-labelledby="mision-heading">
-        <div style={{ maxWidth: 800, margin: '0 auto', padding: '100px 40px', textAlign: 'center' }}>
+      <section id="mision" className="lp-sec-mision" aria-labelledby="mision-heading">
+        <div className="lp-container lp-container--xs">
 
           <div style={{ fontSize: '3rem', marginBottom: 20 }}>🌿</div>
           <EyebrowPill text="Nuestra misión" bg="#dbeafe" color="#1d4ed8" />
 
-          <h2 id="mision-heading" style={{ fontSize: 'clamp(2rem,5vw,3rem)', fontWeight: 800, color: '#0d4f3c', marginBottom: 20, lineHeight: 1.15 }}>
+          <h2 id="mision-heading" style={{ fontSize: 'clamp(2rem,5vw,3rem)', fontWeight: 800, color: 'var(--lp-heading)', marginBottom: 20, lineHeight: 1.15 }}>
             El conocimiento médico<br />debe ser de todos.
           </h2>
 
-          <p style={{ color: '#475569', fontSize: '1.1rem', lineHeight: 1.85, fontStyle: 'italic', maxWidth: 640, margin: '0 auto 12px' }}>
+          <p style={{ color: 'var(--lp-text-slate)', fontSize: '1.1rem', lineHeight: 1.85, fontStyle: 'italic', maxWidth: 640, margin: '0 auto 12px' }}>
             "Vivimos en un mundo donde la información puede salvar vidas,
             pero pocas personas saben qué hacer en los primeros minutos de una emergencia.
             MediGuard AI existe para cambiar eso."
           </p>
-          <p style={{ color: '#94a3b8', fontSize: '0.88rem', marginBottom: 52 }}>
+          <p style={{ color: 'var(--lp-text-subtle)', fontSize: '0.88rem', marginBottom: 52 }}>
             — Equipo MediGuard AI, Tecsup 2025
           </p>
 

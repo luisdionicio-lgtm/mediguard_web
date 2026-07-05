@@ -1,0 +1,137 @@
+# Entorno de desarrollo local dockerizado para MediGuard AI.
+# No cambia lógica de negocio, diseño ni rutas: solo empaqueta los 3
+# servicios existentes (frontend_react, backend_django, usuario) más
+# PostgreSQL, usando los mismos puertos que ya se usaban en local.
+#
+# Uso:
+#   docker compose --env-file .env.docker -f docker-compose.dev.yml up --build
+#
+# Ver README_DOCKER.md para instrucciones completas.
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: mediguard_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - mediguard_postgres_data:/var/lib/postgresql/data
+      # Compatibilidad con el username "postgres" hardcodeado en
+      # usuario/src/main/resources/application.properties (ver README_DOCKER.md).
+      - ./docker/postgres-initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Servicio de un solo uso, en 3 fases (orden verificado con `docker compose
+  # up` real; no es solo teórico):
+  #   1) V1 + V2 — crean roles/users/user_roles/verification_tokens/
+  #      audit_log/categories/courses/lessons/quizzes/course_ratings/
+  #      enrollments/user_lesson_progress/certificates con sus defaults
+  #      reales (p. ej. gen_random_uuid()), tal como pide su propio
+  #      comentario "Fuente de verdad: PostgreSQL. Nunca generar DDL desde
+  #      Django ni Spring Boot".
+  #   2) `migrate users 0003 --fake` — users.0003_add_user_profile_fields
+  #      agrega columnas (avatar_url, bio) que V1 ya incluye en su CREATE
+  #      TABLE actualizado; a diferencia de 0002 (seed idempotente) y 0004
+  #      (usa CREATE OR REPLACE / DROP TRIGGER IF EXISTS, también
+  #      idempotente), el ADD COLUMN de 0003 no lo es y falla si la columna
+  #      ya existe, por eso es la única migración que debe marcarse como
+  #      aplicada sin ejecutarla.
+  #   3) `migrate --fake-initial` — Django adopta las tablas que V1/V2 ya
+  #      crearon (incluye users.0004, ya idempotente) y además crea de
+  #      verdad las tablas que solo él gestiona (emergency, content, tablas
+  #      internas), corriendo las migraciones de datos (seeds, thumbnails)
+  #      con normalidad.
+  #   4) V3 — depende de tablas de la app `emergency` (emergency_eventosos,
+  #      emergency_contactoemergencia) que Django recién creó en el paso 3,
+  #      por eso va al final.
+  db_init:
+    build:
+      context: ./backend_django
+    container_name: mediguard_db_init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DJANGO_DEBUG}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
+      CORS_ALLOWED_ORIGINS: ${FRONTEND_URL}
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      JWT_SECRET: ${JWT_SECRET}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./database:/database:ro
+    command: >
+      sh -c "psql -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB} -v ON_ERROR_STOP=1 -f /database/migrations/V1__identidad.sql &&
+             psql -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB} -v ON_ERROR_STOP=1 -f /database/migrations/V2__categorias_cursos.sql &&
+             python manage.py migrate users 0003 --fake --noinput &&
+             python manage.py migrate --fake-initial --noinput &&
+             psql -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB} -v ON_ERROR_STOP=1 -f /database/migrations/V3__device_tokens_notification_log.sql"
+
+  backend_django:
+    build:
+      context: ./backend_django
+    container_name: mediguard_django
+    depends_on:
+      db_init:
+        condition: service_completed_successfully
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DJANGO_DEBUG}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
+      CORS_ALLOWED_ORIGINS: ${FRONTEND_URL}
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+
+  usuario:
+    build:
+      context: ./usuario
+    container_name: mediguard_usuario
+    depends_on:
+      db_init:
+        condition: service_completed_successfully
+    environment:
+      # spring.datasource.username sigue siendo "postgres" (hardcodeado en
+      # application.properties, sin tocar); el rol compatible se crea en
+      # docker/postgres-initdb/00-create-postgres-role.sh con esta misma
+      # contraseña.
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "8081:8081"
+
+  frontend_react:
+    build:
+      context: ./frontend_react
+    container_name: mediguard_frontend
+    depends_on:
+      - backend_django
+      - usuario
+    ports:
+      - "5173:5173"
+
+volumes:
+  mediguard_postgres_data:

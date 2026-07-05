@@ -50,6 +50,7 @@ usuario/src/main/resources/application-prod.properties
 !frontend_react/.env.example
 !backend_django/.env.example
 !usuario/.env.example
+!.env.docker.example
 
 # ─── Documentación/local architecture no versionable ───────────────────────
 docs/

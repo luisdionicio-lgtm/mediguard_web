@@ -17,7 +17,10 @@ SECRET_KEY = config('SECRET_KEY')
 # DEBUG se lee desde .env — False por defecto en producción.
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# Por defecto queda igual que antes (localhost/127.0.0.1); en Docker se
+# añade el nombre del servicio via DJANGO_ALLOWED_HOSTS sin afectar el
+# desarrollo local sin contenedores (esa variable no existe en el .env real).
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
 
 # ─── Aplicaciones instaladas ─────────────────────────────────────────────────

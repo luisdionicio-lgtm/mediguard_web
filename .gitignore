@@ -34,7 +34,6 @@ target/
 usuario/target/
 
 # Config sensible Spring Boot
-usuario/src/main/resources/application.properties
 usuario/src/main/resources/application-local.properties
 usuario/src/main/resources/application-dev.properties
 usuario/src/main/resources/application-prod.properties

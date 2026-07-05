@@ -360,8 +360,8 @@ def seed_cursos(apps, schema_editor):
 
     # Necesitamos un autor para los cursos. Si no hay ningún admin, se omite.
     author = (
-        Usuario.objects.filter(is_superuser=True).first()
-        or Usuario.objects.filter(is_staff=True).first()
+        Usuario.objects.filter(roles__name='ADMIN').first()
+        or Usuario.objects.first()
     )
     if author is None:
         print(

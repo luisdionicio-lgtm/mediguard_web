@@ -65,17 +65,12 @@ public class VerificationTokenEntity {
     }
 
     @PrePersist
-<<<<<<< HEAD
     void prePersist() {
         if (token == null) {
             byte[] bytes = new byte[32];
             RANDOM.nextBytes(bytes);
             token = HexFormat.of().formatHex(bytes);
         }
-=======
-    void onCreate() {
-        // Mismo motivo que el token: el DEFAULT now() de Postgres no existe en H2.
->>>>>>> origin/cambios-actualizados
         if (createdAt == null) {
             createdAt = Instant.now();
         }

@@ -5,6 +5,7 @@ public record GuideResponse(
         String title,
         String description,
         String category,
-        String content
+        String content,
+        String image
 ) {
 }

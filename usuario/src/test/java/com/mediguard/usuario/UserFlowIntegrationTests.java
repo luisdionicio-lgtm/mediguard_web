@@ -208,7 +208,7 @@ class UserFlowIntegrationTests {
     UserEntity user = userRepository.findByEmailIgnoreCase("verify-expired@example.com").orElseThrow();
 
     VerificationTokenEntity expired = new VerificationTokenEntity(
-        user, VerificationTokenEntity.TokenType.EMAIL_VERIFICATION, Instant.now().minus(1, ChronoUnit.HOURS));
+        user, null, VerificationTokenEntity.TokenType.EMAIL_VERIFICATION, Instant.now().minus(1, ChronoUnit.HOURS));
     expired = verificationTokenRepository.saveAndFlush(expired);
     String expiredToken = expired.getToken();
     assertThat(expiredToken).isNotBlank();

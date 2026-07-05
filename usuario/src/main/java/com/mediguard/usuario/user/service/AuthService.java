@@ -227,7 +227,7 @@ public class AuthService {
 
     private void sendVerificationEmail(UserEntity user) {
         VerificationTokenEntity verificationToken = new VerificationTokenEntity(
-                user, TokenType.EMAIL_VERIFICATION, Instant.now().plus(EMAIL_VERIFICATION_HOURS, ChronoUnit.HOURS));
+                user, null, TokenType.EMAIL_VERIFICATION, Instant.now().plus(EMAIL_VERIFICATION_HOURS, ChronoUnit.HOURS));
         verificationToken = verificationTokenRepository.save(verificationToken);
         emailService.sendVerificationEmail(user, verificationToken.getToken());
     }

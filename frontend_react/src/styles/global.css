@@ -1266,8 +1266,8 @@ select.input { cursor: pointer; }
 
 /* ── Panel izquierdo ── */
 .auth-brand {
-  width: 290px;
-  min-width: 290px;
+  width: 340px;
+  min-width: 340px;
   background: #0D2B1A;
   padding: 28px 22px;
   display: flex;
@@ -1306,14 +1306,14 @@ select.input { cursor: pointer; }
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
 }
-.auth-brand-logo-dot svg { color: #4ADE80; width: 16px; height: 16px; }
+.auth-brand-logo-dot svg { color: #5CB89A; width: 16px; height: 16px; }
 .auth-brand-logo-name {
   font-size: 0.9rem;
   font-weight: 800;
   color: #fff;
   font-family: var(--font-heading);
 }
-.auth-brand-logo-name em { font-style: normal; color: #4ADE80; }
+.auth-brand-logo-name em { font-style: normal; color: #5CB89A; }
 
 .auth-brand-headline {
   font-size: 1.15rem;
@@ -1323,7 +1323,7 @@ select.input { cursor: pointer; }
   margin-bottom: 8px;
   font-family: var(--font-heading);
 }
-.auth-brand-headline em { font-style: normal; color: #4ADE80; }
+.auth-brand-headline em { font-style: normal; color: #5CB89A; }
 
 .auth-brand-sub {
   font-size: 0.8rem;
@@ -1357,10 +1357,10 @@ select.input { cursor: pointer; }
 
 .auth-brand-bullet-icon {
   width: 30px; height: 30px; min-width: 30px;
-  background: rgba(74,222,128,0.10);
+  background: rgba(92,184,154,0.10);
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: #4ADE80;
+  font-size: 14px; color: #5CB89A;
 }
 .auth-brand-bullet-label {
   font-size: 0.8rem;
@@ -1465,17 +1465,17 @@ select.input { cursor: pointer; }
 }
 .auth-input::placeholder { color: #A8C4B0; }
 .auth-input:focus {
-  border-color: #4ADE80;
+  border-color: #5CB89A;
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(74,222,128,0.15);
+  box-shadow: 0 0 0 3px rgba(92,184,154,0.15);
 }
 .auth-input.is-error {
   border-color: #EF4444;
   box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
 }
 .auth-input.is-success {
-  border-color: #4ADE80;
-  box-shadow: 0 0 0 3px rgba(74,222,128,0.15);
+  border-color: #5CB89A;
+  box-shadow: 0 0 0 3px rgba(92,184,154,0.15);
 }
 
 /* Botón submit */
@@ -1483,7 +1483,7 @@ select.input { cursor: pointer; }
   width: 100%;
   height: 46px;
   background: #0D2B1A;
-  color: #4ADE80;
+  color: #5CB89A;
   border: none;
   border-radius: 11px;
   font-size: 0.95rem;
@@ -1508,7 +1508,7 @@ select.input { cursor: pointer; }
 /* Forgot */
 .auth-forgot {
   font-size: 0.78rem;
-  color: #4ADE80;
+  color: #5CB89A;
   text-align: right;
   cursor: pointer;
   margin-bottom: 16px;
@@ -1692,32 +1692,62 @@ select.input { cursor: pointer; }
   margin-bottom: 22px;
 }
 
-/* Social buttons */
+/* Social buttons — icon only at rest, expand on hover */
 .auth-social-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 16px;
+  justify-content: center;
 }
 .auth-social-btn {
-  flex: 1;
-  height: 38px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
+  height: 48px;
+  border-radius: 24px;
+  border: 1.5px solid var(--border);
   background: var(--surface);
   color: var(--text-primary);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  display: flex;
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 0;
   cursor: pointer;
-  transition: var(--transition);
-  font-family: var(--font-heading);
+  padding: 0 13px;
+  white-space: nowrap;
+  transition: border-color 0.2s, background 0.2s,
+              gap     0.28s cubic-bezier(.4,0,.2,1),
+              padding 0.28s cubic-bezier(.4,0,.2,1);
 }
-.auth-social-btn:hover {
+.auth-social-btn svg {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+.auth-social-btn .social-label {
+  display: inline-block;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-width 0.28s cubic-bezier(.4,0,.2,1), opacity 0.22s ease;
+}
+.auth-social-btn:hover:not(:disabled) {
   border-color: var(--brand);
   background: var(--brand-subtle);
+  gap: 8px;
+  padding: 0 20px;
+}
+.auth-social-btn:hover:not(:disabled) .social-label {
+  max-width: 90px;
+  opacity: 1;
+}
+.auth-social-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.auth-social-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
 }
 
 /* Divider */

@@ -128,13 +128,14 @@
 }
 
 /* Secciones con fondo claro */
-[data-theme="dark"] .lp-hero         { background: #1B4332; }
-[data-theme="dark"] .lp-stats-wrap   { background: #111827; }
-[data-theme="dark"] .lp-stats        { background: #111827; border-bottom-color: #1E293B; }
-[data-theme="dark"] .lp-stat         { border-right-color: #1E293B; }
-[data-theme="dark"] .lp-stat-label   { color: #F1F5F9; }
-[data-theme="dark"] .lp-stat-sub     { color: #94A3B8; }
-[data-theme="dark"] .lp-stat-bar     { background: #1E293B; }
+[data-theme="dark"] .lp-hero         { background: #0a0f1a; }
+[data-theme="dark"] .lp-hero-card   { box-shadow: 0 48px 120px rgba(0,0,0,0.5), 0 0 0 1px rgba(74,222,128,0.15); }
+[data-theme="dark"] .lp-stats-wrap   { background: #0a0f1a; }
+[data-theme="dark"] .lp-stats        { background: linear-gradient(135deg, #0a3d22 0%, #0d4f3c 100%); }
+[data-theme="dark"] .lp-stat         { border-right-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .lp-stat-label   { color: rgba(134,239,172,0.70); }
+[data-theme="dark"] .lp-stat-sub     { color: rgba(134,239,172,0.40); }
+[data-theme="dark"] .lp-stat-bar     { background: rgba(255,255,255,0.10); }
 [data-theme="dark"] .lp-resources    { background: #0a0f1a; }
 [data-theme="dark"] .lp-courses-wrap { background: #0a0f1a; }
 [data-theme="dark"] .lp-chat         { background: #0a0f1a; }
@@ -208,32 +209,81 @@
   margin-top: 1px;
 }
 
-/* ── 1. HERO ────────────────────────────────────────────────── */
+/* ── 1. HERO — fondo blanco, card verde flotante ────────────── */
 .lp-hero {
-  background: #1B4332;        /* verde más claro, menos denso */
-  padding: 80px var(--px) 88px;
+  background: #ffffff;
+  padding: 40px var(--px) 40px;
   position: relative;
   z-index: 0;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 64px);
+  box-sizing: border-box;
 }
 
-/* Overlay radial oscuro desde esquina inferior-izquierda */
-.lp-hero::before {
-  content: '';
+/* Blobs de color suave en el fondo blanco */
+.lp-hero-blob {
   position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 70% 80% at 0% 100%, rgba(0,0,0,0.6) 0%, transparent 65%);
+  border-radius: 50%;
+  filter: blur(90px);
   pointer-events: none;
   z-index: 0;
 }
+.lp-hero-blob-tr {
+  top: -160px; right: -160px;
+  width: 560px; height: 560px;
+  background: radial-gradient(circle, #bbf7d0, transparent 65%);
+  opacity: 0.55;
+}
+.lp-hero-blob-bl {
+  bottom: -120px; left: -120px;
+  width: 460px; height: 460px;
+  background: radial-gradient(circle, #86efac, transparent 65%);
+  opacity: 0.38;
+}
+
+/* Card verde oscura flotante */
+.lp-hero-card {
+  width: 100%;
+  max-width: 1380px;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(140deg, #15803d 0%, #166534 55%, #14532d 100%);
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 48px 120px rgba(20,83,45,0.32), 0 0 0 1px rgba(74,222,128,0.18);
+}
+
+/* Grid texture + línea superior via pseudo-elementos */
+.lp-hero-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+.lp-hero-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(74,222,128,0.7), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
 
 .lp-hero-inner {
-  max-width: 1200px;
-  margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 48px;
-  align-items: center;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 0;
+  align-items: stretch;
   position: relative;
   z-index: 1;
 }
@@ -366,16 +416,11 @@
 
 /* ── Columna de texto ── */
 .lp-hero-text {
+  padding: 64px 48px 64px 56px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-
-/* ── Phone column ── */
-.lp-hero-phone-col {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-right: 1px solid rgba(255,255,255,0.08);
 }
 
 /* ── 2. PHONE MOCKUP ────────────────────────────────────────── */
@@ -542,42 +587,57 @@
 .lp-tab-label { font-size: 0.55rem; color: #6B7280; font-weight: 500; }
 .lp-tab.sos .lp-tab-label { color: #EF4444; font-weight: 700; }
 
-/* ── 3. STATS FLOATING ──────────────────────────────────────── */
+/* ── 3. STATS — card verde oscura sobre sección blanca ─────── */
 .lp-stats-wrap {
-  padding: 0 var(--px);
+  padding: 40px var(--px) 0;
   position: relative;
   z-index: 10;
-  background: #ffffff;        /* fondo blanco para que la card no flote sola */
+  background: #ffffff;
 }
 
 .lp-stats {
   max-width: 1100px;
   margin: 0 auto;
-  background: #ffffff;
-  border-radius: 0;
-  padding: 48px 40px;
+  background: linear-gradient(135deg, #0d4f3c 0%, #145a30 100%);
+  border-radius: 20px;
+  padding: 36px 48px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border-bottom: 1px solid #E5E7EB;
+  gap: 24px;
+  box-shadow: 0 16px 48px rgba(13,79,60,0.22), 0 0 0 1px rgba(74,222,128,0.15);
 }
 
 .lp-stat {
-  padding: 0 28px;
+  padding: 0 16px;
   text-align: center;
-  border-right: 1px solid #E5E7EB;
+  border-right: 1px solid rgba(255,255,255,0.10);
   position: relative;
 }
 
 .lp-stat:last-child  { border-right: none; }
 .lp-stat:first-child { padding-left: 0; }
 
+/* ── Ícono decorativo del stat ── */
+.lp-stat-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: rgba(74,222,128,0.15);
+  border: 1px solid rgba(74,222,128,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4ade80;
+  margin: 0 auto 12px;
+  flex-shrink: 0;
+}
+
 /* ── Número animado (count-up via JS) ── */
 .lp-stat-num {
   display: block;
-  font-size: 2rem;
-  font-weight: 800;
-  color: #059669;             /* emerald-600 — visible sobre blanco */
-  line-height: 1.1;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
   font-family: 'Inter', var(--font-heading, system-ui), sans-serif;
   opacity: 0;
   transform: translateY(10px);
@@ -592,23 +652,23 @@
 .lp-stat-label {
   display: block;
   font-size: 0.78rem;
-  font-weight: 600;
-  color: #111827;             /* casi negro — máxima legibilidad */
-  margin-top: 6px;
+  font-weight: 500;
+  color: rgba(134,239,172,0.75);
+  margin-top: 8px;
   line-height: 1.35;
 }
 
 .lp-stat-sub {
   display: block;
-  font-size: 0.68rem;
-  color: #6B7280;             /* gris neutro legible */
+  font-size: 0.66rem;
+  color: rgba(134,239,172,0.45);
   margin-top: 3px;
 }
 
 /* ── Barra de crecimiento ── */
 .lp-stat-bar {
   height: 3px;
-  background: #E5E7EB;
+  background: rgba(255,255,255,0.12);
   border-radius: 2px;
   margin-top: 14px;
   overflow: hidden;
@@ -617,7 +677,7 @@
 .lp-stat-bar-fill {
   height: 100%;
   width: var(--fill, 80%);
-  background: linear-gradient(90deg, #34D399 0%, #059669 100%);
+  background: linear-gradient(90deg, #4ade80 0%, #34d399 100%);
   border-radius: 2px;
   transform: scaleX(0);
   transform-origin: left;
@@ -1400,4 +1460,147 @@
 @media (max-width: 480px) {
   .lp-guides-grid { grid-template-columns: 1fr; }
   .lp-cta-btns    { flex-direction: column; align-items: center; }
+}
+
+/* ============================================================
+   FADE-UP — scroll reveal (IntersectionObserver, sin framer)
+   ============================================================ */
+.fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.fade-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   HERO — columna foto con teléfono flotante
+   ============================================================ */
+.lp-hero-photo-col {
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(360px, 50vh, 540px);
+  border-radius: 0 24px 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lp-hero-photo-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1755549746563-a7c0a391af36?w=900&h=700&fit=crop&auto=format');
+  background-size: cover;
+  background-position: center top;
+}
+
+.lp-hero-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(22,101,52,0.82) 0%, rgba(20,83,45,0.68) 100%);
+}
+
+.lp-hero-photo-edge {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 90px;
+  background: linear-gradient(90deg, #166534, transparent);
+}
+
+.lp-hero-photo-glow {
+  position: absolute;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(74,222,128,0.18), transparent 70%);
+  pointer-events: none;
+}
+
+/* Chips de info flotantes */
+@keyframes chip-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lp-hero-chip {
+  position: absolute;
+  background: rgba(255,255,255,0.13);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+  animation: chip-in 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+.lp-chip-tl { top: 32px;    left: 24px;  animation-delay: 0.7s;  }
+.lp-chip-tr { top: 28px;    right: 20px; animation-delay: 0.78s; }
+.lp-chip-br { bottom: 36px; right: 20px; animation-delay: 0.85s; }
+.lp-chip-bl { bottom: 36px; left: 20px;  animation-delay: 0.92s; }
+
+.lp-chip-green {
+  background: rgba(74,222,128,0.18);
+  border-color: rgba(74,222,128,0.30);
+}
+
+.lp-chip-strong { font-size: 0.82rem; font-weight: 800; color: #fff;                   margin: 0; line-height: 1.2; }
+.lp-chip-muted  { font-size: 0.66rem; color: rgba(255,255,255,0.55); margin: 0; line-height: 1.2; }
+.lp-chip-online { font-size: 0.70rem; font-weight: 700; color: #dcfce7; }
+.lp-chip-emoji  { font-size: 1.3rem; }
+.lp-chip-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  display: block;
+  flex-shrink: 0;
+}
+.lp-chip-stars {
+  color: #fbbf24;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+/* Teléfono flotante */
+@keyframes float-phone {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+.lp-phone-float-wrap {
+  position: relative;
+  z-index: 2;
+  animation: float-phone 4.5s ease-in-out infinite;
+}
+
+/* Dark mode */
+[data-theme="dark"] .lp-hero-photo-edge {
+  background: linear-gradient(90deg, #166534, transparent);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .lp-hero { padding: 24px 16px; min-height: unset; }
+  .lp-hero-card { border-radius: 20px; }
+  .lp-hero-inner { grid-template-columns: 1fr; }
+  .lp-hero-text {
+    padding: 40px 28px 32px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .lp-hero-photo-col {
+    border-radius: 0 0 20px 20px;
+    min-height: 300px;
+  }
+  .lp-chip-tl { top: 14px; left: 12px; }
+  .lp-chip-tr { top: 14px; right: 12px; }
+  .lp-chip-br { bottom: 14px; right: 12px; }
+  .lp-chip-bl { bottom: 14px; left: 12px; }
 }

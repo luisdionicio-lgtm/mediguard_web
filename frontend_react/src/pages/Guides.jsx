@@ -1,15 +1,27 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Lock } from 'lucide-react';
+import { Lock, Heart, Droplets, Flame, Clock } from 'lucide-react';
 import { guideService } from '../services/guideService';
 import { authService } from '../services/authService';
 import PageHeader from '../components/ui/PageHeader';
 import Spinner from '../components/ui/Spinner';
 import Alert from '../components/ui/Alert';
 import EmptyState from '../components/ui/EmptyState';
+import { guideImage } from '../utils/guideImages';
 import '../styles/Dashboard.css';
 
 const FREE_PREVIEW_LIMIT = 3;
+
+/* Acento visual por guía: imagen real si existe; si no, gradiente + icono
+   derivado de la categoría (con respaldo por índice). */
+const GUIDE_ACCENTS = [
+  { cls: 'gd-red',   Icon: Heart },
+  { cls: 'gd-rose',  Icon: Droplets },
+  { cls: 'gd-amber', Icon: Flame },
+];
+const CATEGORY_ACCENT = {
+  'primeros-auxilios': 0, heridas: 1, quemaduras: 2, traumatismos: 1, pediatria: 0,
+};
 
 const Guides = () => {
   const [allGuides, setAllGuides] = useState([]);
@@ -54,34 +66,44 @@ const Guides = () => {
       )}
 
       <div className="resource-grid stagger">
-        {guides.map((guide) => (
-          <article className="resource-card" key={guide.id}>
-            <div className="resource-card-icon">
-              <ShieldCheck size={22} />
-            </div>
+        {guides.map((guide, i) => {
+          const accent = GUIDE_ACCENTS[CATEGORY_ACCENT[guide.category] ?? i % GUIDE_ACCENTS.length];
+          const img = guideImage(guide);
+          return (
+            <article className="dash2-guide-card" key={guide.id}>
+              <div className={`dash2-guide-media ${accent.cls}`}>
+                {img && (
+                  <img
+                    className="dash2-guide-img"
+                    src={img}
+                    alt={guide.title}
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                )}
+                <span className="dash2-guide-cat">{guide.category || 'Guía'}</span>
+                <span className="dash2-guide-badge"><accent.Icon size={20} /></span>
+              </div>
 
-            <div className="resource-card-top">
-              <span className="tag tag-brand">Paso a Paso</span>
-              <span className="resource-card-meta">Offline habilitado</span>
-            </div>
+              <div className="dash2-guide-body">
+                <div className="dash2-guide-tags">
+                  <span className="dash2-tag dash2-tag-brand">Paso a paso</span>
+                  <span className="dash2-tag-meta"><Clock size={13} strokeWidth={2} /> Offline habilitado</span>
+                </div>
 
-            <h3>{guide.title}</h3>
+                <h3 className="dash2-guide-title">{guide.title}</h3>
 
-            {guide.description && (
-              <p className="resource-card-sub">{guide.description}</p>
-            )}
+                {(guide.description || guide.content) && (
+                  <p className="dash2-guide-desc">{guide.description || guide.content}</p>
+                )}
 
-            {guide.content && (
-              <p className="resource-card-desc">{guide.content}</p>
-            )}
-
-            <div className="resource-card-actions">
-              <button type="button" className="btn btn-primary btn-full">
-                Iniciar Guía Interactiva
-              </button>
-            </div>
-          </article>
-        ))}
+                <button type="button" className="btn btn-primary btn-full" style={{ marginTop: '1.25rem' }}>
+                  Iniciar Guía Interactiva
+                </button>
+              </div>
+            </article>
+          );
+        })}
       </div>
 
       {/* Banner de acceso bloqueado */}

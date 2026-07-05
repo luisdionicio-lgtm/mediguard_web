@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Download, Check,
-  MapPin,
+  MapPin, Globe, Bell, Lock,
   Home as IconHome, Activity, AlertCircle, Map, User,
   Bot, Send, ChevronRight,
   Droplets, Pill, Waves, Bone, Baby, Thermometer,
   Users, BookOpen, Shield, Zap, Clock, Heart,
   PhoneCall, AlertTriangle, Siren, TrendingUp,
-  Search,
+  Search, Star,
 } from 'lucide-react';
 import { OFFLINE_GUIDES } from '../data/learnGuides';
 import '../styles/Home.css';
@@ -167,15 +167,6 @@ const TEAM = [
   { emoji: '🤝', name: 'Comunidad',             role: 'Usuarios y feedback',   desc: 'Más de 12,000 personas que ya confían en MediGuard AI cada día.' },
 ];
 
-/* ── Eyebrow pill helper ────────────────────────────────────── */
-function EyebrowPill({ text, bg, color }) {
-  return (
-    <span style={{ display: 'inline-block', background: bg, color, padding: '4px 14px', borderRadius: 50, fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', marginBottom: 14 }}>
-      {text}
-    </span>
-  );
-}
-
 /* ── Modal de video ─────────────────────────────────────────── */
 function VideoModal({ video, onClose }) {
   useEffect(() => {
@@ -209,9 +200,110 @@ function VideoModal({ video, onClose }) {
           />
         </div>
         <p className="vm-disclaimer">
-          <i className="ti ti-shield-check" /> Contenido verificado · Canal oficial: <strong>{video.channel}</strong>
+          <i className="ti ti-shield-check" /> Contenido verificado · Canal oficial: <strong>{video.source}</strong>
         </p>
       </div>
+    </div>
+  );
+}
+
+/* ── Stat con count-up y barra animada (IntersectionObserver) ── */
+function StatCounter({ target, suffix = '', label, sub, fill = 80, delay = 0, icon }) {
+  const [count, setCount] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.35 }
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    let start = null;
+    const duration = 1600;
+    const tick = (ts) => {
+      if (!start) start = ts;
+      const p = Math.min((ts - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      setCount(Math.floor(ease * target));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [visible, target]);
+
+  return (
+    <div
+      ref={ref}
+      className={`lp-stat${visible ? ' stat-visible' : ''}`}
+      style={{ '--bar-delay': `${delay}s`, '--fill': `${fill}%` }}
+    >
+      {icon && (
+        <div className="lp-stat-icon" aria-hidden="true">{icon}</div>
+      )}
+      <span className="lp-stat-num">{count.toLocaleString()}{suffix}</span>
+      <span className="lp-stat-label">{label}</span>
+      <span className="lp-stat-sub">{sub}</span>
+      <div className="lp-stat-bar"><div className="lp-stat-bar-fill" /></div>
+    </div>
+  );
+}
+
+const APP_FEATURES = [
+  { icon: <Zap size={20} />,    bg: '#fef3c7', ic: '#b45309', title: 'SOS en 3 segundos',     desc: 'Un toque y tus contactos reciben tu ubicación exacta en tiempo real.' },
+  { icon: <Globe size={20} />,  bg: '#dcfce7', ic: '#15803d', title: 'Funciona sin internet',  desc: '40+ guías de primeros auxilios disponibles sin ninguna conexión.' },
+  { icon: <MapPin size={20} />, bg: '#dbeafe', ic: '#1d4ed8', title: 'Hospitales cercanos',    desc: 'Geolocalización en tiempo real para encontrar atención médica al instante.' },
+  { icon: <Bot size={20} />,    bg: '#f3e8ff', ic: '#7c3aed', title: 'IA médica 24/7',         desc: 'Asistente inteligente que analiza síntomas y orienta tu respuesta.' },
+  { icon: <Lock size={20} />,   bg: '#dcfce7', ic: '#15803d', title: 'Datos protegidos',       desc: 'Cifrado de grado hospitalario. Tu información médica solo es tuya.' },
+  { icon: <Bell size={20} />,   bg: '#ffe4e4', ic: '#e53935', title: 'Alertas inteligentes',   desc: 'Notificaciones basadas en tu historial médico y ubicación actual.' },
+];
+
+/* ── FadeUp — scroll reveal sin framer-motion ─────────────────── */
+function FadeUp({ children, delay = 0, style = {} }) {
+  const ref = useRef(null);
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVis(true); obs.disconnect(); } },
+      { threshold: 0.12 }
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className={`fade-up${vis ? ' is-visible' : ''}`}
+      style={{ transitionDelay: `${delay}s`, ...style }}>
+      {children}
+    </div>
+  );
+}
+
+/* ── Wave SVG divider ─────────────────────────────────────────── */
+function WaveDown({ from, to }) {
+  return (
+    <div style={{ lineHeight: 0, background: from }}>
+      <svg viewBox="0 0 1440 72" preserveAspectRatio="none"
+        style={{ display: 'block', width: '100%', height: 72 }}>
+        <path d="M0,0 C360,72 1080,0 1440,56 L1440,72 L0,72 Z" fill={to} />
+      </svg>
+    </div>
+  );
+}
+
+/* ── Section label  (línea + texto + línea) ───────────────────── */
+function SectionLabel({ text, light = false }) {
+  const c = light ? '#6ee7b7' : '#16a34a';
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+      <span style={{ width: 28, height: 2, background: c, borderRadius: 2, display: 'block' }} />
+      <span style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: c }}>
+        {text}
+      </span>
+      <span style={{ width: 28, height: 2, background: c, borderRadius: 2, display: 'block' }} />
     </div>
   );
 }
@@ -239,7 +331,13 @@ export default function Home() {
         className="lp-hero"
         aria-labelledby="hero-heading"
       >
-        <div className="lp-hero-inner">
+        {/* Blobs decorativos en el fondo blanco */}
+        <div className="lp-hero-blob lp-hero-blob-tr" aria-hidden="true" />
+        <div className="lp-hero-blob lp-hero-blob-bl" aria-hidden="true" />
+
+        {/* Card verde oscura flotante — igual que App.tsx */}
+        <div className="lp-hero-card">
+          <div className="lp-hero-inner">
 
           {/* Columna izquierda — texto */}
           <div className="lp-hero-text">
@@ -294,22 +392,66 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Columna derecha — phone mockup */}
-          <div className="lp-hero-phone-col">
-            <PhoneMockup />
+          {/* Columna derecha — foto médica + chips + phone */}
+          <div className="lp-hero-photo-col">
+            <div className="lp-hero-photo-bg" aria-hidden="true" />
+            <div className="lp-hero-photo-overlay" aria-hidden="true" />
+            <div className="lp-hero-photo-edge" aria-hidden="true" />
+            <div className="lp-hero-photo-glow" aria-hidden="true" />
+
+            {/* Chip ⚡ arriba-izquierda */}
+            <div className="lp-hero-chip lp-chip-tl" aria-hidden="true">
+              <span className="lp-chip-emoji">⚡</span>
+              <div>
+                <p className="lp-chip-strong">3 seg</p>
+                <p className="lp-chip-muted">Resp. SOS</p>
+              </div>
+            </div>
+
+            {/* Chip offline arriba-derecha */}
+            <div className="lp-hero-chip lp-chip-tr lp-chip-green" aria-hidden="true">
+              <span className="lp-chip-dot" />
+              <span className="lp-chip-online">100% Offline</span>
+            </div>
+
+            {/* Chip 🏥 abajo-derecha */}
+            <div className="lp-hero-chip lp-chip-br" aria-hidden="true">
+              <span className="lp-chip-emoji">🏥</span>
+              <div>
+                <p className="lp-chip-strong">12 K+</p>
+                <p className="lp-chip-muted">Usuarios</p>
+              </div>
+            </div>
+
+            {/* Chip rating abajo-izquierda */}
+            <div className="lp-hero-chip lp-chip-bl" aria-hidden="true">
+              <div className="lp-chip-stars">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={10} fill="#fbbf24" color="#fbbf24" />
+                ))}
+              </div>
+              <span className="lp-chip-strong">4.9 / 5.0</span>
+            </div>
+
+            {/* Phone mockup flotante */}
+            <div className="lp-phone-float-wrap">
+              <PhoneMockup />
+            </div>
           </div>
 
+          </div>
         </div>
       </section>
+
 
       {/* ══════════════════════════════════════════════════════
           2. NOSOTROS  —  blanco #ffffff
          ══════════════════════════════════════════════════════ */}
       <section id="about" style={{ background: '#ffffff' }} aria-labelledby="about-heading">
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 40px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '72px 40px 88px' }}>
 
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
-            <EyebrowPill text="Quiénes somos" bg="#eff6ff" color="#2563eb" />
+            <SectionLabel text="Quiénes somos" />
             <h2 id="about-heading" style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, color: '#0d4f3c', marginBottom: 16, lineHeight: 1.2 }}>
               Construido por estudiantes,<br />inspirado por la realidad
             </h2>
@@ -324,14 +466,16 @@ export default function Home() {
               { icon: <Zap size={22} />,        bg: '#fef3c7', ic: '#d97706', title: 'El problema', text: 'Cada año miles de muertes podrían evitarse si las personas supieran responder en los primeros 4 minutos críticos.' },
               { icon: <BookOpen size={22} />,   bg: '#dbeafe', ic: '#2563eb', title: 'La solución', text: 'Una app con protocolos médicos validados, alertas SOS y guías offline en el bolsillo de cualquier persona.' },
               { icon: <TrendingUp size={22} />, bg: '#dcfce7', ic: '#16a34a', title: 'El impacto',  text: 'Más de 12,000 usuarios activos, 40+ guías sin internet y una comunidad que crece cada semana.' },
-            ].map(card => (
-              <div key={card.title} style={{ borderRadius: 16, padding: '28px 24px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, background: card.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.ic, marginBottom: 16 }}>
-                  {card.icon}
+            ].map((card, i) => (
+              <FadeUp key={card.title} delay={i * 0.1}>
+                <div style={{ borderRadius: 16, padding: '28px 24px', background: '#f8fafc', border: '1px solid #e2e8f0', height: '100%' }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: card.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.ic, marginBottom: 16 }}>
+                    {card.icon}
+                  </div>
+                  <h3 style={{ color: '#0d4f3c', fontWeight: 700, fontSize: '1rem', marginBottom: 8 }}>{card.title}</h3>
+                  <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: 1.7 }}>{card.text}</p>
                 </div>
-                <h3 style={{ color: '#0d4f3c', fontWeight: 700, fontSize: '1rem', marginBottom: 8 }}>{card.title}</h3>
-                <p style={{ color: '#64748b', fontSize: '0.92rem', lineHeight: 1.7 }}>{card.text}</p>
-              </div>
+              </FadeUp>
             ))}
           </div>
 
@@ -340,12 +484,72 @@ export default function Home() {
             <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Un equipo multidisciplinario unido por una misión común</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(250px,1fr))', gap: 18 }}>
-            {TEAM.map(t => (
-              <div key={t.name} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px 20px', textAlign: 'center', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontSize: '2.4rem', marginBottom: 12 }}>{t.emoji}</div>
-                <p style={{ color: '#0d4f3c', fontWeight: 700, fontSize: '0.97rem', marginBottom: 4 }}>{t.name}</p>
-                <p style={{ color: '#0f766e', fontSize: '0.78rem', fontWeight: 600, marginBottom: 10 }}>{t.role}</p>
-                <p style={{ color: '#64748b', fontSize: '0.87rem', lineHeight: 1.65 }}>{t.desc}</p>
+            {TEAM.map((t, i) => (
+              <FadeUp key={t.name} delay={i * 0.1}>
+                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '24px 20px', textAlign: 'center', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' }}>
+                  <div style={{ fontSize: '2.4rem', marginBottom: 12 }}>{t.emoji}</div>
+                  <p style={{ color: '#0d4f3c', fontWeight: 700, fontSize: '0.97rem', marginBottom: 4 }}>{t.name}</p>
+                  <p style={{ color: '#0f766e', fontSize: '0.78rem', fontWeight: 600, marginBottom: 10 }}>{t.role}</p>
+                  <p style={{ color: '#64748b', fontSize: '0.87rem', lineHeight: 1.65 }}>{t.desc}</p>
+                </div>
+              </FadeUp>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════
+          3. FUNCIONALIDADES DE LA APP  —  mint suave #f0fdf4
+         ══════════════════════════════════════════════════════ */}
+      <section style={{ background: '#f0fdf4' }} aria-labelledby="features-app-heading">
+        <WaveDown from="#ffffff" to="#f0fdf4" />
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px clamp(20px,5vw,48px) 80px' }}>
+
+          <div style={{ textAlign: 'center', marginBottom: 52 }}>
+            <SectionLabel text="Funcionalidades" />
+            <h2 id="features-app-heading" style={{ fontSize: 'clamp(1.8rem,4vw,2.4rem)', fontWeight: 800, color: '#0d4f3c', lineHeight: 1.2, marginBottom: 14 }}>
+              Todo lo que necesitas<br />en una sola app
+            </h2>
+            <p style={{ color: '#64748b', fontSize: '0.98rem', maxWidth: 480, margin: '0 auto', lineHeight: 1.75 }}>
+              Diseñada para funcionar en el peor momento posible — sin señal,
+              sin tiempo, sin experiencia médica previa.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 18 }}>
+            {APP_FEATURES.map((f, i) => (
+              <FadeUp key={f.title} delay={i * 0.08}>
+                <div
+                  style={{ display: 'flex', gap: 16, alignItems: 'flex-start', background: '#fff', borderRadius: 18, border: '1px solid #bbf7d0', padding: '22px 20px', transition: 'transform 0.15s,box-shadow 0.15s', height: '100%' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(13,79,60,0.10)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
+                >
+                  <div style={{ width: 46, height: 46, borderRadius: 13, background: f.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: f.ic, flexShrink: 0 }}>{f.icon}</div>
+                  <div>
+                    <p style={{ color: '#0d4f3c', fontWeight: 700, fontSize: '0.93rem', margin: '0 0 6px' }}>{f.title}</p>
+                    <p style={{ color: '#64748b', fontSize: '0.83rem', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
+                  </div>
+                </div>
+              </FadeUp>
+            ))}
+          </div>
+
+          {/* Rating bar */}
+          <div style={{ marginTop: 44, display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
+            {[
+              { store: 'App Store',   rating: '4.9', icon: '🍎' },
+              { store: 'Google Play', rating: '4.8', icon: '🤖' },
+            ].map(s => (
+              <div key={s.store} style={{ display: 'flex', alignItems: 'center', gap: 12, background: '#fff', border: '1px solid #bbf7d0', borderRadius: 14, padding: '12px 20px', boxShadow: '0 2px 8px rgba(13,79,60,0.06)' }}>
+                <span style={{ fontSize: '1.4rem' }}>{s.icon}</span>
+                <div>
+                  <p style={{ fontWeight: 800, color: '#0d4f3c', fontSize: '0.9rem', margin: '0 0 2px' }}>{s.store}</p>
+                  <p style={{ margin: 0, fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <span style={{ color: '#f59e0b' }}>{'★'.repeat(5)}</span>
+                    <span style={{ color: '#64748b' }}>{s.rating} · Verificado</span>
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -354,14 +558,15 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════════════════
-          3. GUÍAS  —  teal vibrante #0f766e
+          5. GUÍAS  —  teal vibrante #0f766e
          ══════════════════════════════════════════════════════ */}
       <section id="recursos" style={{ background: '#F0FDFA' }} aria-labelledby="res-heading">
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 40px' }}>
+        <WaveDown from="#f0fdf4" to="#F0FDFA" />
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 40px 88px' }}>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, marginBottom: 52 }}>
             <div>
-              <EyebrowPill text="Recursos gratuitos" bg="#CCFBF1" color="#0f766e" />
+              <SectionLabel text="Recursos gratuitos" />
               <h2 id="res-heading" style={{ fontSize: 'clamp(1.6rem,3.5vw,2.2rem)', fontWeight: 800, color: '#134E4A', lineHeight: 1.2 }}>
                 Aprende antes de necesitarlo
               </h2>
@@ -413,7 +618,7 @@ export default function Home() {
 
           {/* Guías descargables */}
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <EyebrowPill text="Guías offline" bg="#CCFBF1" color="#0f766e" />
+            <SectionLabel text="Guías offline" />
             <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#134E4A', marginBottom: 8 }}>Disponibles sin internet</h3>
             <p style={{ color: '#4B7C5E', fontSize: '0.95rem' }}>En una emergencia real no siempre hay señal.</p>
           </div>
@@ -470,10 +675,11 @@ export default function Home() {
              Ventana flotante sobre fondo aéreo
          ══════════════════════════════════════════════════════ */}
       <section id="chat" style={{ background: '#eff6ff' }} aria-labelledby="chat-heading">
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 40px' }}>
+        <WaveDown from="#F0FDFA" to="#eff6ff" />
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 40px 88px' }}>
 
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <EyebrowPill text="Inteligencia artificial" bg="#dbeafe" color="#1d4ed8" />
+            <SectionLabel text="Inteligencia artificial" />
             <h2 id="chat-heading" style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 800, color: '#0c4a6e', marginBottom: 14, lineHeight: 1.2 }}>
               Tu asistente médico,<br />disponible 24/7
             </h2>
@@ -565,40 +771,45 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           5. ¿CUÁNDO ACTUAR?  —  azul océano #0c4a6e
          ══════════════════════════════════════════════════════ */}
-      <section id="features" style={{ background: '#0c4a6e' }} aria-labelledby="features-heading">
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 40px' }}>
+      <section id="features" style={{ background: '#0d4f3c' }} aria-labelledby="features-heading">
+        <WaveDown from="#eff6ff" to="#0d4f3c" />
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 40px 88px' }}>
 
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <EyebrowPill text="Guía rápida" bg="rgba(255,255,255,0.12)" color="#bae6fd" />
+            <SectionLabel text="Guía rápida" light />
             <h2 id="features-heading" style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)', fontWeight: 800, color: '#fff', marginBottom: 14, lineHeight: 1.2 }}>
               ¿Cuándo actuar y cómo?
             </h2>
-            <p style={{ color: '#7dd3fc', fontSize: '1rem', maxWidth: 520, margin: '0 auto', lineHeight: 1.75 }}>
+            <p style={{ color: '#86efac', fontSize: '1rem', maxWidth: 520, margin: '0 auto', lineHeight: 1.75 }}>
               No todas las situaciones requieren el mismo nivel de respuesta.
               Aprende a identificar la urgencia antes de que llegue.
             </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(230px,1fr))', gap: 20 }}>
-            {WHEN_CARDS.map(card => (
-              <div key={card.label} style={{ background: 'rgba(255,255,255,0.07)', borderRadius: 16, padding: '24px 20px', border: `1px solid ${card.color}40`, backdropFilter: 'blur(6px)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
-                  <div style={{ width: 46, height: 46, borderRadius: 12, background: `${card.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.color, flexShrink: 0 }}>
-                    {card.icon}
+            {WHEN_CARDS.map((card, i) => (
+              <FadeUp key={card.label} delay={i * 0.1}>
+                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 20, padding: '24px 20px', border: `1px solid ${card.color}30`, backdropFilter: 'blur(8px)' }}>
+                  {/* urgency badge */}
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${card.color}1a`, border: `1px solid ${card.color}30`, borderRadius: 8, padding: '4px 10px', marginBottom: 16 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: card.color, display: 'block' }} />
+                    <span style={{ fontSize: '0.62rem', fontWeight: 800, color: card.color, letterSpacing: '0.1em' }}>{card.urgency}</span>
                   </div>
-                  <div>
-                    <p style={{ color: card.color, fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 2 }}>{card.urgency}</p>
-                    <p style={{ color: '#f0f9ff', fontWeight: 700, fontSize: '0.97rem' }}>{card.label}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 18 }}>
+                    <div style={{ width: 46, height: 46, borderRadius: 13, background: `${card.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: card.color, flexShrink: 0 }}>
+                      {card.icon}
+                    </div>
+                    <p style={{ color: '#f0f9ff', fontWeight: 800, fontSize: '1rem', margin: 0 }}>{card.label}</p>
                   </div>
+                  <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {card.items.map(item => (
+                      <li key={item} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', color: '#86efac', fontSize: '0.84rem', lineHeight: 1.5 }}>
+                        <span style={{ color: card.color, flexShrink: 0, marginTop: 3, fontSize: '0.6rem' }}>●</span>{item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {card.items.map(item => (
-                    <li key={item} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', color: '#7dd3fc', fontSize: '0.86rem', lineHeight: 1.55 }}>
-                      <span style={{ color: card.color, flexShrink: 0, marginTop: 2 }}>•</span>{item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              </FadeUp>
             ))}
           </div>
 
@@ -609,9 +820,10 @@ export default function Home() {
           6. DESCARGA  —  mint suave #f0fdf4
          ══════════════════════════════════════════════════════ */}
       <section id="download" style={{ background: '#f0fdf4' }} aria-labelledby="download-heading">
-        <div style={{ maxWidth: 900, margin: '0 auto', padding: '88px 40px', textAlign: 'center' }}>
+        <WaveDown from="#0d4f3c" to="#f0fdf4" />
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '20px 40px 88px', textAlign: 'center' }}>
 
-          <EyebrowPill text="Descarga gratuita" bg="#dcfce7" color="#15803d" />
+          <SectionLabel text="Descarga gratuita" />
           <h2 id="download-heading" style={{ fontSize: 'clamp(2rem,5vw,3rem)', fontWeight: 800, color: '#0d4f3c', marginBottom: 16, lineHeight: 1.15 }}>
             Prepárate hoy.<br />Las emergencias no avisan.
           </h2>
@@ -671,10 +883,11 @@ export default function Home() {
           7. MISIÓN  —  blanco cálido #fafafa
          ══════════════════════════════════════════════════════ */}
       <section id="mision" style={{ background: '#fafafa' }} aria-labelledby="mision-heading">
-        <div style={{ maxWidth: 800, margin: '0 auto', padding: '100px 40px', textAlign: 'center' }}>
+        <WaveDown from="#f0fdf4" to="#fafafa" />
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: '20px 40px 100px', textAlign: 'center' }}>
 
           <div style={{ fontSize: '3rem', marginBottom: 20 }}>🌿</div>
-          <EyebrowPill text="Nuestra misión" bg="#dbeafe" color="#1d4ed8" />
+          <SectionLabel text="Nuestra misión" />
 
           <h2 id="mision-heading" style={{ fontSize: 'clamp(2rem,5vw,3rem)', fontWeight: 800, color: '#0d4f3c', marginBottom: 20, lineHeight: 1.15 }}>
             El conocimiento médico<br />debe ser de todos.

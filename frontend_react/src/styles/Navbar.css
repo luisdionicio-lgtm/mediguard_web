@@ -1,10 +1,151 @@
+/* ============================================================
+   NAVBAR — MediGuard
+   ============================================================ */
 .app-navbar {
   padding-inline: 6rem;
+  background: var(--navbar-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--navbar-border);
+  box-shadow: var(--navbar-shadow);
 }
 
+.app-navbar-brand { transition: opacity 0.15s ease; }
+.app-navbar-brand:active { opacity: 0.75; }
+
+/* ── Links centrales / de navegación ── */
+.app-navbar-links { gap: 4px; }
+
+.app-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-muted);
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  background: transparent;
+  border: 1px solid transparent;
+  font-family: inherit;
+  transition: background 0.18s ease, color 0.18s ease,
+              box-shadow 0.18s ease, border-color 0.18s ease, transform 0.1s ease;
+}
+
+/* Hover / clic — caja cuadrada con borde y sombra */
+.app-nav-link:hover {
+  background: var(--brand-subtle);
+  color: var(--brand-dark);
+  border-color: var(--brand-border);
+  box-shadow: 0 2px 10px rgba(13, 158, 117, 0.14);
+}
+.app-nav-link:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 1px 4px rgba(13, 158, 117, 0.18);
+}
+
+/* Sección activa — caja más marcada */
+.app-nav-link.active {
+  background: var(--brand-subtle);
+  color: var(--brand-dark);
+  font-weight: 700;
+  border-color: var(--brand-border);
+  box-shadow: 0 4px 14px rgba(13, 158, 117, 0.20),
+              inset 0 0 0 1px var(--brand-border);
+}
+
+/* Variante peligro (Salir) */
+.app-nav-link-danger { color: var(--error); }
+.app-nav-link-danger:hover {
+  background: var(--error-light);
+  color: var(--error);
+  border-color: rgba(220, 38, 38, 0.22);
+  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.14);
+}
+
+/* En el menú mobile los links ocupan todo el ancho */
+.app-nav-link-block { width: 100%; justify-content: flex-start; }
+
+/* ── Botones de icono (tema / hamburguesa) ── */
+.app-nav-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease,
+              box-shadow 0.18s ease, border-color 0.18s ease, transform 0.1s ease;
+}
+.app-nav-icon-btn:hover {
+  background: var(--brand-subtle);
+  color: var(--brand-dark);
+  border-color: var(--brand-border);
+  box-shadow: 0 2px 10px rgba(13, 158, 117, 0.14);
+}
+.app-nav-icon-btn:active { transform: translateY(1px) scale(0.94); }
+
+/* ── CTAs (Ingresar / Crear cuenta) ── */
+.app-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.18s ease, box-shadow 0.18s ease,
+              border-color 0.18s ease, transform 0.1s ease;
+}
+.app-nav-cta:active { transform: translateY(1px) scale(0.98); }
+
+.app-nav-cta-outline {
+  color: var(--brand);
+  background: transparent;
+  border: 1.5px solid var(--brand-border);
+  box-shadow: 0 2px 10px rgba(52, 211, 153, 0.14);
+}
+.app-nav-cta-outline:hover {
+  border-color: var(--brand);
+  background: var(--brand-subtle);
+  box-shadow: 0 4px 14px rgba(13, 158, 117, 0.18);
+}
+
+.app-nav-cta-solid {
+  color: #fff;
+  background: var(--brand);
+  border: 1.5px solid var(--brand);
+  box-shadow: 0 2px 12px rgba(5, 150, 105, 0.35);
+}
+.app-nav-cta-solid:hover {
+  background: var(--brand-hover);
+  border-color: var(--brand-hover);
+  box-shadow: 0 6px 18px rgba(5, 150, 105, 0.40);
+}
+
+/* ── Menú mobile ── */
 .app-navbar-menu-button,
 .app-navbar-mobile-menu {
   display: none;
+}
+.app-navbar-mobile-menu {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+.app-navbar-mobile-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
 }
 
 @media (max-width: 767px) {

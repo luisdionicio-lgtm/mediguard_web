@@ -24,13 +24,14 @@ function Navbar({ hideNav = false }) {
   const navigate     = useNavigate();
   const { pathname } = useLocation();
 
+  // Marca la sección visible mientras se hace scroll (solo en el home).
   useEffect(() => {
+    if (pathname !== '/') { setActiveHash(''); return; }
     const onScroll = () => {
-      if (pathname !== '/') return;
       let current = 'inicio';
       for (const { section } of NAV_LINKS) {
         const el = document.getElementById(section);
-        if (el && el.getBoundingClientRect().top <= 80) current = section;
+        if (el && el.getBoundingClientRect().top <= 90) current = section;
       }
       setActiveHash(current);
     };
@@ -45,16 +46,44 @@ function Navbar({ hideNav = false }) {
     return () => window.removeEventListener('auth-change', onAuth);
   }, []);
 
-  const closeMobile  = () => setMobileOpen(false);
+  const closeMobile = () => setMobileOpen(false);
   const handleLogout = async () => { await authService.logout(); navigate('/login', { replace: true }); };
+
+  // Scroll suave a una sección, con reintentos por si el home aún no montó
+  // tras navegar desde otra ruta. 'inicio' vuelve al tope de la página.
+  const scrollToSection = (section, attempts = 0) => {
+    if (section === 'inicio') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const el = document.getElementById(section);
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY - 76; // compensa navbar sticky
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    } else if (attempts < 25) {
+      setTimeout(() => scrollToSection(section, attempts + 1), 60);
+    }
+  };
+
+  const handleNav = (e, link) => {
+    e.preventDefault();
+    closeMobile();
+    setActiveHash(link.section);
+    if (pathname === '/') {
+      scrollToSection(link.section);
+    } else {
+      navigate('/');
+      scrollToSection(link.section);
+    }
+  };
 
   return (
     <>
       {/* ── NAVBAR ── */}
-      <nav style={{ height: '64px' }} className="app-navbar sticky top-0 z-50 w-full flex items-center bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+      <nav className="app-navbar sticky top-0 z-50 w-full flex items-center" style={{ height: '64px' }}>
 
         {/* Bloque 1 — Logo (izquierda) */}
-        <Link to="/" className="flex items-center gap-2 flex-shrink-0 no-underline">
+        <Link to="/" onClick={(e) => handleNav(e, NAV_LINKS[0])} className="app-navbar-brand flex items-center gap-2 flex-shrink-0 no-underline">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--brand)' }}>
             <Shield size={16} strokeWidth={2.5} color="#fff" />
           </div>
@@ -63,19 +92,15 @@ function Navbar({ hideNav = false }) {
           </span>
         </Link>
 
-        {/* Bloque 2 — Links (centro, flex-1 para ocupar todo el espacio disponible) */}
+        {/* Bloque 2 — Links (centro) */}
         {!hideNav && (
-          <div className="app-navbar-links flex-1 flex items-center justify-center gap-8">
+          <div className="app-navbar-links flex-1 flex items-center justify-center">
             {NAV_LINKS.map(l => (
               <a
                 key={l.href}
                 href={l.href}
-                className={
-                  activeHash === l.section
-                    ? 'px-3 py-2 rounded-md text-sm font-semibold bg-emerald-50 text-emerald-700 transition-colors duration-200'
-                    : 'px-3 py-2 rounded-md text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-700'
-                }
-                style={{ textDecoration: 'none', whiteSpace: 'nowrap' }}
+                onClick={(e) => handleNav(e, l)}
+                className={`app-nav-link${activeHash === l.section ? ' active' : ''}`}
               >
                 {l.label}
               </a>
@@ -87,62 +112,42 @@ function Navbar({ hideNav = false }) {
         {hideNav && <div className="flex-1" />}
 
         {/* Bloque 3 — Acciones (derecha) */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
 
           {/* Theme toggle */}
           <button
             type="button"
             onClick={toggleTheme}
             aria-label="Alternar tema"
-            className="p-2 rounded-md text-gray-500 transition-colors duration-200 hover:bg-gray-100 hover:text-gray-700"
+            className="app-nav-icon-btn"
           >
             {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
           </button>
 
           {/* Auth — desktop */}
-          <div className="app-navbar-auth-desktop hidden md:flex items-center gap-2">
+          <div className="app-navbar-auth-desktop hidden md:flex items-center gap-1.5">
             {isAuth ? (
               <>
-                <Link
-                  to="/dashboard"
-                  className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-700"
-                  style={{ textDecoration: 'none' }}
-                >
+                <Link to="/dashboard" className={`app-nav-link${pathname === '/dashboard' ? ' active' : ''}`}>
                   <LayoutDashboard size={14} /> Dashboard
                 </Link>
-                <Link
-                  to="/profile"
-                  className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-700"
-                  style={{ textDecoration: 'none' }}
-                >
+                <Link to="/profile" className={`app-nav-link${pathname === '/profile' ? ' active' : ''}`}>
                   <User size={14} /> Mi Perfil
                 </Link>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-red-500 transition-colors duration-200 hover:bg-red-50 hover:text-red-700"
-                >
+                <button type="button" onClick={handleLogout} className="app-nav-link app-nav-link-danger">
                   <LogOut size={14} /> Salir
                 </button>
               </>
             ) : hideNav ? (
               pathname === '/login' ? (
-                <Link to="/register" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 700, color: '#fff', background: '#059669', border: '1.5px solid #059669', boxShadow: '0 2px 12px rgba(5,150,105,0.35)' }}>
-                  Crear cuenta
-                </Link>
+                <Link to="/register" className="app-nav-cta app-nav-cta-solid">Crear cuenta</Link>
               ) : (
-                <Link to="/login" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, color: '#059669', border: '1.5px solid #6EE7B7', boxShadow: '0 2px 10px rgba(52,211,153,0.18)' }}>
-                  Ingresar
-                </Link>
+                <Link to="/login" className="app-nav-cta app-nav-cta-outline">Ingresar</Link>
               )
             ) : (
               <>
-                <Link to="/login" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, color: '#059669', border: '1.5px solid #6EE7B7', boxShadow: '0 2px 10px rgba(52,211,153,0.18)' }}>
-                  Ingresar
-                </Link>
-                <Link to="/register" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '7px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 700, color: '#fff', background: '#059669', border: '1.5px solid #059669', boxShadow: '0 2px 12px rgba(5,150,105,0.35)' }}>
-                  Crear cuenta
-                </Link>
+                <Link to="/login" className="app-nav-cta app-nav-cta-outline">Ingresar</Link>
+                <Link to="/register" className="app-nav-cta app-nav-cta-solid">Crear cuenta</Link>
               </>
             )}
           </div>
@@ -153,7 +158,7 @@ function Navbar({ hideNav = false }) {
               type="button"
               onClick={() => setMobileOpen(p => !p)}
               aria-label="Menú"
-              className="app-navbar-menu-button md:hidden p-2 rounded-md text-gray-500 transition-colors duration-200 hover:bg-gray-100"
+              className="app-navbar-menu-button app-nav-icon-btn md:hidden"
             >
               {mobileOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
@@ -163,43 +168,38 @@ function Navbar({ hideNav = false }) {
 
       {/* ── MOBILE MENU ── */}
       {!hideNav && mobileOpen && (
-        <div className="app-navbar-mobile-menu md:hidden fixed top-16 inset-x-0 z-40 bg-white border-b border-gray-200 shadow-lg px-4 py-3 flex flex-col gap-1">
+        <div className="app-navbar-mobile-menu md:hidden fixed top-16 inset-x-0 z-40 px-4 py-3 flex flex-col gap-1">
           {NAV_LINKS.map(l => (
             <a
               key={l.href}
               href={l.href}
-              onClick={closeMobile}
-              style={{ textDecoration: 'none' }}
-              className={
-                activeHash === l.section
-                  ? 'px-3 py-2 rounded-md text-sm font-semibold bg-emerald-50 text-emerald-700'
-                  : 'px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-200'
-              }
+              onClick={(e) => handleNav(e, l)}
+              className={`app-nav-link app-nav-link-block${activeHash === l.section ? ' active' : ''}`}
             >
               {l.label}
             </a>
           ))}
 
-          <div className="h-px bg-gray-100 my-1" />
+          <div className="app-navbar-mobile-divider" />
 
           {isAuth ? (
             <>
-              <Link to="/dashboard" onClick={closeMobile} style={{ textDecoration: 'none' }} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-200">
+              <Link to="/dashboard" onClick={closeMobile} className={`app-nav-link app-nav-link-block${pathname === '/dashboard' ? ' active' : ''}`}>
                 <LayoutDashboard size={14} /> Dashboard
               </Link>
-              <Link to="/profile" onClick={closeMobile} style={{ textDecoration: 'none' }} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-200">
+              <Link to="/profile" onClick={closeMobile} className={`app-nav-link app-nav-link-block${pathname === '/profile' ? ' active' : ''}`}>
                 <User size={14} /> Mi Perfil
               </Link>
-              <button type="button" onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors duration-200 w-full text-left">
+              <button type="button" onClick={handleLogout} className="app-nav-link app-nav-link-block app-nav-link-danger">
                 <LogOut size={14} /> Cerrar sesión
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" onClick={closeMobile} style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', padding: '8px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, color: '#059669', border: '1.5px solid #6EE7B7', boxShadow: '0 2px 10px rgba(52,211,153,0.18)' }}>
+              <Link to="/login" onClick={closeMobile} className="app-nav-cta app-nav-cta-outline" style={{ justifyContent: 'center' }}>
                 Ingresar
               </Link>
-              <Link to="/register" onClick={closeMobile} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 6, padding: '8px 18px', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 700, color: '#fff', background: '#059669', border: '1.5px solid #059669', boxShadow: '0 2px 12px rgba(5,150,105,0.35)' }}>
+              <Link to="/register" onClick={closeMobile} className="app-nav-cta app-nav-cta-solid" style={{ justifyContent: 'center', marginTop: 6 }}>
                 Crear cuenta gratis
               </Link>
             </>

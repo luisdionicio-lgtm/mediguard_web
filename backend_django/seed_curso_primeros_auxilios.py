@@ -59,10 +59,7 @@ else:
             'level': CourseLevel.BASICO,
             'is_published': True,
             'published_at': timezone.now(),
-            # Generada con ChatGPT (DALL-E) y guardada en frontend_react/public/images/.
-            # URL absoluta porque thumbnail_url es URLField; en otro entorno hay que
-            # cambiar el host (localhost:5173 = servidor de Vite en desarrollo local).
-            'thumbnail_url': 'http://localhost:5173/images/primeros_auxilios_course.png',
+            'thumbnail_url': '/images/primeros_auxilios_course.png',
         },
     )
     print(('CREADO' if curso_creado else 'YA EXISTE') + ' curso: ' + course.title)

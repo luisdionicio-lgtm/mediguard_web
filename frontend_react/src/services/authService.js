@@ -56,21 +56,24 @@ export const authService = {
     const user = profileResponse.data;
     localStorage.setItem('user', JSON.stringify(user));
 
-    // 3. Si es ADMIN, también autenticar en Django para el panel admin
-    if (Array.isArray(user.roles) && user.roles.includes('ADMIN')) {
-      try {
-        const djangoRes = await axios.post(`${DJANGO_BASE}login/`, { email, password });
-        const djangoToken = djangoRes.data?.access || djangoRes.data?.tokens?.access;
-        const djangoRefresh = djangoRes.data?.refresh || djangoRes.data?.tokens?.refresh;
-        if (djangoToken) {
-          localStorage.setItem('django_access_token', djangoToken);
-        }
-        if (djangoRefresh) {
-          localStorage.setItem('django_refresh_token', djangoRefresh);
-        }
-      } catch {
-        // No bloquea el login si Django falla
+    // 3. Autenticar también en Django (emite su propio JWT, validable sin
+    //    depender de que JWT_SECRET esté sincronizado con Spring Boot en
+    //    runtime). Antes esto solo corría para ADMIN (panel admin); ahora
+    //    corre para cualquier usuario porque el catálogo de cursos/categorías
+    //    en Django también requiere sesión. Si falla, no bloquea el login:
+    //    djangoApi.js cae de vuelta al token de Spring como antes.
+    try {
+      const djangoRes = await axios.post(`${DJANGO_BASE}login/`, { email, password });
+      const djangoToken = djangoRes.data?.access || djangoRes.data?.tokens?.access;
+      const djangoRefresh = djangoRes.data?.refresh || djangoRes.data?.tokens?.refresh;
+      if (djangoToken) {
+        localStorage.setItem('django_access_token', djangoToken);
       }
+      if (djangoRefresh) {
+        localStorage.setItem('django_refresh_token', djangoRefresh);
+      }
+    } catch {
+      // No bloquea el login si Django falla
     }
 
     return response.data;
@@ -86,7 +89,9 @@ export const authService = {
       user_type: userData.user_type
     };
     const response = await springApi.post('register/', payload);
-    // Note: Do not auto-persist token/user on registration as requested
+    // Spring ya devuelve accessToken/refreshToken/user válidos: se persisten
+    // para loguear automáticamente al usuario recién registrado.
+    persistAuthData(response.data);
     return response.data;
   },
 
@@ -137,6 +142,11 @@ export const authService = {
     } catch {
       return [];
     }
+  },
+
+  verifyEmail: async (token) => {
+    const response = await springApi.get('verify-email/', { params: { token } });
+    return response.data;
   },
 
   googleLogin: async (accessToken) => {

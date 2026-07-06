@@ -28,7 +28,8 @@ public class GuideService {
                 guide.getTitle(),
                 guide.getDescription(),
                 guide.getCategory(),
-                guide.getContent()
+                guide.getContent(),
+                guide.getImage()
         );
     }
 }

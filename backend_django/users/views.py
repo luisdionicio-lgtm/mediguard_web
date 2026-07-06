@@ -20,13 +20,30 @@ from .tokens import build_token_for_user
 # POST /api/register/           -> create user
 # GET  /api/register/?email=... -> check whether an email is registered
 # Public endpoint.
+#
+# Legacy: el frontend registra/loguea usuarios contra Spring Boot, no contra
+# Django. Esta vista queda apagada salvo que ENABLE_LEGACY_DJANGO_REGISTER
+# esté en True (ver settings.py). Los tests la activan explícitamente con
+# @override_settings para seguir validando la lógica con POST/GET reales.
 # ─────────────────────────────────────────────────────────────────────────────
 class VistaRegistro(generics.ListCreateAPIView):
     queryset = Usuario.objects.all()
     serializer_class = SerializadorRegistro
     permission_classes = [AllowAny]
 
+    def _bloqueada_si_deshabilitada(self):
+        if not settings.ENABLE_LEGACY_DJANGO_REGISTER:
+            return Response(
+                {'error': 'Endpoint deshabilitado. El registro/login se hace vía Spring Boot.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return None
+
     def list(self, request, *args, **kwargs):
+        respuesta_bloqueada = self._bloqueada_si_deshabilitada()
+        if respuesta_bloqueada:
+            return respuesta_bloqueada
+
         email = request.query_params.get('email', '').strip().lower()
 
         if request.user and request.user.is_authenticated and not email:
@@ -64,6 +81,10 @@ class VistaRegistro(generics.ListCreateAPIView):
         }, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
+        respuesta_bloqueada = self._bloqueada_si_deshabilitada()
+        if respuesta_bloqueada:
+            return respuesta_bloqueada
+
         serializador = self.get_serializer(data=request.data)
         serializador.is_valid(raise_exception=True)
         usuario = serializador.save()

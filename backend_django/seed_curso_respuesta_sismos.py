@@ -59,7 +59,7 @@ else:
             'level': CourseLevel.BASICO,
             'is_published': True,
             'published_at': timezone.now(),
-            'thumbnail_url': None,
+            'thumbnail_url': '/images/sismos_course.png',
         },
     )
     print(('CREADO' if curso_creado else 'YA EXISTE') + ' curso: ' + course.title)

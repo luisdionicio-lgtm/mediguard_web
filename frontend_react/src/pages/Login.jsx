@@ -1,171 +1,91 @@
 import { useState, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
 import { authService } from '../services/authService';
 import { getApiErrorMessage } from '../services/errorService';
-import GoogleLoginButton from '../components/GoogleLoginButton';
 import AuthBackground from '../components/AuthBackground';
-import AuthStats from '../components/AuthStats';
 
 const GOOGLE_ENABLED = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-function FirstAidScene() {
-  return (
-    <svg
-      width="210" height="218"
-      viewBox="0 0 210 218"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      style={{ display: 'block', margin: '0 auto' }}
-    >
-      {/* ── Fondo circular ── */}
-      <circle cx="105" cy="104" r="88" fill="rgba(255,255,255,0.03)" />
+/* ── Iconos sociales ── */
+const GoogleIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+  </svg>
+);
 
-      {/* ── Botiquín (base de la escena) ── */}
-      {/* Cuerpo del maletín */}
-      <rect x="58" y="72" width="94" height="72" rx="10" fill="#DC2626" />
-      <rect x="58" y="72" width="94" height="72" rx="10" stroke="#991B1B" strokeWidth="2" />
-      {/* Tapa superior más clara */}
-      <rect x="58" y="72" width="94" height="34" rx="10" fill="#EF4444" />
-      <rect x="58" y="96" width="94" height="10" fill="#DC2626" />
-      {/* Asa */}
-      <path d="M84 72 Q84 58 105 58 Q126 58 126 72" stroke="#B91C1C" strokeWidth="5" strokeLinecap="round" fill="none" />
-      {/* Broche central */}
-      <rect x="97" y="99" width="16" height="10" rx="3" fill="#991B1B" />
-      <rect x="100" y="101" width="10" height="6" rx="2" fill="#FCA5A5" />
+const AppleIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+  </svg>
+);
 
-      {/* ── Cruz blanca sobre el botiquín ── */}
-      <rect x="98" y="78" width="14" height="34" rx="4" fill="#fff" opacity="0.95" />
-      <rect x="84" y="88" width="42" height="14" rx="4" fill="#fff" opacity="0.95" />
-
-      {/* ── Corazón pulsante encima ── */}
-      <g transform="translate(105,50)">
-        <animateTransform
-          attributeName="transform"
-          type="scale"
-          values="1 1;1.13 1.13;1 1;1.07 1.07;1 1"
-          dur="1.1s"
-          repeatCount="indefinite"
-          additive="sum"
-          calcMode="spline"
-          keyTimes="0;0.25;0.45;0.65;1"
-          keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"
-        />
-        <path
-          d="M0 6 C0 0 -8 -5 -13 -1 C-18 3 -13 11 0 20 C13 11 18 3 13 -1 C8 -5 0 0 0 6Z"
-          fill="#EF4444"
-        />
-        {/* Brillo del corazón */}
-        <path
-          d="M-9 1 C-10 -1 -8 -3 -6 -2"
-          stroke="#FCA5A5" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.8"
-        />
-      </g>
-
-      {/* ── Señal de alerta (triángulo) — esquina superior derecha ── */}
-      <g>
-        <polygon points="165,28 178,52 152,52" fill="#F59E0B" opacity="0.9" />
-        <rect x="169.5" y="34" width="3" height="10" rx="1.5" fill="#fff" />
-        <circle cx="171" cy="48" r="1.8" fill="#fff" />
-        {/* Parpadeo */}
-        <animate attributeName="opacity" values="0.9;0.4;0.9" dur="1.6s" repeatCount="indefinite" />
-      </g>
-
-      {/* ── Sirena / luces de defensa civil (esquina superior izq.) ── */}
-      <g transform="translate(36,36)">
-        {/* Cuerpo sirena */}
-        <rect x="-12" y="-8" width="24" height="16" rx="8" fill="#1D4ED8" />
-        {/* Luz izquierda roja */}
-        <circle cx="-6" cy="0" r="5" fill="#EF4444">
-          <animate attributeName="opacity" values="1;0.2;1" dur="0.7s" repeatCount="indefinite" />
-        </circle>
-        {/* Luz derecha azul */}
-        <circle cx="6" cy="0" r="5" fill="#3B82F6">
-          <animate attributeName="opacity" values="0.2;1;0.2" dur="0.7s" repeatCount="indefinite" />
-        </circle>
-        {/* Destello irradiado rojo */}
-        <circle cx="-6" cy="0" r="10" fill="none" stroke="#EF4444" strokeWidth="1.5" opacity="0">
-          <animate attributeName="r"       values="5;16;5"    dur="0.7s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.5;0;0.5" dur="0.7s" repeatCount="indefinite" />
-        </circle>
-      </g>
-
-      {/* ── ECG / pulso cardíaco en la base ── */}
-      <polyline
-        points="10,168 30,168 38,150 46,185 54,138 62,168 82,168 90,158 98,177 106,168 192,168"
-        stroke="#4ADE80"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-        opacity="0.85"
-      >
-        <animate
-          attributeName="stroke-dasharray"
-          from="0 400"
-          to="400 0"
-          dur="2s"
-          repeatCount="indefinite"
-        />
-      </polyline>
-      {/* Punto ECG pulsante */}
-      <circle cx="192" cy="168" r="4" fill="#4ADE80">
-        <animate attributeName="opacity" values="1;0.1;1" dur="1.1s" repeatCount="indefinite" />
-        <animate attributeName="r"       values="4;7;4"   dur="1.1s" repeatCount="indefinite" />
-      </circle>
-      {/* Línea base ECG */}
-      <line x1="10" y1="168" x2="192" y2="168" stroke="rgba(74,222,128,0.12)" strokeWidth="1" />
-
-      {/* ── Etiqueta EMERGENCIA ── */}
-      <rect x="52" y="152" width="106" height="18" rx="5" fill="rgba(220,38,38,0.15)" />
-      <text
-        x="105" y="164"
-        textAnchor="middle"
-        fontSize="8.5"
-        fontWeight="700"
-        fontFamily="system-ui, sans-serif"
-        fill="#EF4444"
-        letterSpacing="1.5"
-      >EMERGENCIA MÉDICA</text>
-
-      {/* ── Partículas / destellos verdes ── */}
-      {[[22,90],[188,82],[170,132],[24,128]].map(([cx,cy],i) => (
-        <circle key={i} cx={cx} cy={cy} r="3" fill="#4ADE80" opacity="0.5">
-          <animate attributeName="opacity" values="0.5;0.05;0.5" dur={`${1.5 + i * 0.25}s`} repeatCount="indefinite" begin={`${i * 0.38}s`} />
-          <animate attributeName="r"       values="3;5;3"         dur={`${1.5 + i * 0.25}s`} repeatCount="indefinite" begin={`${i * 0.38}s`} />
-        </circle>
-      ))}
-
-      {/* ── Anillo de alerta exterior ── */}
-      <circle cx="105" cy="104" r="94" stroke="#EF4444" strokeWidth="1" opacity="0.12">
-        <animate attributeName="r"       values="94;98;94"    dur="2.2s" repeatCount="indefinite" />
-        <animate attributeName="opacity" values="0.12;0.03;0.12" dur="2.2s" repeatCount="indefinite" />
-      </circle>
-    </svg>
-  );
-}
+const MicrosoftIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 23 23" aria-hidden="true">
+    <rect x="1"  y="1"  width="10" height="10" fill="#f25022" />
+    <rect x="12" y="1"  width="10" height="10" fill="#7fba00" />
+    <rect x="1"  y="12" width="10" height="10" fill="#00a4ef" />
+    <rect x="12" y="12" width="10" height="10" fill="#ffb900" />
+  </svg>
+);
 
 export default function Login() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  /* ── LÓGICA INTACTA ── */
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPw, setShowPw] = useState(false);
-  const [btnState, setBtnState] = useState('idle');
-  const [emailErr, setEmailErr] = useState('');
-  const [pwErr, setPwErr] = useState('');
+  const [email, setEmail]         = useState('');
+  const [password, setPassword]   = useState('');
+  const [showPw, setShowPw]       = useState(false);
+  const [btnState, setBtnState]   = useState('idle');
+  const [emailErr, setEmailErr]   = useState('');
+  const [pwErr, setPwErr]         = useState('');
   const [googleErr, setGoogleErr] = useState('');
-  const [shaking, setShaking] = useState(false);
-  const [successMsg] = useState(location.state?.successMessage || '');
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [shaking, setShaking]     = useState(false);
+  const [successMsg]              = useState(location.state?.successMessage || '');
 
-  const btnRef = useRef(null);
+  const btnRef   = useRef(null);
   const panelRef = useRef(null);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const canSubmit = emailValid && password.length >= 4;
+  const canSubmit  = emailValid && password.length >= 4;
+  const busy       = btnState === 'loading' || btnState === 'success';
 
+  /* ── Google OAuth ── */
+  const googleLogin = useGoogleLogin({
+    flow: 'implicit',
+    onSuccess: async (tokenResponse) => {
+      try {
+        setGoogleErr('');
+        const data = await authService.googleLogin(tokenResponse.access_token);
+        setBtnState('success');
+        const dest = Array.isArray(data?.user?.roles) && data.user.roles.includes('ADMIN')
+          ? '/admin/dashboard' : '/dashboard';
+        setTimeout(() => navigate(dest), 900);
+      } catch (err) {
+        setGoogleErr(err?.response?.data?.error || 'Error al autenticar con Google.');
+      } finally {
+        setGoogleLoading(false);
+      }
+    },
+    onError: (err) => {
+      setGoogleLoading(false);
+      setGoogleErr(err?.error_description || 'No se pudo conectar con Google.');
+    },
+    onNonOAuthError: () => setGoogleLoading(false),
+  });
+
+  const handleGoogleClick = () => {
+    if (busy || googleLoading) return;
+    setGoogleLoading(true);
+    setGoogleErr('');
+    googleLogin();
+  };
+
+  /* ── Ripple & shake ── */
   const triggerRipple = (e) => {
     const btn = btnRef.current;
     if (!btn) return;
@@ -183,13 +103,13 @@ export default function Login() {
     setTimeout(() => setShaking(false), 380);
   };
 
+  /* ── Submit ── */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!canSubmit) return;
     setEmailErr(''); setPwErr('');
     triggerRipple(e);
     setBtnState('loading');
-
     try {
       await authService.login(email.trim(), password);
       setBtnState('success');
@@ -216,51 +136,67 @@ export default function Login() {
       <AuthBackground />
       <div className="auth-wrapper">
 
-        {/* ══ COLUMNA IZQUIERDA ══ */}
+        {/* ══ PANEL IZQUIERDO — foto full-bleed ══ */}
         <div className="auth-brand">
-          {/* Logo */}
-          <div className="auth-brand-logo">
-            <div className="auth-brand-logo-dot">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <polyline points="3,12 6,7 9,14 12,4 15,14 18,9 21,12" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <span className="auth-brand-logo-name">Medi<em>Guard</em> AI</span>
-          </div>
 
-          <p className="auth-brand-headline">Tu salud, siempre<br /><em>protegida.</em></p>
+          {/* Foto */}
+          <img
+            src="https://images.unsplash.com/photo-1666887360388-93e684b6474a?w=700&h=1000&fit=crop&auto=format&crop=top"
+            alt="Profesional médico con estetoscopio"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
+          />
 
-          {/* Ilustración animada */}
-          <div style={{ margin: '18px 0 14px' }}>
-            <FirstAidScene />
-          </div>
+          {/* Overlay — fuerte abajo, transparente arriba */}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(8,22,14,0.98) 0%, rgba(8,22,14,0.88) 28%, rgba(8,22,14,0.35) 58%, rgba(8,22,14,0.08) 100%)' }} />
 
-          <p className="auth-brand-sub">Accede a tu perfil médico seguro y a todas las herramientas de MediGuard.</p>
+          {/* Contenido */}
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-          <div className="auth-brand-divider" />
-
-          <div className="auth-brand-bullets">
-            {[
-              { icon: 'ti ti-shield-lock',   label: 'Sesión encriptada',  desc: 'TLS de extremo a extremo en cada acceso' },
-              { icon: 'ti ti-device-mobile', label: 'Multiplataforma',    desc: 'Web y app móvil sincronizados en tiempo real' },
-              { icon: 'ti ti-clock',         label: 'Disponible 24/7',    desc: 'Tus registros siempre accesibles' },
-            ].map(b => (
-              <div key={b.label} className="auth-brand-bullet">
-                <div className="auth-brand-bullet-icon"><i className={b.icon} /></div>
-                <div>
-                  <p className="auth-brand-bullet-label">{b.label}</p>
-                  <p className="auth-brand-bullet-desc">{b.desc}</p>
-                </div>
+            {/* Logo — arriba */}
+            <div className="auth-brand-logo">
+              <div className="auth-brand-logo-dot">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <polyline points="3,12 6,7 9,14 12,4 15,14 18,9 21,12" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </div>
-            ))}
-          </div>
+              <span className="auth-brand-logo-name">Medi<em>Guard</em> AI</span>
+            </div>
 
-          <div className="auth-brand-footer">
-            <p className="auth-brand-tagline">MediGuard AI · TECSUP 2026</p>
+            {/* Espaciador — la foto domina el centro */}
+            <div style={{ flex: 1 }} />
+
+            {/* Sección inferior */}
+            <div>
+              {/* Badge */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(92,184,154,0.12)', border: '1px solid rgba(92,184,154,0.25)', borderRadius: 20, padding: '4px 12px', marginBottom: 14 }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#5CB89A', flexShrink: 0 }} />
+                <span style={{ color: '#5CB89A', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Salud de Emergencia · IA</span>
+              </div>
+
+              {/* Headline */}
+              <p className="auth-brand-headline" style={{ fontSize: '1.45rem', lineHeight: 1.3 }}>
+                Tu salud<br />siempre<br /><em>protegida.</em>
+              </p>
+
+              {/* Badges SSL */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 14 }}>
+                {[
+                  { icon: 'ti ti-lock', label: 'SSL 256-bit' },
+                  { icon: 'ti ti-award', label: 'ISO 27001' },
+                  { icon: 'ti ti-clock', label: '24/7' },
+                ].map(b => (
+                  <div key={b.label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <i className={b.icon} style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }} />
+                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.63rem', fontWeight: 600 }}>{b.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
 
-        {/* ══ COLUMNA DERECHA ══ */}
+        {/* ══ PANEL DERECHO — formulario ══ */}
         <div ref={panelRef} className={`auth-form-panel${shaking ? ' shake' : ''}`}>
           <div className="auth-form-card">
 
@@ -282,34 +218,7 @@ export default function Login() {
               </div>
             )}
 
-            {/* Google OAuth */}
-            {GOOGLE_ENABLED && (
-              <GoogleLoginButton
-                onSuccess={async (accessToken) => {
-                  setGoogleErr('');
-                  setBtnState('loading');
-                  try {
-                    const data = await authService.googleLogin(accessToken);
-                    const user = data.user;
-                    setBtnState('success');
-                    const destination = Array.isArray(user?.roles) && user.roles.includes('ADMIN')
-                      ? '/admin/dashboard' : '/dashboard';
-                    setTimeout(() => navigate(destination), 900);
-                  } catch (err) {
-                    setBtnState('idle');
-                    const msg = err?.response?.data?.error || 'Error al autenticar con Google.';
-                    setGoogleErr(msg);
-                  }
-                }}
-                onError={(msg) => { setGoogleErr(msg || 'No se pudo conectar con Google.'); setBtnState('idle'); }}
-                disabled={btnState === 'loading' || btnState === 'success'}
-              />
-            )}
-            {GOOGLE_ENABLED && googleErr && (
-              <p className="auth-field-error show" style={{ marginTop: '-8px', marginBottom: '12px' }}>{googleErr}</p>
-            )}
-            {GOOGLE_ENABLED && <div className="google-divider">o continúa con tu correo</div>}
-
+            {/* ── Formulario: email + contraseña ── */}
             <form onSubmit={handleSubmit} noValidate>
               {/* Email */}
               <div className="auth-field">
@@ -328,7 +237,7 @@ export default function Login() {
                 <span className={`auth-field-error${emailErr ? ' show' : ''}`}>{emailErr}</span>
               </div>
 
-              {/* Password */}
+              {/* Contraseña */}
               <div className="auth-field">
                 <label className="auth-label">Contraseña</label>
                 <div className="auth-input-wrap">
@@ -354,7 +263,7 @@ export default function Login() {
                 ref={btnRef}
                 type="submit"
                 className={`auth-submit${btnState === 'success' ? ' is-success' : ''}`}
-                disabled={!canSubmit || btnState === 'loading' || btnState === 'success'}
+                disabled={!canSubmit || busy}
               >
                 {btnState === 'loading' && <><span className="auth-spinner" />Ingresando…</>}
                 {btnState === 'success' && <><i className="ti ti-circle-check" style={{ fontSize: 17 }} />¡Acceso concedido!</>}
@@ -365,15 +274,52 @@ export default function Login() {
             {/* Trust badges */}
             <div className="auth-trust">
               <span className="auth-trust-item"><i className="ti ti-lock" />Sesión segura</span>
-              <span className="auth-trust-item"><i className="ti ti-shield" />Datos encriptados</span>
-              <span className="auth-trust-item"><i className="ti ti-eye-off" />Privacidad total</span>
+              <span className="auth-trust-item"><i className="ti ti-shield" />Encriptado</span>
+              <span className="auth-trust-item"><i className="ti ti-eye-off" />Privado</span>
             </div>
 
             <p className="auth-switch">
               ¿No tienes cuenta?&nbsp;<Link to="/register">Regístrate gratis</Link>
             </p>
-          </div>
 
+            {/* ── Acceso rápido — debajo del formulario ── */}
+            <div className="auth-divider" style={{ margin: '16px 0 14px' }}>
+              <div className="auth-divider-line" />
+              <span className="auth-divider-text">o acceso rápido con</span>
+              <div className="auth-divider-line" />
+            </div>
+
+            <div className="auth-social-row">
+              {/* Google */}
+              <button
+                type="button"
+                className="auth-social-btn"
+                onClick={handleGoogleClick}
+                disabled={!GOOGLE_ENABLED || busy || googleLoading}
+                title={GOOGLE_ENABLED ? 'Continuar con Gmail' : 'Google no configurado'}
+              >
+                {googleLoading ? <span className="auth-spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> : <GoogleIcon />}
+                <span className="social-label">Gmail</span>
+              </button>
+
+              {/* Apple — visual */}
+              <button type="button" className="auth-social-btn" disabled title="Próximamente">
+                <AppleIcon />
+                <span className="social-label">iOS</span>
+              </button>
+
+              {/* Microsoft — visual */}
+              <button type="button" className="auth-social-btn" disabled title="Próximamente">
+                <MicrosoftIcon />
+                <span className="social-label">Microsoft</span>
+              </button>
+            </div>
+
+            {googleErr && (
+              <p className="auth-field-error show" style={{ marginTop: 6, textAlign: 'center' }}>{googleErr}</p>
+            )}
+
+          </div>
         </div>
 
       </div>

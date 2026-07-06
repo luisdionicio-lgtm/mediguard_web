@@ -23,6 +23,8 @@ class CoursePagination(PageNumberPagination):
 
 
 class CourseViewSet(viewsets.ReadOnlyModelViewSet):
+    # Catálogo requiere sesión: cambio de criterio de producto — el listado y
+    # detalle de cursos solo se muestran a usuarios autenticados.
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = CoursePagination
     lookup_field = 'slug'
@@ -94,6 +96,7 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    # Catálogo requiere sesión: mismo criterio que CourseViewSet.
     queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticated]

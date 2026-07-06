@@ -33,6 +33,7 @@ build/
 .vscode/
 
 # Ignorar configuraciones sensibles
+src/main/resources/application.properties
 src/main/resources/application-local.properties
 
 *.pem

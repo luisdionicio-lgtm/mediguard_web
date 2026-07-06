@@ -51,69 +51,114 @@ function StatusDot({ active }) {
 /* ═══════════════════════════════════════════════
    SECCIÓN: OVERVIEW
 ═══════════════════════════════════════════════ */
-function SectionOverview({ users, guides, hospitals, news }) {
-  const total      = users.length;
-  const admins     = users.filter(u => u.roles?.includes('ADMIN')).length;
-  const socorr     = users.filter(u => u.roles?.includes('SOCORRISTA')).length;
-  const coords     = users.filter(u => u.roles?.includes('COORDINADOR')).length;
-  const citizens   = users.filter(u => u.roles?.includes('CIUDADANO')).length;
-  const recentUsers = [...users].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+function SectionOverview({ users, guides, hospitals, news, onNavigate }) {
+  const total    = users.length;
+  const admins   = users.filter(u => u.roles?.includes('ADMIN')).length;
+  const socorr   = users.filter(u => u.roles?.includes('SOCORRISTA')).length;
+  const coords   = users.filter(u => u.roles?.includes('COORDINADOR')).length;
+  const citizens = users.filter(u => u.roles?.includes('CIUDADANO')).length;
 
-  const STATS = [
-    { icon: Users,     label: 'Usuarios totales', value: total,           sub: `${admins} admin`,        cls: 'sc-blue' },
-    { icon: BookOpen,  label: 'Guías',             value: guides.length,   sub: 'primeros auxilios',      cls: 'sc-green' },
-    { icon: Building2, label: 'Hospitales',         value: hospitals.length,sub: `${hospitals.filter(h=>h.is_active||h.active).length} activos`, cls: 'sc-amber' },
-    { icon: Newspaper, label: 'Noticias',           value: news.length,    sub: `${news.filter(n=>n.is_active||n.active).length} publicadas`,  cls: 'sc-teal' },
+  const DAY = 86_400_000;
+  const now = Date.now();
+  const newUsers30 = users.filter(u => u.created_at && now - new Date(u.created_at) < 30 * DAY).length;
+  const activeHosp = hospitals.filter(h => h.is_active ?? h.active).length;
+  const pubNews    = news.filter(n => n.is_active ?? n.active).length;
+
+  const recentUsers = [...users]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 5);
+
+  const METRICS = [
+    { key: 'u', icon: Users,     label: 'Usuarios',   value: total,            delta: newUsers30 ? `+${newUsers30}` : null, up: true, deltaLabel: 'nuevos · 30d',     accent: 'm-green' },
+    { key: 'g', icon: BookOpen,  label: 'Guías',      value: guides.length,    delta: null,                                            deltaLabel: 'primeros auxilios', accent: 'm-blue' },
+    { key: 'h', icon: Building2, label: 'Hospitales', value: hospitals.length, delta: `${activeHosp}`,                                 deltaLabel: 'activos',          accent: 'm-amber' },
+    { key: 'n', icon: Newspaper, label: 'Noticias',   value: news.length,      delta: `${pubNews}`,                                    deltaLabel: 'publicadas',       accent: 'm-teal' },
+  ];
+
+  const ROLES = [
+    { role: 'CIUDADANO',   count: citizens },
+    { role: 'SOCORRISTA',  count: socorr },
+    { role: 'COORDINADOR', count: coords },
+    { role: 'ADMIN',       count: admins },
+  ];
+
+  const QUICK = [
+    { id: 'usuarios',   icon: Users,     label: 'Gestionar usuarios', sub: `${total} registrados` },
+    { id: 'guias',      icon: BookOpen,  label: 'Ver guías',          sub: `${guides.length} activas` },
+    { id: 'hospitales', icon: Building2, label: 'Hospitales',         sub: `${hospitals.length} centros` },
+    { id: 'noticias',   icon: Newspaper, label: 'Noticias',           sub: `${news.length} artículos` },
   ];
 
   return (
     <div className="adm-section">
-      <div className="adm-section-head">
+      <div className="adm-ov-head">
         <div>
           <h2 className="adm-section-title">Resumen general</h2>
-          <p className="adm-section-sub">Vista rápida de todo el sistema</p>
+          <p className="adm-section-sub">Estado actual del sistema</p>
         </div>
+        <span className="adm-ov-live"><span className="adm-live-dot" /> En vivo</span>
       </div>
 
-      {/* stat cards */}
-      <div className="adm-stat-grid">
-        {STATS.map(s => (
-          <div key={s.label} className={`adm-stat-card ${s.cls}`}>
-            <div className="adm-stat-icon"><s.icon size={20} /></div>
-            <div className="adm-stat-body">
-              <p className="adm-stat-val">{s.value}</p>
-              <p className="adm-stat-lbl">{s.label}</p>
-              <p className="adm-stat-sub">{s.sub}</p>
+      {/* franja de métricas — sin cajas, separadas por líneas */}
+      <div className="adm-metric-strip stagger">
+        {METRICS.map(m => (
+          <div key={m.key} className={`adm-metric ${m.accent}`}>
+            <div className="adm-metric-top">
+              <m.icon size={15} strokeWidth={2} />
+              <span className="adm-metric-label">{m.label}</span>
             </div>
+            <p className="adm-metric-val">{m.value}</p>
+            <p className="adm-metric-delta">
+              {m.delta && <span className={`adm-delta-pill${m.up ? ' up' : ''}`}>{m.delta}</span>}
+              <span>{m.deltaLabel}</span>
+            </p>
           </div>
         ))}
       </div>
 
-      {/* roles distribution */}
-      <div className="adm-two-col">
-        <div className="adm-card">
-          <h3 className="adm-card-title"><TrendingUp size={15} /> Distribución de roles</h3>
+      {/* accesos rápidos */}
+      <div className="adm-quick stagger">
+        {QUICK.map(q => (
+          <button key={q.id} className="adm-quick-btn" onClick={() => onNavigate(q.id)}>
+            <span className="adm-quick-icon"><q.icon size={16} strokeWidth={2} /></span>
+            <span className="adm-quick-txt">
+              <span className="adm-quick-label">{q.label}</span>
+              <span className="adm-quick-sub">{q.sub}</span>
+            </span>
+            <ChevronRight size={14} className="adm-quick-arrow" />
+          </button>
+        ))}
+      </div>
+
+      {/* bento asimétrico: roles (ancho) + registros */}
+      <div className="adm-bento">
+        <div className="adm-panel">
+          <div className="adm-panel-head">
+            <h3 className="adm-panel-title"><TrendingUp size={15} /> Distribución de roles</h3>
+            <span className="adm-panel-meta">{total} usuarios</span>
+          </div>
           <div className="adm-role-dist">
-            {[
-              { role:'CIUDADANO',   count: citizens, pct: total ? Math.round(citizens/total*100) : 0 },
-              { role:'SOCORRISTA',  count: socorr,   pct: total ? Math.round(socorr/total*100)   : 0 },
-              { role:'COORDINADOR', count: coords,   pct: total ? Math.round(coords/total*100)   : 0 },
-              { role:'ADMIN',       count: admins,   pct: total ? Math.round(admins/total*100)   : 0 },
-            ].map(r => (
-              <div key={r.role} className="adm-dist-row">
-                <Badge role={r.role} />
-                <div className="adm-dist-bar-wrap">
-                  <div className="adm-dist-bar" style={{ width: `${r.pct}%` }} />
+            {ROLES.map(r => {
+              const pct = total ? Math.round(r.count / total * 100) : 0;
+              return (
+                <div key={r.role} className="adm-dist-row">
+                  <Badge role={r.role} />
+                  <div className="adm-dist-bar-wrap">
+                    <div className="adm-dist-bar" style={{ width: `${pct}%` }} />
+                  </div>
+                  <span className="adm-dist-pct">{pct}%</span>
+                  <span className="adm-dist-count">{r.count}</span>
                 </div>
-                <span className="adm-dist-count">{r.count}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
-        {/* recent users */}
-        <div className="adm-card">
-          <h3 className="adm-card-title"><Activity size={15} /> Últimos registros</h3>
+        <div className="adm-panel">
+          <div className="adm-panel-head">
+            <h3 className="adm-panel-title"><Activity size={15} /> Últimos registros</h3>
+            <button className="adm-panel-link" onClick={() => onNavigate('usuarios')}>Ver todos</button>
+          </div>
           <div className="adm-recent-list">
             {recentUsers.map(u => (
               <div key={u.id} className="adm-recent-row">
@@ -123,7 +168,7 @@ function SectionOverview({ users, guides, hospitals, news }) {
                   <p className="adm-recent-email">{u.email}</p>
                 </div>
                 <div className="adm-recent-roles">
-                  {(u.roles || []).map(r => <Badge key={r} role={r} />)}
+                  {(u.roles || []).slice(0, 1).map(r => <Badge key={r} role={r} />)}
                 </div>
               </div>
             ))}
@@ -469,7 +514,7 @@ export default function AdminDashboard() {
   };
 
   const SECTION_MAP = {
-    overview:   <SectionOverview  users={users} guides={guides} hospitals={hospitals} news={news} />,
+    overview:   <SectionOverview  users={users} guides={guides} hospitals={hospitals} news={news} onNavigate={setSection} />,
     usuarios:   <SectionUsuarios  users={users} loading={loadUsers} onRefresh={fetchUsers} />,
     guias:      <SectionGuias     guides={guides} loading={loadContent} />,
     hospitales: <SectionHospitales hospitals={hospitals} loading={loadContent} />,

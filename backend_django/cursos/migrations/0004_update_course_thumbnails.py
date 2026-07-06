@@ -31,7 +31,7 @@ def unset_thumbnails(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cursos', '0002_seed_cursos_seguridad_sismos'),
+        ('cursos', '0003_thumbnail_url_to_charfield'),
     ]
 
     operations = [

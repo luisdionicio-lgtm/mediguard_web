@@ -8,7 +8,7 @@ import {
   Droplets, Pill, Waves, Bone, Baby, Thermometer,
   Users, BookOpen, Shield, Zap, Clock, Heart,
   PhoneCall, AlertTriangle, Siren, TrendingUp,
-  Search,
+  Search, Play, ExternalLink,
 } from 'lucide-react';
 import { OFFLINE_GUIDES } from '../data/learnGuides';
 import '../styles/Home.css';
@@ -107,10 +107,15 @@ function PhoneMockup() {
 }
 
 /* ── Data ───────────────────────────────────────────────────── */
+const RESOURCE_TYPE_META = {
+  video:    { icon: <Play size={11} />,         label: 'Video' },
+  external: { icon: <ExternalLink size={11} />, label: 'Guía oficial' },
+};
+
 const RESOURCES = [
-  { slug: 'rcp',        emoji: '🫀', imgStyle: { background: 'linear-gradient(160deg,#e0f5ed,#c5edd8)' }, badge: { text: 'Gratis', cls: 'lp-badge-green' }, tag: 'Primeros auxilios',  title: 'RCP: guía paso a paso para adultos y niños',    desc: 'Aprende la técnica correcta de reanimación cardiopulmonar con instrucciones claras.', meta: '📖 5 min' },
-  { slug: 'ansiedad',   emoji: '🧠', imgStyle: { background: 'linear-gradient(160deg,#e3f0fc,#c0daf7)' }, badge: { text: 'Nuevo',  cls: 'lp-badge-pink'  }, tag: 'Salud mental',       title: 'Cómo manejar una crisis de ansiedad en público', desc: 'Tips prácticos y técnicas de regulación que puedes aplicar en segundos.',            meta: '📖 4 min' },
-  { slug: 'quemaduras', emoji: '🔥', imgStyle: { background: 'linear-gradient(160deg,#fef6e4,#fde5a0)' }, badge: { text: 'Gratis', cls: 'lp-badge-green' }, tag: 'Emergencias comunes',title: 'Quemaduras: qué hacer (y qué nunca hacer)',      desc: 'Los errores más frecuentes al tratar una quemadura y el protocolo correcto.',        meta: '📖 3 min' },
+  { slug: 'rcp',        emoji: '🫀', imgStyle: { background: 'linear-gradient(160deg,#e0f5ed,#c5edd8)' }, badge: { text: 'Gratis', cls: 'lp-badge-green' }, tag: 'Primeros auxilios',  title: 'RCP: guía paso a paso para adultos y niños',    desc: 'Aprende la técnica correcta de reanimación cardiopulmonar con instrucciones claras.', meta: '📖 5 min', resourceType: 'video',    sourceLabel: 'YouTube' },
+  { slug: 'ansiedad',   emoji: '🧠', imgStyle: { background: 'linear-gradient(160deg,#e3f0fc,#c0daf7)' }, badge: { text: 'Nuevo',  cls: 'lp-badge-pink'  }, tag: 'Salud mental',       title: 'Cómo manejar una crisis de ansiedad en público', desc: 'Tips prácticos y técnicas de regulación que puedes aplicar en segundos.',            meta: '📖 4 min', resourceType: 'external', sourceLabel: 'OMS' },
+  { slug: 'quemaduras', emoji: '🔥', imgStyle: { background: 'linear-gradient(160deg,#fef6e4,#fde5a0)' }, badge: { text: 'Gratis', cls: 'lp-badge-green' }, tag: 'Emergencias comunes',title: 'Quemaduras: qué hacer (y qué nunca hacer)',      desc: 'Los errores más frecuentes al tratar una quemadura y el protocolo correcto.',        meta: '📖 3 min', resourceType: 'external', sourceLabel: 'Red Cross' },
 ];
 
 const GUIDE_VISUALS = {
@@ -318,7 +323,15 @@ export default function Home() {
                   <p className="lp-res-card-desc">{r.desc}</p>
                 </div>
                 <div className="lp-res-card-footer">
-                  <span>{r.meta}</span>
+                  <span className="lp-res-card-meta-row">
+                    <span>{r.meta}</span>
+                    {RESOURCE_TYPE_META[r.resourceType] && (
+                      <span className="lp-res-card-type" title={r.sourceLabel}>
+                        {RESOURCE_TYPE_META[r.resourceType].icon}
+                        {RESOURCE_TYPE_META[r.resourceType].label}
+                      </span>
+                    )}
+                  </span>
                   <Link to={`/aprende/${r.slug}`} className="lp-res-read-link">
                     Leer <ChevronRight size={12} />
                   </Link>

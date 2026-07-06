@@ -22,6 +22,10 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 # desarrollo local sin contenedores (esa variable no existe en el .env real).
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
+# El frontend registra/loguea usuarios contra Spring Boot, no contra Django.
+# Este endpoint legacy queda apagado por defecto (ver users/views.py).
+ENABLE_LEGACY_DJANGO_REGISTER = config('ENABLE_LEGACY_DJANGO_REGISTER', default=False, cast=bool)
+
 
 # ─── Aplicaciones instaladas ─────────────────────────────────────────────────
 INSTALLED_APPS = [

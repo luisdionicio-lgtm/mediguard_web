@@ -12,7 +12,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.Type;
+import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.HexFormat;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +25,8 @@ public class VerificationTokenEntity {
     public enum TokenType {
         EMAIL_VERIFICATION, PASSWORD_RESET, PHONE_VERIFICATION
     }
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -33,12 +38,19 @@ public class VerificationTokenEntity {
     private UserEntity user;
 
     // El DDL de Postgres define un DEFAULT encode(gen_random_bytes(32), 'hex'),
-    // pero se envía explícitamente desde Java para que funcione igual en H2 (test),
-    // que no tiene ese default. Un valor explícito siempre sobreescribe el DEFAULT.
-    @Column(unique = true, nullable = false)
+    // pero se envía explícitamente desde Java para que funcione igual en H2 (test).
+    @Column(unique = true, updatable = false, nullable = false)
     private String token;
 
+    // TokenTypeUserType bindea el parámetro con Types.OTHER en vez de
+    // VARCHAR -- sin esto, Postgres rechaza el insert contra la columna
+    // nativa token_type_enum (ver V1__identidad.sql) con "column
+    // token_type is of type token_type_enum but expression is of type
+    // character varying". Probado que SqlTypes.NAMED_ENUM no sirve aquí:
+    // rompe los tests contra H2 (MODE=PostgreSQL) intentando convertir el
+    // enum a bytes.
     @Enumerated(EnumType.STRING)
+    @Type(TokenTypeUserType.class)
     @Column(name = "token_type", nullable = false, columnDefinition = "token_type_enum")
     private TokenType tokenType;
 
@@ -62,8 +74,12 @@ public class VerificationTokenEntity {
     }
 
     @PrePersist
-    void onCreate() {
-        // Mismo motivo que el token: el DEFAULT now() de Postgres no existe en H2.
+    void prePersist() {
+        if (token == null) {
+            byte[] bytes = new byte[32];
+            RANDOM.nextBytes(bytes);
+            token = HexFormat.of().formatHex(bytes);
+        }
         if (createdAt == null) {
             createdAt = Instant.now();
         }

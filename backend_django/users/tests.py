@@ -24,6 +24,7 @@ class RegistroUsuariosSprint1Tests(TestCase):
             defaults={'description': 'Administrador del sistema'},
         )
 
+    @override_settings(ENABLE_LEGACY_DJANGO_REGISTER=True)
     def test_register_creates_user_default_role_audit_and_tokens(self):
         response = self.client.post('/api/register/', {
             'first_name': 'Ana',
@@ -44,6 +45,7 @@ class RegistroUsuariosSprint1Tests(TestCase):
         self.assertIn('refresh', response.data['tokens'])
         self.assertIn('user', response.data)
 
+    @override_settings(ENABLE_LEGACY_DJANGO_REGISTER=True)
     def test_register_api_saves_phone_in_sqlite(self):
         response = self.client.post('/api/register/', {
             'first_name': 'Luis',
@@ -91,6 +93,7 @@ class RegistroUsuariosSprint1Tests(TestCase):
         self.assertIn('access', response.data)
         self.assertIn('refresh', response.data)
 
+    @override_settings(ENABLE_LEGACY_DJANGO_REGISTER=True)
     def test_email_duplicado_es_rechazado(self):
         Usuario.objects.create_user(
             email='duplicado@example.com',
@@ -108,6 +111,7 @@ class RegistroUsuariosSprint1Tests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    @override_settings(ENABLE_LEGACY_DJANGO_REGISTER=True)
     def test_get_register_checks_existing_user_by_email(self):
         Usuario.objects.create_user(
             email='verificado@example.com',
@@ -122,12 +126,31 @@ class RegistroUsuariosSprint1Tests(TestCase):
         self.assertTrue(response.data['registered'])
         self.assertEqual(response.data['user']['email'], 'verificado@example.com')
 
+    @override_settings(ENABLE_LEGACY_DJANGO_REGISTER=True)
     def test_get_register_returns_false_when_email_does_not_exist(self):
         response = self.client.get('/api/register/', {'email': 'noexiste@example.com'})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertFalse(response.data['registered'])
-        self.assertEqual(response.data['email'], 'noexiste@example.com')
+
+    def test_register_disabled_by_default_blocks_post_and_get(self):
+        """Sin ENABLE_LEGACY_DJANGO_REGISTER, el endpoint debe estar apagado.
+
+        El registro real del frontend va por Spring Boot; este test fija el
+        comportamiento por defecto (settings.py: default=False) para que
+        nadie reactive el endpoint sin querer.
+        """
+        response_post = self.client.post('/api/register/', {
+            'first_name': 'Nadie',
+            'last_name': 'Deberia',
+            'email': 'nadie@example.com',
+            'password': 'ClaveSegura123!',
+        }, format='json')
+        self.assertEqual(response_post.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertFalse(Usuario.objects.filter(email='nadie@example.com').exists())
+
+        response_get = self.client.get('/api/register/', {'email': 'cualquiera@example.com'})
+        self.assertEqual(response_get.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_nuevo_token_invalida_token_anterior_del_mismo_tipo(self):
         usuario = Usuario.objects.create_user(

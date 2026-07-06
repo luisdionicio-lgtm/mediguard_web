@@ -28,7 +28,7 @@ public class GuideEntity {
     @Column(nullable = false, columnDefinition = "text")
     private String content;
 
-    @Column(length = 100)
+    @Column(length = 500)
     private String image;
 
     @Column(name = "created_at", nullable = false)

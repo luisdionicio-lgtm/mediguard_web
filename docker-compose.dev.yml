@@ -120,6 +120,16 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+      # Opcionales: si tu .env.docker no define un valor real, se usa el
+      # mismo dummy que application.properties trae por defecto. OJO: no
+      # se puede dejar en blanco como VITE_GOOGLE_CLIENT_ID — Spring
+      # Security OAuth2Client valida que el client-id no esté vacío y el
+      # contenedor no arranca (spring-boot-starter-security-oauth2-client
+      # está en el classpath). Google Login vía Spring solo valida el
+      # access_token que ya emitió Google en el frontend; no depende de
+      # client-secret en runtime.
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-dummy-google-client-id}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-dummy-google-client-secret}
     ports:
       - "8081:8081"
 
@@ -130,6 +140,10 @@ services:
     depends_on:
       - backend_django
       - usuario
+    environment:
+      # Opcional: sin este valor, Login.jsx/Register.jsx dejan el botón de
+      # Google deshabilitado sin romper /login (ver main.jsx).
+      VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
     ports:
       - "5173:5173"
 

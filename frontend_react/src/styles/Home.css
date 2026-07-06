@@ -540,6 +540,24 @@
   color: var(--lp-text-meta);
 }
 
+.lp-res-card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lp-res-card-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--lp-accent-teal);
+  background: var(--lp-border-teal);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
 .lp-res-read-link {
   font-weight: 700;
   color: var(--lp-accent-teal);

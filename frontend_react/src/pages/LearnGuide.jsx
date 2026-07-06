@@ -57,7 +57,7 @@ function VideoPlaceholder({ color, emoji }) {
     <div style={{
       aspectRatio: '16/9', borderRadius: 16, overflow: 'hidden',
       background: `linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%)`,
-      border: `1px solid ${border}`, position: 'relative',
+      border: `1px dashed ${border}`, position: 'relative',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       gap: 14,
     }}>
@@ -68,27 +68,67 @@ function VideoPlaceholder({ color, emoji }) {
       {/* play button */}
       <div style={{
         width: 70, height: 70, borderRadius: '50%',
-        background: `${color}22`, border: `2px solid ${color}`,
+        background: `${color}18`, border: `2px solid ${color}`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: `0 0 30px ${color}33`,
+        opacity: 0.85,
       }}>
         <Play size={28} color={color} style={{ marginLeft: 4 }} />
       </div>
       <div style={{ textAlign: 'center', zIndex: 1 }}>
         <p style={{ color: text, fontWeight: 700, fontSize: '0.97rem' }}>Video explicativo</p>
-        <p style={{ color: 'var(--text-disabled)', fontSize: '0.8rem', marginTop: 4 }}>Próximamente disponible</p>
+        <p style={{ color: 'var(--text-disabled)', fontSize: '0.8rem', marginTop: 4 }}>Estamos preparando este contenido</p>
       </div>
     </div>
   );
 }
 
-function GuideListSection({ title, items, variant, icon: Icon }) {
+function ExternalResourceCard({ color, emoji, sourceLabel, externalResourceUrl }) {
+  return (
+    <div style={{
+      aspectRatio: '16/9', borderRadius: 16, overflow: 'hidden',
+      background: `linear-gradient(135deg, ${color}0d 0%, var(--surface) 100%)`,
+      border: `1px solid ${border}`, position: 'relative',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      gap: 14, padding: 24,
+    }}>
+      <span style={{ position: 'absolute', fontSize: '8rem', opacity: 0.06, userSelect: 'none' }}>
+        {emoji}
+      </span>
+      <div style={{
+        width: 60, height: 60, borderRadius: '50%',
+        background: `${color}18`, border: `2px solid ${color}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <ExternalLink size={24} color={color} />
+      </div>
+      <div style={{ textAlign: 'center', zIndex: 1 }}>
+        <p style={{ color: text, fontWeight: 700, fontSize: '0.97rem', marginBottom: 4 }}>Recurso oficial disponible</p>
+        <p style={{ color: muted, fontSize: '0.8rem' }}>{sourceLabel}</p>
+      </div>
+      <a
+        href={externalResourceUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          zIndex: 1, display: 'flex', alignItems: 'center', gap: 8,
+          background: color, color: '#fff', fontWeight: 700, fontSize: '0.85rem',
+          padding: '10px 20px', borderRadius: 10, textDecoration: 'none',
+        }}
+      >
+        Ver recurso oficial <ExternalLink size={14} />
+      </a>
+    </div>
+  );
+}
+
+function GuideListSection({ title, items, variant, icon: Icon, numbered }) {
+  const List = numbered ? 'ol' : 'ul';
   return (
     <section className={`offline-guide-section is-${variant}`}>
       <h2><Icon size={22} aria-hidden="true" />{title}</h2>
-      <ul>
+      <List className={numbered ? 'offline-guide-steps' : undefined}>
         {items.map((item) => <li key={item}>{item}</li>)}
-      </ul>
+      </List>
     </section>
   );
 }
@@ -131,7 +171,7 @@ function OfflineGuideDetail({ guide }) {
         <section className="offline-guide-key-idea">
           <Lightbulb size={24} aria-hidden="true" />
           <div>
-            <h2>Idea principal</h2>
+            <h2>Recuerda</h2>
             <p>{guide.keyIdea}</p>
           </div>
         </section>
@@ -154,6 +194,7 @@ function OfflineGuideDetail({ guide }) {
             items={guide.doSteps}
             variant="do"
             icon={CheckCircle2}
+            numbered
           />
           <GuideListSection
             title="Qué NO hacer"
@@ -181,9 +222,9 @@ function OfflineGuideDetail({ guide }) {
 
         <section className="offline-guide-source">
           <h2>Fuente de referencia</h2>
-          <p>Contenido breve y original elaborado con fines educativos a partir de:</p>
-          <a href={guide.sourceUrl} target="_blank" rel="noreferrer">
-            {guide.sourceName} <ExternalLink size={14} aria-hidden="true" />
+          <p>Contenido breve y original elaborado con fines educativos a partir de: {guide.sourceName}.</p>
+          <a href={guide.sourceUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline">
+            Ver recurso oficial <ExternalLink size={14} aria-hidden="true" />
           </a>
         </section>
 
@@ -213,7 +254,11 @@ export default function LearnGuide() {
     return <OfflineGuideDetail guide={guide} />;
   }
 
-  const { color, emoji, tag, badge, title, duration, videoEmbed, intro, steps, extraNote, warnings } = guide;
+  const {
+    color, emoji, tag, badge, title, duration, intro, steps, extraNote, warnings,
+    videoUrl, videoEmbed, externalResourceUrl, sourceLabel,
+    officialCourseUrl, officialCourseLabel, remember, dontDo,
+  } = guide;
   const related = GUIDES_LIST.filter(g => g.slug !== slug);
 
   return (
@@ -260,17 +305,45 @@ export default function LearnGuide() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24, marginBottom: 48 }} className="lg-two-col">
           <style>{`@media(min-width:700px){.lg-two-col{grid-template-columns:1fr 260px!important;}}`}</style>
 
-          {/* Video */}
+          {/* Video / recurso externo */}
           {videoEmbed ? (
-            <div style={{ borderRadius: 16, overflow: 'hidden', aspectRatio: '16/9' }}>
-              <iframe
-                src={videoEmbed}
-                style={{ width: '100%', height: '100%', border: 'none' }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                title={title}
-              />
+            <div>
+              <div style={{ borderRadius: 16, overflow: 'hidden', aspectRatio: '16/9' }}>
+                <iframe
+                  src={videoEmbed}
+                  style={{ width: '100%', height: '100%', border: 'none' }}
+                  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={`Video explicativo: ${title}`}
+                />
+              </div>
+              {videoUrl && (
+                <a
+                  href={videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, color: muted, fontSize: '0.78rem', textDecoration: 'none' }}
+                >
+                  <ExternalLink size={13} /> Ver en YouTube{sourceLabel ? ` · ${sourceLabel}` : ''}
+                </a>
+              )}
+              {officialCourseUrl && (
+                <a
+                  href={officialCourseUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8, marginTop: 12,
+                    background: `${color}12`, border: `1px solid ${color}30`, borderRadius: 10,
+                    padding: '10px 14px', color: text, fontSize: '0.82rem', fontWeight: 600, textDecoration: 'none',
+                  }}
+                >
+                  <ExternalLink size={14} color={color} style={{ flexShrink: 0 }} /> {officialCourseLabel || 'Ver curso oficial'}
+                </a>
+              )}
             </div>
+          ) : externalResourceUrl ? (
+            <ExternalResourceCard color={color} emoji={emoji} sourceLabel={sourceLabel} externalResourceUrl={externalResourceUrl} />
           ) : (
             <VideoPlaceholder color={color} emoji={emoji} />
           )}
@@ -292,6 +365,22 @@ export default function LearnGuide() {
           </div>
         </div>
 
+        {/* Recuerda */}
+        {remember && (
+          <div style={{
+            display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 40,
+            background: `color-mix(in srgb, ${color} 9%, var(--surface))`,
+            border: `1px solid color-mix(in srgb, ${color} 30%, var(--border))`,
+            borderRadius: 15, padding: '20px 22px',
+          }}>
+            <Lightbulb size={24} color={color} style={{ flexShrink: 0 }} aria-hidden="true" />
+            <div>
+              <h2 style={{ fontSize: '1.05rem', fontWeight: 800, color: text, marginBottom: 6 }}>Recuerda</h2>
+              <p style={{ color: muted, lineHeight: 1.65, fontSize: '0.92rem' }}>{remember}</p>
+            </div>
+          </div>
+        )}
+
         {/* Steps */}
         <div style={{ marginBottom: 48 }}>
           <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: text, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -304,6 +393,29 @@ export default function LearnGuide() {
             ))}
           </div>
         </div>
+
+        {/* Qué NO hacer */}
+        {dontDo && dontDo.length > 0 && (
+          <div style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: text, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ width: 4, height: 22, background: 'var(--error)', borderRadius: 4, display: 'inline-block' }} />
+              Qué NO hacer
+            </h2>
+            <div style={{
+              display: 'flex', flexDirection: 'column', gap: 10,
+              background: 'color-mix(in srgb, var(--error) 6%, var(--surface))',
+              border: '1px solid color-mix(in srgb, var(--error) 25%, transparent)',
+              borderRadius: 14, padding: '18px 20px',
+            }}>
+              {dontDo.map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                  <XCircle size={17} color="var(--error)" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <p style={{ color: text, fontSize: '0.88rem', lineHeight: 1.6 }}>{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Extra note */}
         {extraNote && (

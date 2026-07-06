@@ -172,9 +172,10 @@ export default function Home() {
          ══════════════════════════════════════════════════════ */}
       <section
         id="inicio"
-        className="lp-hero"
+        className="lp-hero-shell"
         aria-labelledby="hero-heading"
       >
+        <div className="lp-hero-card">
         <div className="lp-hero-inner">
 
           {/* Columna izquierda — texto */}
@@ -235,6 +236,7 @@ export default function Home() {
             <PhoneMockup />
           </div>
 
+        </div>
         </div>
       </section>
 

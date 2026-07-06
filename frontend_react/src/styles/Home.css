@@ -113,22 +113,35 @@
 [data-theme="dark"] .lp-store-light     { background: #1a2336; border-color: #2d3f58; color: #f1f5f9; }
 
 /* Transicion suave al cambiar de tema (solo clases activas) */
-.lp-hero, .lp-res-card, .lp-guide-card, .lp-chat-head,
+.lp-hero-card, .lp-res-card, .lp-guide-card, .lp-chat-head,
 .lp-bubble-user, .lp-bubble-ai, .lp-store-light {
   transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
-/* ── 1. HERO ────────────────────────────────────────────────── */
-.lp-hero {
+/* ── 1. HERO — shell de página + card institucional ──────────── */
+/* Shell: ocupa todo el ancho, fondo suave de página, da el "aire"
+   arriba/abajo para que la card no quede pegada al navbar. */
+.lp-hero-shell {
+  background: var(--lp-sec-recursos);
+  padding: 48px var(--px) 72px;
+  transition: background 0.3s ease;
+}
+
+/* Card: el verde institucional vive acá adentro, no en toda la sección. */
+.lp-hero-card {
+  max-width: 1240px;
+  margin: 0 auto;
   background: #1B4332;        /* verde más claro, menos denso */
-  padding: 80px var(--px) 88px;
+  border-radius: 24px;
+  box-shadow: 0 40px 100px -20px rgba(13,43,26,0.35), 0 12px 32px rgba(0,0,0,0.14);
+  padding: 64px var(--px) 72px;
   position: relative;
   z-index: 0;
   overflow: hidden;
 }
 
 /* Overlay radial oscuro desde esquina inferior-izquierda */
-.lp-hero::before {
+.lp-hero-card::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -891,6 +904,9 @@
 }
 
 @media (max-width: 768px) {
+  .lp-hero-shell { padding: 28px var(--px) 48px; }
+  .lp-hero-card  { border-radius: 20px; padding: 40px var(--px) 44px; }
+
   .lp-hero-inner {
     grid-template-columns: 1fr;
     text-align: center;
@@ -901,8 +917,9 @@
   .lp-hero-btns   { justify-content: center; }
   .lp-hero-trust  { align-items: flex-start; max-width: 360px; margin: 0 auto; }
 
+  /* Texto arriba, mockup del celular debajo (orden natural del DOM) */
   .lp-hero-phone-col {
-    order: -1;
+    margin-top: 32px;
   }
 
   .lp-phone { width: 260px; min-height: 500px; }

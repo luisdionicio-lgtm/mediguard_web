@@ -120,7 +120,7 @@ else:
             'slug': 'control-hemorragias',
             'title': 'Control de Hemorragias',
             'level': CourseLevel.BASICO,
-            'thumbnail_url': '/images/primeros_auxilios_course.png',
+            'thumbnail_url': '/images/controlh.jpg',
             'description': (
                 'Tecnicas basicas para controlar sangrados externos, aplicar presion directa, '
                 'reconocer signos de gravedad y activar ayuda.'
@@ -187,7 +187,7 @@ else:
             'slug': 'manejo-quemaduras',
             'title': 'Manejo de Quemaduras',
             'level': CourseLevel.BASICO,
-            'thumbnail_url': '/images/primeros_auxilios_course.png',
+            'thumbnail_url': '/images/manejoquemaduras.jpg',
             'description': (
                 'Cómo actuar ante quemaduras leves, electricas o quimicas, que evitar y cuando '
                 'buscar atencion medica.'
@@ -252,7 +252,7 @@ else:
             'slug': 'rcp-basico',
             'title': 'RCP básica para adultos',
             'level': CourseLevel.BASICO,
-            'thumbnail_url': '/images/primeros_auxilios_course.png',
+            'thumbnail_url': '/images/rcpbasica.jpg',
             'description': (
                 'Pasos iniciales para evaluar respuesta, activar emergencias y realizar '
                 'compresiones toracicas basicas en adultos.'
@@ -318,7 +318,7 @@ else:
             'slug': 'fracturas-traumatismos',
             'title': 'Fracturas y Traumatismos',
             'level': CourseLevel.INTERMEDIO,
-            'thumbnail_url': '/images/primeros_auxilios_course.png',
+            'thumbnail_url': '/images/fracturaytraumatismo.jpg',
             'description': (
                 'Primeras acciones ante golpes, caidas, sospecha de fracturas, inmovilizacion '
                 'basica y señales de emergencia.'
@@ -400,6 +400,13 @@ else:
         )
         if curso_creado:
             total_cursos_creados += 1
+        elif course.thumbnail_url != curso_data['thumbnail_url']:
+            # El curso ya existia (por ejemplo, creado antes de tener la
+            # imagen definitiva): actualiza solo thumbnail_url sin tocar el
+            # resto de sus datos.
+            course.thumbnail_url = curso_data['thumbnail_url']
+            course.save(update_fields=['thumbnail_url'])
+            print('  ACTUALIZADO thumbnail_url de: ' + course.title)
         print(('CREADO' if curso_creado else 'YA EXISTE') + ' curso: ' + course.title)
 
         total_duracion = 0

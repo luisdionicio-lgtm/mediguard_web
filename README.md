@@ -302,7 +302,8 @@ npm run preview
 
 ---
 
-# 📱 Configuración Android
+# 📱 Configuración Android 
+--- repositorio: https://github.com/luisdionicio-lgtm/Movil_PrimerosAuxilios_medicguard
 
 Cambiar URL de Retrofit:
 

@@ -140,12 +140,20 @@
   overflow: hidden;
 }
 
-/* Overlay radial oscuro desde esquina inferior-izquierda */
+/* Overlay: gradiente radial + degradado verde (oculta la foto detrás del
+   texto para legibilidad, la deja más visible del lado del mockup) +
+   fondo_home.jpg como capa base, sutil, tipo fondo médico premium. */
 .lp-hero-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 70% 80% at 0% 100%, rgba(0,0,0,0.6) 0%, transparent 65%);
+  background:
+    radial-gradient(ellipse 70% 80% at 0% 100%, rgba(0,0,0,0.6) 0%, transparent 65%),
+    linear-gradient(100deg, rgba(13,43,26,0.95) 28%, rgba(13,43,26,0.62) 60%, rgba(13,43,26,0.3) 100%),
+    url('/images/fondo_home.jpg');
+  background-size: auto, auto, cover;
+  background-position: center, center, right center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
   pointer-events: none;
   z-index: 0;
 }

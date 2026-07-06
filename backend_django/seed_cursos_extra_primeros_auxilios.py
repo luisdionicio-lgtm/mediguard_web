@@ -51,7 +51,7 @@ else:
             'slug': 'primeros-auxilios-pediatricos',
             'title': 'Primeros Auxilios Pediátricos',
             'level': CourseLevel.INTERMEDIO,
-            'thumbnail_url': '/images/primeros_auxilios_course.png',
+            'thumbnail_url': '/images/pediatrico.webp',
             'description': (
                 'Atencion inicial de emergencias en bebes y niños: evaluacion segura, fiebre, '
                 'convulsiones febriles, atragantamiento y señales de alarma.'
